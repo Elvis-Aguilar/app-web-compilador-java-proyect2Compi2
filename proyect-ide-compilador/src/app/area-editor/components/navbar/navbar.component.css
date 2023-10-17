@@ -1,0 +1,13 @@
+.boton-margin {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.inicio {
+  cursor: pointer;
+  color: rgb(255, 255, 255);
+}
+
+.dropdown-item{
+  cursor: pointer;
+}

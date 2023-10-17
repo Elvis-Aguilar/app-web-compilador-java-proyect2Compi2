@@ -1,0 +1,46 @@
+.box {
+    font-family: "times new roman", serif;
+    line-height: 30px;
+    background: rgb(17, 17, 17);
+    border-radius: 2px;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.1);
+    margin: 5px 5%;
+    padding: 5%;
+    overflow: auto;
+    height: 100vh;
+    max-height: 100vh; 
+    display: flex;
+    align-items: center; /* Centrar verticalmente */
+    flex-direction: column;
+
+}
+
+@media (min-width: 200px) {
+    .box {
+      margin: 0px;
+      max-width: 200px;
+      padding: 5px;
+    }
+  }
+
+span{
+    color: #fff;
+    padding: 5px;
+    display: block;
+    border: 1px solid #fff;
+    margin: 2px;
+}
+
+span:hover{
+    color: rgb(60, 125, 185);
+    cursor: pointer;
+}
+
+span:active {
+    /* Configuraciones cuando el elemento está siendo presionado */
+    background-color: #1f2774; /* Cambiar el color de fondo */
+    transform: scale(0.95); /* Escalar el elemento */
+    color: #FFFFFF; /* Cambiar el color del texto */
+  }
+
+  

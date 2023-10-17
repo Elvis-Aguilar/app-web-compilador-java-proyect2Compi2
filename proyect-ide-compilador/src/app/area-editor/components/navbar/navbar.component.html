@@ -1,0 +1,44 @@
+<nav class="navbar bg-dark">
+    <div class="container-fluid">
+      <div>
+        <div class="btn-group boton-margin">
+          <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            Archivo
+          </button>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" (click)="crearProyecto()" >Nuevo Proyecto</a></li>
+            <li><a class="dropdown-item" href="#">Abrir Proyecto</a></li>
+            <li><a class="dropdown-item" href="#">Guardar</a></li>
+            <li><a class="dropdown-item" href="#">Guardar Como</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="#">Cerrar Proyecto</a></li>
+          </ul>
+        </div>
+        <div class="btn-group boton-margin">
+          <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            Generar
+          </button>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#">Codigo 3 Direcciones</a></li>
+            <li><a class="dropdown-item" href="#">Codigo Assembler</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="title" >
+        <a routerLink="/inicio/principal" class="navbar-brand inicio">MINI-COMPILIDAOR-JAVA</a>
+      </div>
+      <div class="d-flex">
+        <div class="btn-group boton-margin">
+          <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            Descargar
+          </button>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#">Codigo 3 Direcciones</a></li>
+            <li><a class="dropdown-item" href="#">Codigo Assembler</a></li>
+          </ul>
+        </div>
+        <button routerLink="/autenticacion/login" type="button" class="btn btn-primary boton-margin">
+          Ayuda</button>
+      </div>
+    </div>
+  </nav>

@@ -1,0 +1,18 @@
+<div class="buttons">
+  <div  *ngFor="let archivo of sesion.archivos; let i = index">
+    <button class="conten"  (click) ="setContent(i)" >{{archivo.nombre}}</button>
+    <button class="close">X</button>
+  </div>
+</div>
+<ngx-codemirror
+  [(ngModel)]="content"
+  [options]="{
+    lineNumbers: true,
+    theme: 'yonce',
+    lineWrapping: true,
+    mode: 'text/x-java'
+  }"
+></ngx-codemirror>
+<div class="d-flex justify-content-center">
+  <button (click)="onCompilar()" class="btn btn-light ms-auto">Compilar</button>
+</div>

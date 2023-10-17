@@ -1,0 +1,48 @@
+.buttons{
+  display: flex;
+  align-items: center; /* Centrar verticalmente */
+  flex-direction: row;
+}
+
+div{
+  padding: 0px;
+}
+
+
+button {
+    background: none;
+    border: 1px solid rgb(255, 255, 255);
+    font-family: "times new roman", serif;
+    line-height: 1;
+    margin: 0.5em 0em 0em 0em;
+    padding: 0.5em;
+    color: #fff;
+    font-size: 14px;
+}
+
+.conten:hover {
+	color: white;
+	background: #589ff7;
+	
+	border-color: #789cc9;
+}
+
+.close:hover {
+	color: white;
+	background: #f77058;
+	
+	border-color: #c97878;
+}
+
+
+.conten {
+    border-right: none;
+    padding-right: 0;
+
+  }
+  
+  .close {
+    border-left: none;
+    padding-left: 1.5;
+
+  }

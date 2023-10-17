@@ -1,0 +1,43 @@
+# See http://help.github.com/ignore-files/ for more about ignoring files.
+
+# Compiled output
+/proyect-ide-compilador/dist
+/proyect-ide-compilador/tmp
+/proyect-ide-compilador/out-tsc
+/proyect-ide-compilador/bazel-out
+
+# Node
+/proyect-ide-compilador/node_modules
+proyect-ide-compilador/npm-debug.log
+proyect-ide-compilador/yarn-error.log
+
+# IDEs and editors
+proyect-ide-compilador/.idea/
+proyect-ide-compilador/.project
+proyect-ide-compilador/.classpath
+proyect-ide-compilador/.c9/
+proyect-ide-compilador/*.launch
+proyect-ide-compilador/.settings/
+proyect-ide-compilador/*.sublime-workspace
+
+# Visual Studio Code
+proyect-ide-compilador/.vscode/*
+proyect-ide-compilador/!.vscode/settings.json
+proyect-ide-compilador/!.vscode/tasks.json
+proyect-ide-compilador/!.vscode/launch.json
+proyect-ide-compilador/!.vscode/extensions.json
+proyect-ide-compilador/.history/*
+
+# Miscellaneous
+proyect-ide-compilador/.angular/cache
+proyect-ide-compilador.sass-cache/
+proyect-ide-compilador/connect.lock
+proyect-ide-compilador/coverage
+proyect-ide-compilador/libpeerconnection.log
+proyect-ide-compiladortestem.log
+proyect-ide-compilador/typings
+
+# System files
+proyect-ide-compilador/.DS_Store
+proyect-ide-compilador/Thumbs.db
+
