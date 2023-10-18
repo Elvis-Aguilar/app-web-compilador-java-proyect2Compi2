@@ -1,5 +1,6 @@
-import { Visitor } from "../visitors/visitor";
+import { Visitor } from '../visitors/visitor';
 
-export abstract class instruction{
-    abstract genericQuartet(vi:Visitor): void;
+export abstract class Instruction {
+  abstract execute(vi: Visitor): void;
+  abstract genericQuartet(vi: Visitor): void;
 }

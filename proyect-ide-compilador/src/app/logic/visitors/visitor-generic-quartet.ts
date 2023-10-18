@@ -1,3 +1,7 @@
+import { DoWhileInstruction } from '../instructions/bifurcaciones/do-while-instruction';
+import { ElseInstruction } from '../instructions/bifurcaciones/Else-Instruction';
+import { IfInstruction } from '../instructions/bifurcaciones/If-instruction';
+import { WhileInstruction } from '../instructions/bifurcaciones/while-Instruction';
 import { Declaration } from '../instructions/declare-asig/declaration';
 import { NodoOperation } from '../instructions/operations/nodo-operation';
 import { Operation } from '../instructions/operations/operation';
@@ -7,6 +11,7 @@ import { TypeOperationQuartet } from '../quartets/type-operation-quartet';
 import { Visitor } from './visitor';
 
 export class VisitorGenericQuartet extends Visitor {
+
   
     readonly POINTER: string = 'ptr';
     qh: QuartHandler;
@@ -52,5 +57,20 @@ export class VisitorGenericQuartet extends Visitor {
       nodo.result = this.qh.tmpVar();
       this.qh.aumentarTmp();
 
+  }
+  
+  visitIf(ifI: IfInstruction): void {
+    throw new Error('Method not implemented.');
+  }
+
+  visitElse(elseI: ElseInstruction): void {
+    throw new Error('Method not implemented.');
+  }
+
+  visitWhile(whileI: WhileInstruction): void {
+    throw new Error('Method not implemented.');
+  }
+  visitDoWhile(doWhileI: DoWhileInstruction): void {
+    throw new Error('Method not implemented.');
   }
 }

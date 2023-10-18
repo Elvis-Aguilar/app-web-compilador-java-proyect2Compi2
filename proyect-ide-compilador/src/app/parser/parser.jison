@@ -40,6 +40,16 @@ print               "print"
 math                "Math"
 
 
+//bifurcaciones
+if                  "if"
+else                "else"
+switch              "switch"
+case                "case"
+break               "break"          
+default             "default"
+while               "while"
+do                  "do"
+
 
 /* operators */
 
@@ -73,6 +83,7 @@ coma                            ","
 parentesisA                     "("
 parentesisC                     ")"
 puntoComa                       ";"
+dosPunto                        ":"
 igual                           "="
 punto                           "."
 llaveA                          "{"
@@ -112,7 +123,8 @@ id                  [a-zA-Z_][a-zA-Z_0-9]*
 {coma}                      return "COMA"                   
 {parentesisA}               return "PARENTESA"                            
 {parentesisC}               return "PARENTESC"                                
-{puntoComa}                 return "PUNTOCOMA"                           
+{puntoComa}                 return "PUNTOCOMA" 
+{dosPunto}                  return "DOSPUNTO"                           
 {igual}                     return "IGUAL" 
 {int}                       return "INT" 
 {float}                     return "FLOAT"
@@ -140,7 +152,14 @@ id                  [a-zA-Z_][a-zA-Z_0-9]*
 {out}                       return "OUT"
 {println}                   return "PRINTLN"
 {print}                     return "PRINT"
-
+{if}                        return "IF"
+{else}                      return "ELSE"
+{switch}                    return "SWITCH"
+{case}                      return "CASE"
+{break}                     return "BREAK"          
+{default}                   return "DEFAULT"
+{while}                     return "WHILE"
+{do}                        return "DO"
 
 /* id */
 {id}                        return "ID"
@@ -223,6 +242,7 @@ sent_glo
     : declar_var_glo
     | fun
     | main_fun
+    | getSet PUNTOCOMA
     ;
 
 
@@ -233,7 +253,9 @@ declar_var_glo
     ;
 
 getSet
-  : GETTER
+  : GETTER SETTER
+  | SETTER GETTER
+  | GETTER
   | SETTER
   ;
 
@@ -298,7 +320,12 @@ sentencias
 sentencia
     : declaracion_var         {$$ =$1;}
     | asig 
-    | oput        
+    | oput 
+    | def_if_complete
+    | def_switch
+    | BREAK PUNTOCOMA   
+    | def_while  
+    | def_do_while  
     ;
 
 /*gramatica para declaracion de variables anidadas*/
@@ -325,8 +352,72 @@ oput
   ;
 
 
-/*gramatica para if*/
+/*definicion de un if, if else, if elseif else*/
+def_if_complete 
+    : def_if                                                                
+    | def_if def_else                                               
+    | def_if  def_else_if                                              
+    ;
 
+/*Gramatica para if  */
+def_if 
+    : IF PARENTESA exp PARENTESC LLAVEA sentencias LLAVEC
+    ;
+
+/*Gramatica para ELSE  */
+def_else 
+    : ELSE LLAVEA sentencias LLAVEC                                                 
+    ;
+
+/*Gramatica para ELSE_if  */
+def_else_if 
+    : ELSE def_if                                                                                                                                       
+    | ELSE def_if def_else
+    | ELSE def_if def_else_if                                       
+    ;
+
+/*Gramatica para switch  */
+def_switch 
+    : SWITCH PARENTESA ID PARENTESC LLAVEA cases LLAVEC                           
+    ;
+
+/*Gramatica para casos dentro del switch  */
+cases 
+    : caso_sw BREAK PUNTOCOMA cases                                                               
+    |                                                                                               
+    ;
+
+/*Gramatica para casos */
+caso_sw 
+    : CASE ter_exp DOSPUNTO sentencias_sw                                 
+    | DEFAULT DOSPUNTO sentencias_sw                                                  
+    ;
+
+/*Gramatica para sentencias, pueden venir dentro de una funcion o metodo */
+sentencias_sw 
+  : sentencias_sw sentencia_sw                                          
+  |                                                                                        
+  ;
+
+sentencia_sw
+    : declaracion_var         
+    | asig 
+    | oput 
+    | def_if_complete 
+    | def_while
+    | def_do_while      
+    ;
+
+
+/*Gramatica para while  */
+def_while 
+  : WHILE PARENTESA exp PARENTESC LLAVEA sentencias LLAVEC                                            {:RESULT = new SentenciaWhile((ArrayList<Instruccions> )sent, (Operation) cond, new TablaSimbol(errorsSemanticos));:}               
+  ;
+
+/*Gramatica para do_while  */
+def_do_while 
+    : DO LLAVEA sentencias LLAVEC WHILE PARENTESA exp PARENTESC PUNTOCOMA                            {:RESULT = new SentenciaDoWhile((ArrayList<Instruccions> )sent, (Operation) cond, new TablaSimbol(errorsSemanticos));:}          
+    ;
 
 /*gramatica para expresiones*/
 exp 

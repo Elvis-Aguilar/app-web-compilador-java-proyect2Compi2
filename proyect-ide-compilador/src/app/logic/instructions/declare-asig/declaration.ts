@@ -1,9 +1,9 @@
 import { Token } from "src/app/parser/token";
 import { Visitor } from "../../visitors/visitor";
-import { instruction } from "../instruction";
+import { Instruction } from "../instruction";
 import { Operation } from "../operations/operation";
 
-export class Declaration extends instruction{
+export class Declaration extends Instruction{
 
     token:Token;
     op:Operation | null;

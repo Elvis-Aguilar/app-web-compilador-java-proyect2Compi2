@@ -57,7 +57,7 @@ export class NodoOperation {
       case TypeDato.INTEGER:
         this.result = `${this.dato.numero}`;
         break;
-      case TypeDato.DOUBLE:
+      case TypeDato.FLOAT:
         this.result = `${this.dato.numero}`;
         break;
       case TypeDato.BOOLEAN:
