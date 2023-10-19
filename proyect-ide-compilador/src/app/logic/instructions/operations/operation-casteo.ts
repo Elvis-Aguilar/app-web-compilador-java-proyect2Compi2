@@ -15,7 +15,7 @@ export class OperationCasteo {
     this.datoLeft = dato1;
     this.datoRight = dato2;
     this.typeOp = typeOp;
-    let resutl = new Dato(TypeDato.INTEGER);
+    let resutl = new Dato(TypeDato.INT);
     switch (this.typeOp) {
       case TypeOperation.SUMA:
         resutl = this.operacionSUma();
@@ -61,7 +61,7 @@ export class OperationCasteo {
   }
 
   private operacionSUma(): Dato {
-    let datoResult = new Dato(TypeDato.INTEGER);
+    let datoResult = new Dato(TypeDato.INT);
 
     switch (this.datoLeft.typeDato) {
       case TypeDato.STRING:
@@ -81,7 +81,7 @@ export class OperationCasteo {
         datoResult.numero = this.sumaDecimalDato();
         break;
       default:
-        datoResult.typeDato = TypeDato.INTEGER;
+        datoResult.typeDato = TypeDato.INT;
         datoResult.numero = this.sumaEnteroDato();
         break;
     }
@@ -90,7 +90,7 @@ export class OperationCasteo {
   }
 
   private operacionResta(): Dato {
-    let datoResult = new Dato(TypeDato.INTEGER);
+    let datoResult = new Dato(TypeDato.INT);
 
     if (this.datoLeft.typeDato == TypeDato.FLOAT) {
       switch (this.datoRight.typeDato) {
@@ -130,7 +130,7 @@ export class OperationCasteo {
       }
     }
 
-    if (this.datoLeft.typeDato == TypeDato.INTEGER) {
+    if (this.datoLeft.typeDato == TypeDato.INT) {
       switch (this.datoRight.typeDato) {
         case TypeDato.STRING:
           ErrorSingleton.getInstance().push(
@@ -170,7 +170,7 @@ export class OperationCasteo {
   }
 
   private operacionMultiplicacion(): Dato {
-    let datoResult = new Dato(TypeDato.INTEGER);
+    let datoResult = new Dato(TypeDato.INT);
 
     if (this.datoLeft.typeDato == TypeDato.FLOAT) {
       switch (this.datoRight.typeDato) {
@@ -210,7 +210,7 @@ export class OperationCasteo {
       }
     }
 
-    if (this.datoLeft.typeDato == TypeDato.INTEGER) {
+    if (this.datoLeft.typeDato == TypeDato.INT) {
       switch (this.datoRight.typeDato) {
         case TypeDato.STRING:
           ErrorSingleton.getInstance().push(
@@ -250,7 +250,7 @@ export class OperationCasteo {
   }
 
   operacionDivision(): Dato {
-    let datoResult = new Dato(TypeDato.INTEGER);
+    let datoResult = new Dato(TypeDato.INT);
 
     if (this.datoLeft.typeDato == TypeDato.FLOAT) {
       switch (this.datoRight.typeDato) {
@@ -290,7 +290,7 @@ export class OperationCasteo {
       }
     }
 
-    if (this.datoLeft.typeDato == TypeDato.INTEGER) {
+    if (this.datoLeft.typeDato == TypeDato.INT) {
       switch (this.datoRight.typeDato) {
         case TypeDato.STRING:
           ErrorSingleton.getInstance().push(
@@ -330,7 +330,7 @@ export class OperationCasteo {
   }
 
   operacionMod(): Dato {
-    let datoResult = new Dato(TypeDato.INTEGER);
+    let datoResult = new Dato(TypeDato.INT);
 
     if (this.datoLeft.typeDato == TypeDato.FLOAT) {
       switch (this.datoRight.typeDato) {
@@ -370,7 +370,7 @@ export class OperationCasteo {
       }
     }
 
-    if (this.datoLeft.typeDato == TypeDato.INTEGER) {
+    if (this.datoLeft.typeDato == TypeDato.INT) {
       switch (this.datoRight.typeDato) {
         case TypeDato.STRING:
           ErrorSingleton.getInstance().push(
@@ -457,9 +457,9 @@ export class OperationCasteo {
   private operacionEquals(): Dato {
     let datoResult = new Dato(TypeDato.BOOLEAN);
     switch (this.datoLeft.typeDato) {
-      case TypeDato.INTEGER:
+      case TypeDato.INT:
         switch (this.datoRight.typeDato) {
-          case TypeDato.INTEGER:
+          case TypeDato.INT:
             datoResult.booleano = this.datoLeft.numero == this.datoRight.numero;
             break;
           case TypeDato.FLOAT:
@@ -482,7 +482,7 @@ export class OperationCasteo {
         break;
       case TypeDato.FLOAT:
         switch (this.datoRight.typeDato) {
-          case TypeDato.INTEGER:
+          case TypeDato.INT:
             datoResult.booleano = this.datoLeft.numero == this.datoRight.numero;
             break;
           case TypeDato.FLOAT:
@@ -578,9 +578,9 @@ export class OperationCasteo {
   private operacionDiferente(): Dato {
     let datoResult = new Dato(TypeDato.BOOLEAN);
     switch (this.datoLeft.typeDato) {
-      case TypeDato.INTEGER:
+      case TypeDato.INT:
         switch (this.datoRight.typeDato) {
-          case TypeDato.INTEGER:
+          case TypeDato.INT:
             datoResult.booleano = this.datoLeft.numero != this.datoRight.numero;
             break;
           case TypeDato.FLOAT:
@@ -603,7 +603,7 @@ export class OperationCasteo {
         break;
       case TypeDato.FLOAT:
         switch (this.datoRight.typeDato) {
-          case TypeDato.INTEGER:
+          case TypeDato.INT:
             datoResult.booleano = this.datoLeft.numero != this.datoRight.numero;
             break;
           case TypeDato.FLOAT:
@@ -699,9 +699,9 @@ export class OperationCasteo {
   private operacionMayorQ(): Dato {
     let datoResult = new Dato(TypeDato.BOOLEAN);
     switch (this.datoLeft.typeDato) {
-      case TypeDato.INTEGER:
+      case TypeDato.INT:
         switch (this.datoRight.typeDato) {
-          case TypeDato.INTEGER:
+          case TypeDato.INT:
             datoResult.booleano = this.datoLeft.numero > this.datoRight.numero;
             break;
           case TypeDato.FLOAT:
@@ -724,7 +724,7 @@ export class OperationCasteo {
         break;
       case TypeDato.FLOAT:
         switch (this.datoRight.typeDato) {
-          case TypeDato.INTEGER:
+          case TypeDato.INT:
             datoResult.booleano = this.datoLeft.numero > this.datoRight.numero;
             break;
           case TypeDato.FLOAT:
@@ -787,9 +787,9 @@ export class OperationCasteo {
   private operacionMenorQ(): Dato {
     let datoResult = new Dato(TypeDato.BOOLEAN);
     switch (this.datoLeft.typeDato) {
-      case TypeDato.INTEGER:
+      case TypeDato.INT:
         switch (this.datoRight.typeDato) {
-          case TypeDato.INTEGER:
+          case TypeDato.INT:
             datoResult.booleano = this.datoLeft.numero < this.datoRight.numero;
             break;
           case TypeDato.FLOAT:
@@ -812,7 +812,7 @@ export class OperationCasteo {
         break;
       case TypeDato.FLOAT:
         switch (this.datoRight.typeDato) {
-          case TypeDato.INTEGER:
+          case TypeDato.INT:
             datoResult.booleano = this.datoLeft.numero < this.datoRight.numero;
             break;
           case TypeDato.FLOAT:
@@ -874,9 +874,9 @@ export class OperationCasteo {
   private operacionMayorIgual(): Dato {
     let datoResult = new Dato(TypeDato.BOOLEAN);
     switch (this.datoLeft.typeDato) {
-      case TypeDato.INTEGER:
+      case TypeDato.INT:
         switch (this.datoRight.typeDato) {
-          case TypeDato.INTEGER:
+          case TypeDato.INT:
             datoResult.booleano = this.datoLeft.numero >= this.datoRight.numero;
             break;
           case TypeDato.FLOAT:
@@ -899,7 +899,7 @@ export class OperationCasteo {
         break;
       case TypeDato.FLOAT:
         switch (this.datoRight.typeDato) {
-          case TypeDato.INTEGER:
+          case TypeDato.INT:
             datoResult.booleano = this.datoLeft.numero >= this.datoRight.numero;
             break;
           case TypeDato.FLOAT:
@@ -962,9 +962,9 @@ export class OperationCasteo {
   private operacionMenorIgual(): Dato {
     let datoResult = new Dato(TypeDato.BOOLEAN);
     switch (this.datoLeft.typeDato) {
-      case TypeDato.INTEGER:
+      case TypeDato.INT:
         switch (this.datoRight.typeDato) {
-          case TypeDato.INTEGER:
+          case TypeDato.INT:
             datoResult.booleano = this.datoLeft.numero <= this.datoRight.numero;
             break;
           case TypeDato.FLOAT:
@@ -987,7 +987,7 @@ export class OperationCasteo {
         break;
       case TypeDato.FLOAT:
         switch (this.datoRight.typeDato) {
-          case TypeDato.INTEGER:
+          case TypeDato.INT:
             datoResult.booleano = this.datoLeft.numero <= this.datoRight.numero;
             break;
           case TypeDato.FLOAT:

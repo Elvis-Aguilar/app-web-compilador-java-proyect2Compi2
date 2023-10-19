@@ -1,13 +1,16 @@
 /*codigo javascript, como variables, o funciones*/
 %{
-
+  let claseAux;
 %}
 
 /* lexical grammar */
 %lex
 /*macro-tockens expresiones regulares para usarlos en token compuestos*/
-entero              [0]|[1-9][0-9]*
-decimal             {integer}(\.[0-9]+)
+decimal             [0-9]+"."[0-9]+("F"|"f")
+entero              [0-9]+
+
+cadena              \"[^\"]*\"
+caracter            "'"[^]"'" 
 
 //para comentarios 
 lineTerminator      \r|\n|\r\n
@@ -35,6 +38,8 @@ System              "System"
 out                 "out"
 println             "println"
 print               "print"
+true                "true"
+false               "false"
 
 //operadores de clase Math
 math                "Math"
@@ -102,8 +107,8 @@ id                  [a-zA-Z_][a-zA-Z_0-9]*
 %%
 
 {whitespace}                /* skip */
-{entero}                    return "ENTERO"
 {decimal}                   return "DECIMAL"
+{entero}                    return "ENTERO"
 {incre}                     return "INCRE"
 {decre}                     return "DECRE"
 {mas} 						          return "MAS"
@@ -160,6 +165,10 @@ id                  [a-zA-Z_][a-zA-Z_0-9]*
 {default}                   return "DEFAULT"
 {while}                     return "WHILE"
 {do}                        return "DO"
+{cadena}                    return "CADENA"
+{caracter}                  return "CARACTER"
+{true}                      return "TRUE"
+{false}                     return "FALSE"
 
 /* id */
 {id}                        return "ID"
@@ -191,7 +200,7 @@ initial
 
 /*gramatica para un archivo valido: impor ... class || class*/
 program 
-    : pack imprts clase
+    : pack imprts clase                   {$$ = $3;}
     ;
 
 
@@ -223,32 +232,37 @@ term_imprt
 
 /*gramatica para clases: public class id {...} || class id {...}*/
 clase 
-  : visi_class CLASS ID LLAVEA sente_glos LLAVEC
+  : visi_class clas_name LLAVEA sente_glos LLAVEC       {$$ = claseAux; $$.isFinal = $1; $$.instructions = $4;}         
   ; 
 
+clas_name
+  : CLASS ID              {claseAux = new yy.Clase($2);}            
+  ;
+
+
 visi_class 
-    : PUBLIC FINAL
-    | PUBLIC
-    |  
+    : PUBLIC FINAL    {$$ = true;}
+    | PUBLIC          {$$ = false;}
+    |                 {$$ = false;}
     ;
 
 /*sentencias globales*/
 sente_glos 
-    : sente_glos sent_glo
-    | 
+    : sente_glos sent_glo                       {$$ = yy.AuxFun.pushInstruccion($1, $2);}
+    |                                           {$$=[];}
     ;
 
 sent_glo 
-    : declar_var_glo
-    | fun
-    | main_fun
-    | getSet PUNTOCOMA
+    : declar_var_glo                            {$$ = $1;}
+    | fun                                       {$$ = null;}
+    | main_fun                                  {$$ = null;}
+    | getSet PUNTOCOMA                          {$$ = null;}
     ;
 
 
 /*declaracion variable global*/
 declar_var_glo
-    : agrup items PUNTOCOMA
+    : agrup items PUNTOCOMA                   {$$ = yy.AuxFun.completDeclacionGlobla($2,$1);}
     | getSet agrup items PUNTOCOMA
     ;
 
@@ -260,8 +274,8 @@ getSet
   ;
 
 statc
-  : STATIC
-  |
+  : STATIC                    {$$ = true;}  
+  |                           {$$ = false; }
   ;
 
 /*gramatica para delcarar funciones*/
@@ -281,9 +295,18 @@ params
   ;
 
 param 
-  : type ID
+  : type_param ID
   | ID ID
   ; 
+
+
+type_param
+    : INT                 {$$ = yy.TypeDato.INT;}                     
+    | FLOAT               {$$ = yy.TypeDato.FLOAT;}
+    | BOOLEAN             {$$ = yy.TypeDato.BOOLEAN;}
+    | CHAR                {$$ = yy.TypeDato.CHAR;}
+    | STRING              {$$ = yy.TypeDato.STRING;}
+    ;
 
 
 /*funcion main, aqui se validara el stack y desde aqui se iniciara la compilacion*/
@@ -292,23 +315,29 @@ main_fun
     ;
 
 visi
-  : PUBLIC
-  | PRIVATE
-  | PROTECTED
-  | 
+  : PUBLIC                {$$ = yy.Visibilidad.PUBLIC;}
+  | PRIVATE               {$$ = yy.Visibilidad.PRIVATE;}
+  | PROTECTED             {$$ = yy.Visibilidad.PROTECTED;}
+  |                       {$$ = yy.Visibilidad.PUBLIC;}
   ;
 
 type
-    : INT
-    | FLOAT
-    | BOOLEAN
-    | CHAR
-    | VOID                 // void valido solo en funciones
+    : INT                 {$$ = yy.TypeDato.INT;}                     
+    | FLOAT               {$$ = yy.TypeDato.FLOAT;}
+    | BOOLEAN             {$$ = yy.TypeDato.BOOLEAN;}
+    | CHAR                {$$ = yy.TypeDato.CHAR;}
+    | STRING              {$$ = yy.TypeDato.STRING;}
+    | VOID                {$$ = yy.TypeDato.VOID;}
     ;
 
 agrup
-  : visi statc type
-  | visi statc ID                  //se usa un id para refernciar  objetos
+  : visi statc fin type               {$$ = [$1, $2, $3, $4]; }
+  | visi statc fin ID                  //se usa un id para refernciar  objetos
+  ;
+
+fin 
+  : FINAL                 {$$ = true;}
+  |                       {$$ = false;}
   ;
 
 /*sentencias de instrucciones internas, para funciones y anidadas en bifurcaciones*/
@@ -334,10 +363,10 @@ declaracion_var
             ;
 
 items 
-    : items COMA ID {$$ =""+ $1+" , "+" > "+ $3+" < ";}
-    | items COMA ID IGUAL exp 
-    | ID IGUAL exp           {$$ = new yy.Token($1,this._$.first_column, this._$.first_line);}
-    | ID
+    : items COMA ID                       {$$ = $1; $$.push(new yy.Declaration(new yy.Token($3,this._$.first_column, this._$.first_line)));}
+    | items COMA ID IGUAL exp             {$$ = $1; $$.push(new yy.Declaration(new yy.Token($3,this._$.first_column, this._$.first_line), new yy.Operation($5)));}
+    | ID IGUAL exp                        {$$ = []; $$.push(new yy.Declaration(new yy.Token($1,this._$.first_column, this._$.first_line), new yy.Operation($3)));}
+    | ID                                  {$$ = []; $$.push(new yy.Declaration(new yy.Token($1,this._$.first_column, this._$.first_line)));}
     ;
 
 /*gramatica para asignacion de variables*/
@@ -411,12 +440,12 @@ sentencia_sw
 
 /*Gramatica para while  */
 def_while 
-  : WHILE PARENTESA exp PARENTESC LLAVEA sentencias LLAVEC                                            {:RESULT = new SentenciaWhile((ArrayList<Instruccions> )sent, (Operation) cond, new TablaSimbol(errorsSemanticos));:}               
+  : WHILE PARENTESA exp PARENTESC LLAVEA sentencias LLAVEC                                            
   ;
 
 /*Gramatica para do_while  */
 def_do_while 
-    : DO LLAVEA sentencias LLAVEC WHILE PARENTESA exp PARENTESC PUNTOCOMA                            {:RESULT = new SentenciaDoWhile((ArrayList<Instruccions> )sent, (Operation) cond, new TablaSimbol(errorsSemanticos));:}          
+    : DO LLAVEA sentencias LLAVEC WHILE PARENTESA exp PARENTESC PUNTOCOMA                            
     ;
 
 /*gramatica para expresiones*/
@@ -439,6 +468,11 @@ exp
   ;
 
 ter_exp
-      : ENTERO        {$$ = new yy.Dato(yy.TypeDato.INTEGER, parseInt($1));}
-      | DECIMAL       {$$ = new yy.Dato(yy.TypeDato.DOUBLE, parseFloat($1));}
+      : ENTERO        {$$ = new yy.Dato(yy.TypeDato.INT, parseInt($1), "", false, new yy.Token($1,this._$.first_column, this._$.first_line));}
+      | DECIMAL       {$$ = new yy.Dato(yy.TypeDato.FLOAT, parseFloat($1), "", false, new yy.Token($1,this._$.first_column, this._$.first_line));}
+      | CADENA        {$$ = new yy.Dato(yy.TypeDato.STRING, 0,$1.substr(1,yyleng-2), false, new yy.Token($1,this._$.first_column, this._$.first_line));}  
+      | CARACTER      {$$ = new yy.Dato(yy.TypeDato.CHAR, 0,$1.substr(1,yyleng-2), false, new yy.Token($1,this._$.first_column, this._$.first_line));}  
+      | TRUE          {$$ = new yy.Dato(yy.TypeDato.BOOLEAN, 0,"", true, new yy.Token($1,this._$.first_column, this._$.first_line));}
+      | FALSE         {$$ = new yy.Dato(yy.TypeDato.BOOLEAN, 0,"", false, new yy.Token($1,this._$.first_column, this._$.first_line));}
+      | ID            {$$ = new yy.Dato(yy.TypeDato.INT, 0,"", false, new yy.Token($1,this._$.first_column, this._$.first_line), true);}
       ;

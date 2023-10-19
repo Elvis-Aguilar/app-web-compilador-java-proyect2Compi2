@@ -42,7 +42,7 @@ export class NodoOperation {
       //TODO: buscar variable
       //return symboltable.getVar implementar
     }
-    const tmp = new Dato(TypeDato.INTEGER);
+    const tmp = new Dato(TypeDato.INT);
     //const datoLeft = this.opLeft?.execute(symbolTable);
     //const datoRight = this.opRight?.execute(symbolTable);
     return tmp;
@@ -54,7 +54,7 @@ export class NodoOperation {
 
   valueDato(){
     switch (this.dato?.typeDato) {
-      case TypeDato.INTEGER:
+      case TypeDato.INT:
         this.result = `${this.dato.numero}`;
         break;
       case TypeDato.FLOAT:

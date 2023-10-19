@@ -1,7 +1,8 @@
 export enum TypeDato {
-    INTEGER,
+    INT,
     FLOAT,
     STRING,
     CHAR,
-    BOOLEAN
+    BOOLEAN,
+    VOID
 }

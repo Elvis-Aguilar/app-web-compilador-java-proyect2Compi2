@@ -1,14 +1,17 @@
+import { Clase } from "../logic/class/clase";
 import { ErrorSingleton } from "../logic/errors/error-singleton";
 import { Error } from "../logic/errors/errors";
 import { TypeError } from "../logic/errors/type-error";
 import { Declaration } from "../logic/instructions/declare-asig/declaration";
-import { instruction } from "../logic/instructions/instruction";
+import { Instruction } from "../logic/instructions/instruction";
 import { NodoOperation } from "../logic/instructions/operations/nodo-operation";
 import { Operation } from "../logic/instructions/operations/operation";
 import { TypeOperation } from "../logic/instructions/operations/type-operation";
 import { Dato } from "../logic/table-simbol/dato";
 import { TypeDato } from "../logic/table-simbol/type-dato";
+import { Visibilidad } from "../logic/table-simbol/visibilidad";
 import { VisitorGenericQuartet } from "../logic/visitors/visitor-generic-quartet";
+import { AuxFun } from "./aux-fun";
 import { Token } from "./token";
 
 declare var parser:  any;
@@ -28,7 +31,9 @@ export class Parser {
         parser.yy.Errores = ErrorSingleton.getInstance();
         parser.yy.ErrorSintx = Error;
         parser.yy.TypeError = TypeError;
-        
+        parser.yy.Visibilidad = Visibilidad;
+        parser.yy.AuxFun = new AuxFun();
+        parser.yy.Clase = Clase;
     }
 
     /**
@@ -37,7 +42,8 @@ export class Parser {
     parse(){
         try {
             //const instructions:instruction[] = parser.parse(this.txtEntrada);
-            parser.parse(this.txtEntrada);
+            const clase:Clase = parser.parse(this.txtEntrada);
+            console.log(clase);
             const visGeneQuarte = new VisitorGenericQuartet();
             //instructions.forEach(inst => {
               //  inst.genericQuartet(visGeneQuarte);

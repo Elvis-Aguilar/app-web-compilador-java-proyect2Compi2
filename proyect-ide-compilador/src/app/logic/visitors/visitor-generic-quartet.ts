@@ -1,6 +1,8 @@
+import { CaseSwitchInstruction } from '../instructions/bifurcaciones/case-switch-instruction';
 import { DoWhileInstruction } from '../instructions/bifurcaciones/do-while-instruction';
 import { ElseInstruction } from '../instructions/bifurcaciones/Else-Instruction';
 import { IfInstruction } from '../instructions/bifurcaciones/If-instruction';
+import { SwitchInstruction } from '../instructions/bifurcaciones/switch-instruction';
 import { WhileInstruction } from '../instructions/bifurcaciones/while-Instruction';
 import { Declaration } from '../instructions/declare-asig/declaration';
 import { NodoOperation } from '../instructions/operations/nodo-operation';
@@ -11,6 +13,7 @@ import { TypeOperationQuartet } from '../quartets/type-operation-quartet';
 import { Visitor } from './visitor';
 
 export class VisitorGenericQuartet extends Visitor {
+
 
   
     readonly POINTER: string = 'ptr';
@@ -71,6 +74,13 @@ export class VisitorGenericQuartet extends Visitor {
     throw new Error('Method not implemented.');
   }
   visitDoWhile(doWhileI: DoWhileInstruction): void {
+    throw new Error('Method not implemented.');
+  }
+
+  visitSwitch(swit: SwitchInstruction): void {
+    throw new Error('Method not implemented.');
+  }
+  visitCaseSwitch(caseSwitchI: CaseSwitchInstruction): void {
     throw new Error('Method not implemented.');
   }
 }

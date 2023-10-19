@@ -1,6 +1,7 @@
 import { Token } from "src/app/parser/token";
 import { TypeDato } from "./type-dato";
 import { Variable } from "./variable";
+import { Visibilidad } from "./visibilidad";
 
 export class SymbolTable {
     nameReference: string;
@@ -27,7 +28,7 @@ export class SymbolTable {
             return variable;
         } else {
             //error semantico no existe la variable
-            return new Variable(TypeDato.INTEGER,tok.id);
+            return new Variable(Visibilidad.PUBLIC,false,false,TypeDato.INT,tok.id);
         }
     }
     
