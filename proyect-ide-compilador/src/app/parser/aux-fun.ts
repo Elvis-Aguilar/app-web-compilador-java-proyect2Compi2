@@ -41,4 +41,13 @@ export class AuxFun {
       ErrorSingleton.getInstance().push(new Error(token.line, token.column,token.id,`${msjError}`,TypeError.SEMANTICO));
     }
   }
+
+  agregarType(type:TypeDato, decs:Declaration[]): Declaration[]{
+    decs.forEach((dec) => {
+      dec.typeDato = type;
+      this.validarTypeDato(dec.typeDato, dec.token);
+    });
+    return decs;
+  }
+  
 }

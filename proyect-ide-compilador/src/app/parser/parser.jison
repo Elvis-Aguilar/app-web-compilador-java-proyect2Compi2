@@ -6,7 +6,7 @@
 /* lexical grammar */
 %lex
 /*macro-tockens expresiones regulares para usarlos en token compuestos*/
-decimal             [0-9]+"."[0-9]+("F"|"f")
+decimal             [0-9]+"."[0-9]+("F"|"f"|"")
 entero              [0-9]+
 
 cadena              \"[^\"]*\"
@@ -19,9 +19,9 @@ whitespace          {lineTerminator}|[ \t\f]
 //palabras reservadas
 int                 "int"
 float               "float"
-string              "string"
+string              "String"
 char                "CHAR"  
-boolean             "BOOLEAN"
+boolean             "Boolean"
 import              "import"
 public              "public"
 private             "private"
@@ -34,10 +34,8 @@ package             "package"
 protected           "protected"   
 getter              "@Getter"
 setter              "@Setter"
-System              "System"
-out                 "out"
-println             "println"
-print               "print"
+println             "System.out.println"
+print               "System.out.print"
 true                "true"
 false               "false"
 
@@ -153,8 +151,6 @@ id                  [a-zA-Z_][a-zA-Z_0-9]*
 {corchetC}                  return "CORCHETAC"
 {getter}                    return "GETTER"
 {setter}                    return "SETTER"
-{System}                    return "SYSTEM"
-{out}                       return "OUT"
 {println}                   return "PRINTLN"
 {print}                     return "PRINT"
 {if}                        return "IF"
@@ -254,7 +250,7 @@ sente_glos
 
 sent_glo 
     : declar_var_glo                            {$$ = $1;}
-    | fun                                       {$$ = null;}
+    | fun                                       {$$ = null; claseAux.pushFun($1);}
     | main_fun                                  {$$ = null;}
     | getSet PUNTOCOMA                          {$$ = null;}
     ;
@@ -280,23 +276,23 @@ statc
 
 /*gramatica para delcarar funciones*/
 fun
-  : agrup ID PARENTESA paramets PARENTESC LLAVEA sentencias LLAVEC
+  : agrup ID PARENTESA paramets PARENTESC LLAVEA sentencias LLAVEC          {$$ = new yy.Funcion($1, new yy.Token($2,this._$.first_column, this._$.first_line), $2, $4, $7);}
   | agrup PARENTESA paramets PARENTESC LLAVEA sentencias LLAVEC         //constructor validar
   ;
 
 paramets
-    : params
-    |
+    : params                        {$$ = $1;}    
+    |                               {$$ = [];}
     ;
 
 params
-  : params COMA param
-  | param
+  : params COMA param               {$$ = $1; $$.push($3);}
+  | param                           {$$ = [$1];}
   ;
 
 param 
-  : type_param ID
-  | ID ID
+  : type_param ID                   {$$ = new yy.Variable(yy.Visibilidad.PUBLIC, false, false, $1, $2, new yy.Dato(yy.TypeDato.INT, 1, '', false, new yy.Token($2,this._$.first_column, this._$.first_line))); }
+  | ID ID                           //{$$ = new yy.Variable();}
   ; 
 
 
@@ -342,24 +338,25 @@ fin
 
 /*sentencias de instrucciones internas, para funciones y anidadas en bifurcaciones*/
 sentencias
-    : sentencias sentencia    {$$ = $1; $$.push($2);}
+    : sentencias sentencia    {$$ = yy.AuxFun.pushInstruccion($1, $2);}
     |                         {$$ = []; }
     ;
 
 sentencia
-    : declaracion_var         {$$ =$1;}
-    | asig 
-    | oput 
-    | def_if_complete
-    | def_switch
+    : declaracion_var                 {$$ = $1;}
+    | asig                            {$$ = $1;}
+    | oput                            {$$ = $1;}
+    | def_if_complete                 {$$ = $1;}
+    | def_switch                      {$$ = $1;}
     | BREAK PUNTOCOMA   
-    | def_while  
-    | def_do_while  
+    | def_while                       {$$ = $1;}
+    | def_do_while                    {$$ = $1;}
     ;
 
 /*gramatica para declaracion de variables anidadas*/
 declaracion_var 
-            : type items  PUNTOCOMA      {$$ = new yy.Declaration($2, new yy.Operation($4));}
+            : type items  PUNTOCOMA      {$$ = yy.AuxFun.agregarType($1, $2);}
+            | ID items  PUNTOCOMA
             ;
 
 items 
@@ -371,55 +368,55 @@ items
 
 /*gramatica para asignacion de variables*/
 asig 
-  : ID IGUAL exp PUNTOCOMA
+  : ID IGUAL exp PUNTOCOMA                {$$ = new yy.Asignacion(new yy.Token($1,this._$.first_column, this._$.first_line), $3);}
   ;
 
 /*grmatica para system.out.print*/
 oput
-  : SYSTEM PUNTO OUT PUNTO PRINTLN PARENTESA exp PARENTESC PUNTOCOMA
-  | SYSTEM PUNTO OUT PUNTO PRINT PARENTESA exp PARENTESC PUNTOCOMA
+  : PRINTLN PARENTESA exp PARENTESC PUNTOCOMA                   {$$ = new yy.Sout($3, true);}
+  | PRINT PARENTESA exp PARENTESC PUNTOCOMA                     {$$ = new yy.Sout($3, false);}
   ;
 
 
 /*definicion de un if, if else, if elseif else*/
 def_if_complete 
-    : def_if                                                                
-    | def_if def_else                                               
-    | def_if  def_else_if                                              
+    : def_if                                                      {$$ = $1;}                                                                
+    | def_if def_else                                             {$$ = $1; $$.ElseInstruction = $2;}                                             
+    | def_if def_else_if                                          {$$ = $1; $$.ElseIfInstruction = $2;}                                             
     ;
 
 /*Gramatica para if  */
 def_if 
-    : IF PARENTESA exp PARENTESC LLAVEA sentencias LLAVEC
+    : IF PARENTESA exp PARENTESC LLAVEA sentencias LLAVEC           {$$ = new yy.If($6, $3, new yy.Token($1,this._$.first_column, this._$.first_line));}
     ;
 
 /*Gramatica para ELSE  */
 def_else 
-    : ELSE LLAVEA sentencias LLAVEC                                                 
+    : ELSE LLAVEA sentencias LLAVEC                                  {$$ = new yy.Else($3,new yy.Token($1,this._$.first_column, this._$.first_line));}                                                 
     ;
 
 /*Gramatica para ELSE_if  */
 def_else_if 
-    : ELSE def_if                                                                                                                                       
-    | ELSE def_if def_else
-    | ELSE def_if def_else_if                                       
+    : ELSE def_if                                                   {$$ = $2;}                                                                                                                                         
+    | ELSE def_if def_else                                          {$$ = $2; $$.ElseInstruction = $3;}
+    | ELSE def_if def_else_if                                       {$$ = $2; $$.ElseIfInstruction = $3;}                                      
     ;
 
 /*Gramatica para switch  */
-def_switch 
-    : SWITCH PARENTESA ID PARENTESC LLAVEA cases LLAVEC                           
+def_switch  
+    : SWITCH PARENTESA ID PARENTESC LLAVEA cases LLAVEC           {$$ = new yy.Switch($6,new yy.Variable(yy.Visibilidad.PUBLIC, false, false, yy.TypeDato.INT, $3, new yy.Dato(yy.TypeDato.INT, 1, '', false, new yy.Token($3,this._$.first_column, this._$.first_line))) );}                         
     ;
 
 /*Gramatica para casos dentro del switch  */
 cases 
-    : caso_sw BREAK PUNTOCOMA cases                                                               
-    |                                                                                               
+    : cases caso_sw                   {$$ = $1; $$.push($2);}                                                           
+    |                                 {$$ = [];}                                                                           
     ;
 
 /*Gramatica para casos */
 caso_sw 
-    : CASE ter_exp DOSPUNTO sentencias_sw                                 
-    | DEFAULT DOSPUNTO sentencias_sw                                                  
+    : CASE ter_exp DOSPUNTO sentencias_sw  BREAK PUNTOCOMA        {$$ = new yy.Case($4,new yy.Token($1,this._$.first_column, this._$.first_line),$2);}                             
+    | DEFAULT DOSPUNTO sentencias_sw   BREAK PUNTOCOMA            {$$ = new yy.Case($3,new yy.Token($1,this._$.first_column, this._$.first_line));}                                              
     ;
 
 /*Gramatica para sentencias, pueden venir dentro de una funcion o metodo */
@@ -440,12 +437,12 @@ sentencia_sw
 
 /*Gramatica para while  */
 def_while 
-  : WHILE PARENTESA exp PARENTESC LLAVEA sentencias LLAVEC                                            
+  : WHILE PARENTESA exp PARENTESC LLAVEA sentencias LLAVEC                      {$$ = new yy.While($6, $3, new yy.Token($1,this._$.first_column, this._$.first_line));}                                         
   ;
 
 /*Gramatica para do_while  */
 def_do_while 
-    : DO LLAVEA sentencias LLAVEC WHILE PARENTESA exp PARENTESC PUNTOCOMA                            
+    : DO LLAVEA sentencias LLAVEC WHILE PARENTESA exp PARENTESC PUNTOCOMA       {$$ = new yy.DoWhile($3, $7, new yy.Token($5,this._$.first_column, this._$.first_line));}                           
     ;
 
 /*gramatica para expresiones*/
@@ -470,9 +467,9 @@ exp
 ter_exp
       : ENTERO        {$$ = new yy.Dato(yy.TypeDato.INT, parseInt($1), "", false, new yy.Token($1,this._$.first_column, this._$.first_line));}
       | DECIMAL       {$$ = new yy.Dato(yy.TypeDato.FLOAT, parseFloat($1), "", false, new yy.Token($1,this._$.first_column, this._$.first_line));}
-      | CADENA        {$$ = new yy.Dato(yy.TypeDato.STRING, 0,$1.substr(1,yyleng-2), false, new yy.Token($1,this._$.first_column, this._$.first_line));}  
-      | CARACTER      {$$ = new yy.Dato(yy.TypeDato.CHAR, 0,$1.substr(1,yyleng-2), false, new yy.Token($1,this._$.first_column, this._$.first_line));}  
-      | TRUE          {$$ = new yy.Dato(yy.TypeDato.BOOLEAN, 0,"", true, new yy.Token($1,this._$.first_column, this._$.first_line));}
-      | FALSE         {$$ = new yy.Dato(yy.TypeDato.BOOLEAN, 0,"", false, new yy.Token($1,this._$.first_column, this._$.first_line));}
-      | ID            {$$ = new yy.Dato(yy.TypeDato.INT, 0,"", false, new yy.Token($1,this._$.first_column, this._$.first_line), true);}
+      | CADENA        {$$ = new yy.Dato(yy.TypeDato.STRING, 1,$1.substr(1,yyleng-2), false, new yy.Token($1,this._$.first_column, this._$.first_line));}  
+      | CARACTER      {$$ = new yy.Dato(yy.TypeDato.CHAR, 1,$1.substr(1,yyleng-2), false, new yy.Token($1,this._$.first_column, this._$.first_line));}  
+      | TRUE          {$$ = new yy.Dato(yy.TypeDato.BOOLEAN, 1,"", true, new yy.Token($1,this._$.first_column, this._$.first_line));}
+      | FALSE         {$$ = new yy.Dato(yy.TypeDato.BOOLEAN, 1,"", false, new yy.Token($1,this._$.first_column, this._$.first_line));}
+      | ID            {$$ = new yy.Dato(yy.TypeDato.INT, 1,"", false, new yy.Token($1,this._$.first_column, this._$.first_line), true);}
       ;

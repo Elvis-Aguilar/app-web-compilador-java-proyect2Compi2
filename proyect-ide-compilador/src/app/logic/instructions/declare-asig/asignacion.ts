@@ -4,25 +4,21 @@ import { Visitor } from '../../visitors/visitor';
 import { Instruction } from '../instruction';
 import { Operation } from '../operations/operation';
 
-export class WhileInstruction extends Instruction {
-  instructions: Instruction[] = [];
-  condition: Operation;
+export class Asignacion extends Instruction {
   symbolTable!: SymbolTable;
-  token: Token;
+  token:Token;
+  op: Operation;
 
-  constructor(
-    instructions: Instruction[],
-    condition: Operation,
-    token: Token
-  ) {
+  constructor(token:Token, op: Operation){
     super();
-    this.instructions = instructions;
-    this.condition = condition;
     this.token = token;
+    this.op = op;
   }
 
+  
+
   execute(vi: Visitor): void {
-    vi.visitWhile(this);
+    //TODO: Method not implemented.
   }
   genericQuartet(vi: Visitor): void {
     //TODO: Method not implemented.

@@ -2,13 +2,23 @@ import { Clase } from "../logic/class/clase";
 import { ErrorSingleton } from "../logic/errors/error-singleton";
 import { Error } from "../logic/errors/errors";
 import { TypeError } from "../logic/errors/type-error";
+import { CaseSwitchInstruction } from "../logic/instructions/bifurcaciones/case-switch-instruction";
+import { DoWhileInstruction } from "../logic/instructions/bifurcaciones/do-while-instruction";
+import { ElseInstruction } from "../logic/instructions/bifurcaciones/Else-Instruction";
+import { IfInstruction } from "../logic/instructions/bifurcaciones/If-instruction";
+import { SwitchInstruction } from "../logic/instructions/bifurcaciones/switch-instruction";
+import { WhileInstruction } from "../logic/instructions/bifurcaciones/while-Instruction";
+import { Asignacion } from "../logic/instructions/declare-asig/asignacion";
 import { Declaration } from "../logic/instructions/declare-asig/declaration";
+import { Sout } from "../logic/instructions/fun-nativas/sout";
+import { Funcion } from "../logic/instructions/funcion/funcion";
 import { Instruction } from "../logic/instructions/instruction";
 import { NodoOperation } from "../logic/instructions/operations/nodo-operation";
 import { Operation } from "../logic/instructions/operations/operation";
 import { TypeOperation } from "../logic/instructions/operations/type-operation";
 import { Dato } from "../logic/table-simbol/dato";
 import { TypeDato } from "../logic/table-simbol/type-dato";
+import { Variable } from "../logic/table-simbol/variable";
 import { Visibilidad } from "../logic/table-simbol/visibilidad";
 import { VisitorGenericQuartet } from "../logic/visitors/visitor-generic-quartet";
 import { AuxFun } from "./aux-fun";
@@ -34,6 +44,16 @@ export class Parser {
         parser.yy.Visibilidad = Visibilidad;
         parser.yy.AuxFun = new AuxFun();
         parser.yy.Clase = Clase;
+        parser.yy.Funcion = Funcion;
+        parser.yy.Variable = Variable;
+        parser.yy.Asignacion = Asignacion; 
+        parser.yy.Sout = Sout;
+        parser.yy.If = IfInstruction;
+        parser.yy.Else = ElseInstruction;
+        parser.yy.Switch = SwitchInstruction;
+        parser.yy.Case = CaseSwitchInstruction;
+        parser.yy.DoWhile = DoWhileInstruction;
+        parser.yy.While = WhileInstruction;
     }
 
     /**

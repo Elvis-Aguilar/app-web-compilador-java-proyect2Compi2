@@ -7,15 +7,14 @@ import { Instruction } from '../instruction';
 export class CaseSwitchInstruction extends Instruction {
   instructions: Instruction[] = [];
   symbolTable!: SymbolTable;
-  dato: Dato;
-  datoSwintch: Dato;
+  dato: Dato | null;
+  datoSwintch!: Dato;
   token: Token;
 
-  constructor(instructions: Instruction[], dato: Dato, datoSwintch: Dato, token: Token) {
+  constructor(instructions: Instruction[], token: Token, dato?: Dato) {
     super();
     this.instructions = instructions;
-    this.dato = dato;
-    this.datoSwintch = datoSwintch;
+    this.dato = dato || null;
     this.token = token;
   }
 

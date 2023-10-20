@@ -25,5 +25,12 @@ export class Variable {
     this.typeDato = typeDato;
     this.id = id;
     this.dato = dato || null;
+    this.actulizarType();
+  }
+
+  actulizarType(){
+    if (this.dato) {
+      this.dato.typeDato = this.typeDato;
+    }
   }
 }
