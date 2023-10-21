@@ -1,4 +1,5 @@
 import { Token } from 'src/app/parser/token';
+import { SymbolTable } from '../../table-simbol/symbol-table';
 import { TypeDato } from '../../table-simbol/type-dato';
 import { Variable } from '../../table-simbol/variable';
 import { Visibilidad } from '../../table-simbol/visibilidad';
@@ -14,6 +15,8 @@ export class Funcion extends Instruction {
   nombre:string;
   parametros:Variable[];
   instructions:Instruction[];
+  symbolTable!: SymbolTable;
+
 
   constructor(config:any, token: Token, nombre:string, parametros:Variable[], instructions:Instruction[]) {
     super();

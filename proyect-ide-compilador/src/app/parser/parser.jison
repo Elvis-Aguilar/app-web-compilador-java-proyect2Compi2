@@ -38,9 +38,23 @@ println             "System.out.println"
 print               "System.out.print"
 true                "true"
 false               "false"
+new                 "new"
 
 //operadores de clase Math
-math                "Math"
+mathabs             "Math.abs"
+mathceil            "Math.ceil"
+mathfloor           "Math.floor"
+mathround           "Math.round"
+mathmax             "Math.max "
+mathmin             "Math.min"
+mathpow             "Math.pow"
+mathsqrt            "Math.sqrt"
+mathrandom          "Math.random"
+mathtoRadians       "Math.toRadians"
+mathacos            "Math.acos "
+mathsin             "Math.sin"
+mathatan            "Math.atan"
+mathexp             "Math.exp"
 
 
 //bifurcaciones
@@ -59,6 +73,8 @@ do                  "do"
 //incremento decremento
 incre                           "++"
 decre                           "--"
+
+masigul                         "+="
 
 //aritmeticos
 mas 						  	            "+"
@@ -109,6 +125,7 @@ id                  [a-zA-Z_][a-zA-Z_0-9]*
 {entero}                    return "ENTERO"
 {incre}                     return "INCRE"
 {decre}                     return "DECRE"
+{masigul}                   return "MASIGUAL"
 {mas} 						          return "MAS"
 {menos} 					          return "MENOS"
 {por} 			  			        return "POR"
@@ -165,6 +182,23 @@ id                  [a-zA-Z_][a-zA-Z_0-9]*
 {caracter}                  return "CARACTER"
 {true}                      return "TRUE"
 {false}                     return "FALSE"
+{mathabs}                   return "MATHABS"
+{mathceil}                  return "MATHCEIL"
+{mathfloor}                 return "MATHFLOOR"
+{mathround}                 return "MATHROUND"
+{mathmax}                   return "MATHMAX"
+{mathmin}                   return "MATHMIN"
+{mathpow}                   return "MATHPOW"
+{mathsqrt}                  return "MATHSQRT"
+{mathrandom}                return "MATHRANDOM"
+{mathtoRadians}             return "MATHTORADIANS"
+{mathacos}                  return "MATHACOS"
+{mathsin}                   return "MATHSIN"
+{mathatan}                  return "MATHATAN"
+{mathexp}                   return "MATHEXP"
+{new}                       return "NEW"
+
+
 
 /* id */
 {id}                        return "ID"
@@ -178,11 +212,11 @@ id                  [a-zA-Z_][a-zA-Z_0-9]*
 /*configuracion de precedencia*/
 %left OR
 %left AND
+%right NOT
 %left EQUALS DIFERENTE MAYORQ MAYOROI MENORQ MENOROI
 %left MAS MENOS 
 %left POR DIVISION MODULO
-
-
+%right MENOS
 
 //produccion incial
 %start initial
@@ -250,8 +284,10 @@ sente_glos
 
 sent_glo 
     : declar_var_glo                            {$$ = $1;}
+    | declar_arr_glo
     | fun                                       {$$ = null; claseAux.pushFun($1);}
-    | main_fun                                  {$$ = null;}
+    | main_fun                                  {$$ = null; claseAux.pushMain($1);}
+    | constr                                    {$$ = null; claseAux.pushConstructor($1);}
     | getSet PUNTOCOMA                          {$$ = null;}
     ;
 
@@ -274,10 +310,41 @@ statc
   |                           {$$ = false; }
   ;
 
+/*gramatica para declarar arreglos globales*/
+declar_arr_glo
+    : agrup ID cochets PUNTOCOMA
+    | agrup ID cochets IGUAL NEW type cochets_val PUNTOCOMA
+    | agrup ID cochets IGUAL  arr_init PUNTOCOMA
+    ;
+
+cochets 
+    : cochets CORCHETA CORCHETAC
+    | CORCHETA CORCHETAC
+    ;
+
+cochets_val
+    : cochets CORCHETA exp CORCHETAC
+    | CORCHETA exp CORCHETAC
+    ;
+
+arr_init
+    : LLAVEA cont_arr LLAVEC
+    | LLAVEA LLAVEA cont_arr LLAVEC COMA LLAVEA cont_arr LLAVEC  LLAVEC
+    ;
+
+cont_arr
+    : cont_arr COMA exp
+    | exp
+    ;
+
+
 /*gramatica para delcarar funciones*/
 fun
   : agrup ID PARENTESA paramets PARENTESC LLAVEA sentencias LLAVEC          {$$ = new yy.Funcion($1, new yy.Token($2,this._$.first_column, this._$.first_line), $2, $4, $7);}
-  | agrup PARENTESA paramets PARENTESC LLAVEA sentencias LLAVEC         //constructor validar
+  ;
+
+constr
+  : agrup PARENTESA paramets PARENTESC LLAVEA sentencias LLAVEC               {$$ = new yy.Constructor($1, $3, $6, new yy.Token($1[3],this._$.first_column, this._$.first_line));}
   ;
 
 paramets
@@ -307,7 +374,7 @@ type_param
 
 /*funcion main, aqui se validara el stack y desde aqui se iniciara la compilacion*/
 main_fun 
-    : agrup MAIN PARENTESA  PARENTESC LLAVEA sentencias LLAVEC        
+    : agrup MAIN PARENTESA  PARENTESC LLAVEA sentencias LLAVEC      {$$ = new yy.Main($6,new yy.Token($2,this._$.first_column, this._$.first_line));}    
     ;
 
 visi
@@ -328,7 +395,7 @@ type
 
 agrup
   : visi statc fin type               {$$ = [$1, $2, $3, $4]; }
-  | visi statc fin ID                  //se usa un id para refernciar  objetos
+  | visi statc fin ID                 {$$ = [$1, $2, $3, $4];}
   ;
 
 fin 
@@ -344,13 +411,17 @@ sentencias
 
 sentencia
     : declaracion_var                 {$$ = $1;}
+    | declar_arr
     | asig                            {$$ = $1;}
+    | asi_arr_comp
+    | asi_arr_ind
     | oput                            {$$ = $1;}
     | def_if_complete                 {$$ = $1;}
     | def_switch                      {$$ = $1;}
-    | BREAK PUNTOCOMA   
     | def_while                       {$$ = $1;}
     | def_do_while                    {$$ = $1;}
+    | incr_decr                       {$$ = $1;}
+    | BREAK PUNTOCOMA   
     ;
 
 /*gramatica para declaracion de variables anidadas*/
@@ -366,12 +437,33 @@ items
     | ID                                  {$$ = []; $$.push(new yy.Declaration(new yy.Token($1,this._$.first_column, this._$.first_line)));}
     ;
 
+/*gramatica para declarar un arreglo*/
+declar_arr
+    : type ID cochets PUNTOCOMA
+    | type ID cochets IGUAL NEW type cochets_val PUNTOCOMA
+    | type ID cochets IGUAL  arr_init PUNTOCOMA
+    ;
+
 /*gramatica para asignacion de variables*/
 asig 
   : ID IGUAL exp PUNTOCOMA                {$$ = new yy.Asignacion(new yy.Token($1,this._$.first_column, this._$.first_line), $3);}
+  | ID MASIGUAL exp PUNTOCOMA             {$$ = yy.AuxFun.configMasIgual($3, new yy.Token($1,this._$.first_column, this._$.first_line));}
   ;
 
-/*grmatica para system.out.print*/
+asi_arr_comp
+  : ID IGUAL NEW type cochets_val PUNTOCOMA
+  ;
+
+asi_arr_ind
+    : ID cochets_val IGUAL exp PUNTOCOMA
+    ;
+
+incr_decr
+    : ID INCRE PUNTOCOMA                  {$$ = yy.AuxFun.configIncremet(new yy.Token($1,this._$.first_column, this._$.first_line), yy.TypeOperation.SUMA);}
+    | ID DECRE PUNTOCOMA                  {$$ = yy.AuxFun.configIncremet(new yy.Token($1,this._$.first_column, this._$.first_line), yy.TypeOperation.RESTA);}
+    ;
+
+/*grmatica para system.out.print || println*/
 oput
   : PRINTLN PARENTESA exp PARENTESC PUNTOCOMA                   {$$ = new yy.Sout($3, true);}
   | PRINT PARENTESA exp PARENTESC PUNTOCOMA                     {$$ = new yy.Sout($3, false);}
@@ -460,6 +552,8 @@ exp
   | exp MENOROI exp                         {$$ = new yy.NodoOperation(null, $1, $3, yy.TypeOperation.MENOROI, new yy.Token($2,this._$.first_column, this._$.first_line));}
   | exp OR exp                              {$$ = new yy.NodoOperation(null, $1, $3, yy.TypeOperation.OR, new yy.Token($2,this._$.first_column, this._$.first_line));}
   | exp AND exp                             {$$ = new yy.NodoOperation(null, $1, $3, yy.TypeOperation.AND, new yy.Token($2,this._$.first_column, this._$.first_line));}
+  | NOT exp                                 {$$ = new yy.NodoOperation(null, null, $2, yy.TypeOperation.NOT, new yy.Token($2,this._$.first_column, this._$.first_line));}
+  | MENOS exp                               {$$ = new yy.NodoOperation(null, null, $2, yy.TypeOperation.MENOS, new yy.Token($2,this._$.first_column, this._$.first_line));}
   | ter_exp                                 {$$ = new yy.NodoOperation($1);}
   | PARENTESA exp PARENTESC                 {$$ = new yy.NodoOperation($1);}
   ;

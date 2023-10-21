@@ -1,4 +1,6 @@
 import { Clase } from "../logic/class/clase";
+import { Constructor } from "../logic/class/constructor";
+import { FunMain } from "../logic/class/fun-main";
 import { ErrorSingleton } from "../logic/errors/error-singleton";
 import { Error } from "../logic/errors/errors";
 import { TypeError } from "../logic/errors/type-error";
@@ -54,6 +56,8 @@ export class Parser {
         parser.yy.Case = CaseSwitchInstruction;
         parser.yy.DoWhile = DoWhileInstruction;
         parser.yy.While = WhileInstruction;
+        parser.yy.Main = FunMain;
+        parser.yy.Constructor = Constructor;
     }
 
     /**

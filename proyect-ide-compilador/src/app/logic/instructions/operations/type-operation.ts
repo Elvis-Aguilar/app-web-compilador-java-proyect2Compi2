@@ -6,12 +6,14 @@ export enum TypeOperation {
     MODULO,
     OR,
     AND,
+    NOT,
     EQUALS,
     DIFERENTE,
     MAYORQ,
     MAYOROI,
     MENORQ,
-    MENOROI
+    MENOROI,
+    MENOS
 }
 
 
