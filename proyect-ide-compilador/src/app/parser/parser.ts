@@ -10,8 +10,10 @@ import { ElseInstruction } from "../logic/instructions/bifurcaciones/Else-Instru
 import { IfInstruction } from "../logic/instructions/bifurcaciones/If-instruction";
 import { SwitchInstruction } from "../logic/instructions/bifurcaciones/switch-instruction";
 import { WhileInstruction } from "../logic/instructions/bifurcaciones/while-Instruction";
+import { AsignacionArr } from "../logic/instructions/declare-asig/asiganacion-arr";
 import { Asignacion } from "../logic/instructions/declare-asig/asignacion";
 import { Declaration } from "../logic/instructions/declare-asig/declaration";
+import { DeclarationArr } from "../logic/instructions/declare-asig/declaration-arr";
 import { Sout } from "../logic/instructions/fun-nativas/sout";
 import { Funcion } from "../logic/instructions/funcion/funcion";
 import { Instruction } from "../logic/instructions/instruction";
@@ -58,6 +60,8 @@ export class Parser {
         parser.yy.While = WhileInstruction;
         parser.yy.Main = FunMain;
         parser.yy.Constructor = Constructor;
+        parser.yy.DeclarationArr = DeclarationArr;
+        parser.yy.AsignacionArr = AsignacionArr;
     }
 
     /**
@@ -65,6 +69,7 @@ export class Parser {
      */
     parse(){
         try {
+            const ssss: Clase[] = [];
             //const instructions:instruction[] = parser.parse(this.txtEntrada);
             const clase:Clase = parser.parse(this.txtEntrada);
             console.log(clase);

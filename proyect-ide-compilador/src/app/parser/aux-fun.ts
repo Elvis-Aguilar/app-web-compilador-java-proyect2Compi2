@@ -10,6 +10,8 @@ import { Asignacion } from '../logic/instructions/declare-asig/asignacion';
 import { NodoOperation } from '../logic/instructions/operations/nodo-operation';
 import { Dato } from '../logic/table-simbol/dato';
 import { TypeOperation } from '../logic/instructions/operations/type-operation';
+import { Visibilidad } from '../logic/table-simbol/visibilidad';
+import { ForInstrction } from '../logic/instructions/bifurcaciones/for-instruction';
 
 export class AuxFun {
   completDeclacionGlobla(decs: Declaration[], config: any): Declaration[] {
@@ -69,5 +71,19 @@ export class AuxFun {
     const nodoRoot = new NodoOperation(undefined, opLeft, opright, typeOp, token);
     const operation = new Operation(nodoRoot);
     return new Asignacion(token, operation);
+  }
+
+  configVarIteradorFor(dec:Declaration):Declaration{
+    dec.isFinal = false;
+    dec.isStatik = false;
+    dec.visibilidad = Visibilidad.PUBLIC;
+    dec.typeDato = TypeDato.INT;
+    return dec;
+  }
+
+  configFor(config:any, token:Token, instrcs:Instruction[]): ForInstrction{
+    instrcs.push(config[2]);
+    const senFor = new ForInstrction(config[0],config[1],instrcs ,token);
+    return senFor;
   }
 }

@@ -39,6 +39,8 @@ print               "System.out.print"
 true                "true"
 false               "false"
 new                 "new"
+continue            "continue"
+return              "return"
 
 //operadores de clase Math
 mathabs             "Math.abs"
@@ -66,6 +68,7 @@ break               "break"
 default             "default"
 while               "while"
 do                  "do"
+for                 "for"
 
 
 /* operators */
@@ -178,6 +181,7 @@ id                  [a-zA-Z_][a-zA-Z_0-9]*
 {default}                   return "DEFAULT"
 {while}                     return "WHILE"
 {do}                        return "DO"
+{for}                       return "FOR"
 {cadena}                    return "CADENA"
 {caracter}                  return "CARACTER"
 {true}                      return "TRUE"
@@ -197,7 +201,8 @@ id                  [a-zA-Z_][a-zA-Z_0-9]*
 {mathatan}                  return "MATHATAN"
 {mathexp}                   return "MATHEXP"
 {new}                       return "NEW"
-
+{continue}                  return "CONTINUE"
+{return}                    return "RETURN"
 
 
 /* id */
@@ -242,22 +247,22 @@ pack
 
 /*gramatica para importaciones: import id.id.id.*; || import id.*; || id.id; || id;*/
 imprts
-    : imprts imprt
+    : imprts imprt          //import1; import2;
     |
     ;
 
 imprt
-    : IMPORT ids_imprt term_imprt
+    : IMPORT ids_imprt term_imprt   //com.id.id.*   
     ;
 
 ids_imprt 
-    : ids_imprt PUNTO ID
-    | ID
+    : ids_imprt PUNTO ID        {$$ = $1+ `${$2}` + `${$3}`} //com.id.id.id
+    | ID                      {$$ = `${$1}`;}      //com
     ;
   
 term_imprt
-    : PUNTO POR PUNTOCOMA
-    | PUNTOCOMA 
+    : PUNTO POR PUNTOCOMA    {$$ = $1+"" +$2;}  //.*
+    | PUNTOCOMA              {$$ = "";}
     ;
 
 /*gramatica para clases: public class id {...} || class id {...}*/
@@ -284,7 +289,7 @@ sente_glos
 
 sent_glo 
     : declar_var_glo                            {$$ = $1;}
-    | declar_arr_glo
+    | declar_arr_glo                            {$$ = $1;}
     | fun                                       {$$ = null; claseAux.pushFun($1);}
     | main_fun                                  {$$ = null; claseAux.pushMain($1);}
     | constr                                    {$$ = null; claseAux.pushConstructor($1);}
@@ -295,7 +300,7 @@ sent_glo
 /*declaracion variable global*/
 declar_var_glo
     : agrup items PUNTOCOMA                   {$$ = yy.AuxFun.completDeclacionGlobla($2,$1);}
-    | getSet agrup items PUNTOCOMA
+    | getSet agrup items PUNTOCOMA            //
     ;
 
 getSet
@@ -312,29 +317,29 @@ statc
 
 /*gramatica para declarar arreglos globales*/
 declar_arr_glo
-    : agrup ID cochets PUNTOCOMA
-    | agrup ID cochets IGUAL NEW type cochets_val PUNTOCOMA
-    | agrup ID cochets IGUAL  arr_init PUNTOCOMA
+    : agrup ID cochets PUNTOCOMA                                    {$$ = new yy.DeclarationArr($1, $3,new yy.Token($2,this._$.first_column, this._$.first_line));}
+    | agrup ID cochets IGUAL NEW type cochets_val PUNTOCOMA         {$$ = new yy.DeclarationArr($1, $3,new yy.Token($2,this._$.first_column, this._$.first_line), $6, $7, true);}
+    | agrup ID cochets IGUAL arr_init PUNTOCOMA                     {$$ = new yy.DeclarationArr($1, $3,new yy.Token($2,this._$.first_column, this._$.first_line), undefined, $5, false);}
     ;
 
 cochets 
-    : cochets CORCHETA CORCHETAC
-    | CORCHETA CORCHETAC
+    : CORCHETA CORCHETAC CORCHETA CORCHETAC           {$$ = 2;}
+    | CORCHETA CORCHETAC                              {$$ = 1;}
     ;
 
 cochets_val
-    : cochets CORCHETA exp CORCHETAC
-    | CORCHETA exp CORCHETAC
+    : CORCHETA exp CORCHETAC CORCHETA exp CORCHETAC     {$$ = []; $$.push( new yy.Operation($2)); $$.push( new yy.Operation($5));}
+    | CORCHETA exp CORCHETAC                            {$$ = []; $$.push( new yy.Operation($2));}
     ;
 
 arr_init
-    : LLAVEA cont_arr LLAVEC
-    | LLAVEA LLAVEA cont_arr LLAVEC COMA LLAVEA cont_arr LLAVEC  LLAVEC
+    : LLAVEA LLAVEA cont_arr LLAVEC COMA LLAVEA cont_arr LLAVEC  LLAVEC       {$$ = $3.concat($7);}
+    | LLAVEA cont_arr LLAVEC                                                  {$$ = $2;}                                                 
     ;
 
 cont_arr
-    : cont_arr COMA exp
-    | exp
+    : cont_arr COMA exp       {$$ = $1; $$.push( new yy.Operation($3));}
+    | exp                     {$$ = [ new yy.Operation($1)];}
     ;
 
 
@@ -411,17 +416,24 @@ sentencias
 
 sentencia
     : declaracion_var                 {$$ = $1;}
-    | declar_arr
+    | declar_arr                      {$$ = $1;}
     | asig                            {$$ = $1;}
-    | asi_arr_comp
-    | asi_arr_ind
+    | asi_arr_comp                    {$$ = $1;}
+    | asi_arr_ind                     {$$ = $1;}
     | oput                            {$$ = $1;}
     | def_if_complete                 {$$ = $1;}
     | def_switch                      {$$ = $1;}
     | def_while                       {$$ = $1;}
     | def_do_while                    {$$ = $1;}
+    | def_for                         {$$ = $1;}
     | incr_decr                       {$$ = $1;}
-    | BREAK PUNTOCOMA   
+    | BREAK PUNTOCOMA
+    | CONTINUE PUNTOCOMA 
+    | def_return                      {$$ = $1;}                     
+    ;
+
+def_return 
+    : RETURN exp PUNTOCOMA            {$$ = new yy.Asignacion(new yy.Token($1,this._$.first_column, this._$.first_line),  new yy.Operation($2));}
     ;
 
 /*gramatica para declaracion de variables anidadas*/
@@ -439,23 +451,23 @@ items
 
 /*gramatica para declarar un arreglo*/
 declar_arr
-    : type ID cochets PUNTOCOMA
-    | type ID cochets IGUAL NEW type cochets_val PUNTOCOMA
-    | type ID cochets IGUAL  arr_init PUNTOCOMA
+    : type ID cochets PUNTOCOMA                                 {$$ = new yy.DeclarationArr([undefined,false, false,$1], $3,new yy.Token($2,this._$.first_column, this._$.first_line));}
+    | type ID cochets IGUAL NEW type cochets_val PUNTOCOMA      {$$ = new yy.DeclarationArr([undefined,false, false,$1], $3,new yy.Token($2,this._$.first_column, this._$.first_line), $6, $7, true);}
+    | type ID cochets IGUAL arr_init PUNTOCOMA                  {$$ = new yy.DeclarationArr([undefined,false, false,$1], $3,new yy.Token($2,this._$.first_column, this._$.first_line), undefined, $5, false);}
     ;
 
 /*gramatica para asignacion de variables*/
 asig 
-  : ID IGUAL exp PUNTOCOMA                {$$ = new yy.Asignacion(new yy.Token($1,this._$.first_column, this._$.first_line), $3);}
-  | ID MASIGUAL exp PUNTOCOMA             {$$ = yy.AuxFun.configMasIgual($3, new yy.Token($1,this._$.first_column, this._$.first_line));}
+  : ID IGUAL exp PUNTOCOMA                {$$ = new yy.Asignacion(new yy.Token($1,this._$.first_column, this._$.first_line),  new yy.Operation($3));}
+  | ID MASIGUAL exp PUNTOCOMA             {$$ = yy.AuxFun.configMasIgual(new yy.Operation($3), new yy.Token($1,this._$.first_column, this._$.first_line));}
   ;
 
 asi_arr_comp
-  : ID IGUAL NEW type cochets_val PUNTOCOMA
+  : ID IGUAL NEW type cochets_val PUNTOCOMA           {$$ = new yy.AsignacionArr(new yy.Token($1,this._$.first_column, this._$.first_line), $4, $5, null,false);}      
   ;
 
 asi_arr_ind
-    : ID cochets_val IGUAL exp PUNTOCOMA
+    : ID cochets_val IGUAL exp PUNTOCOMA              {$$ = new yy.AsignacionArr(new yy.Token($1,this._$.first_column, this._$.first_line), undefined, $2,  new yy.Operation($4),true);}
     ;
 
 incr_decr
@@ -465,8 +477,8 @@ incr_decr
 
 /*grmatica para system.out.print || println*/
 oput
-  : PRINTLN PARENTESA exp PARENTESC PUNTOCOMA                   {$$ = new yy.Sout($3, true);}
-  | PRINT PARENTESA exp PARENTESC PUNTOCOMA                     {$$ = new yy.Sout($3, false);}
+  : PRINTLN PARENTESA exp PARENTESC PUNTOCOMA                   {$$ = new yy.Sout(new yy.Operation($3), true);}
+  | PRINT PARENTESA exp PARENTESC PUNTOCOMA                     {$$ = new yy.Sout(new yy.Operation($3), false);}
   ;
 
 
@@ -479,7 +491,7 @@ def_if_complete
 
 /*Gramatica para if  */
 def_if 
-    : IF PARENTESA exp PARENTESC LLAVEA sentencias LLAVEC           {$$ = new yy.If($6, $3, new yy.Token($1,this._$.first_column, this._$.first_line));}
+    : IF PARENTESA exp PARENTESC LLAVEA sentencias LLAVEC           {$$ = new yy.If($6,  new yy.Operation($3), new yy.Token($1,this._$.first_column, this._$.first_line));}
     ;
 
 /*Gramatica para ELSE  */
@@ -529,12 +541,26 @@ sentencia_sw
 
 /*Gramatica para while  */
 def_while 
-  : WHILE PARENTESA exp PARENTESC LLAVEA sentencias LLAVEC                      {$$ = new yy.While($6, $3, new yy.Token($1,this._$.first_column, this._$.first_line));}                                         
+  : WHILE PARENTESA exp PARENTESC LLAVEA sentencias LLAVEC                      {$$ = new yy.While($6,  new yy.Operation($3), new yy.Token($1,this._$.first_column, this._$.first_line));}                                         
   ;
 
 /*Gramatica para do_while  */
 def_do_while 
-    : DO LLAVEA sentencias LLAVEC WHILE PARENTESA exp PARENTESC PUNTOCOMA       {$$ = new yy.DoWhile($3, $7, new yy.Token($5,this._$.first_column, this._$.first_line));}                           
+    : DO LLAVEA sentencias LLAVEC WHILE PARENTESA exp PARENTESC PUNTOCOMA       {$$ = new yy.DoWhile($3,  new yy.Operation($7), new yy.Token($5,this._$.first_column, this._$.first_line));}                           
+    ;
+
+/*gramatica para for*/
+def_for
+    : FOR PARENTESA condition_for PARENTESC LLAVEA sentencias LLAVEC            {$$ = yy.AuxFun.configFor($3,new yy.Token($1,this._$.first_column, this._$.first_line), $6);}
+    ;
+
+condition_for
+    : var_iterador PUNTOCOMA exp PUNTOCOMA incr_decr      {$$ = [$1,  new yy.Operation($3), $5];}
+    ;
+
+var_iterador
+    : INT ID IGUAL exp                  {$$ = yy.AuxFun.configVarIteradorFor(new yy.Declaration(new yy.Token($1,this._$.first_column, this._$.first_line), new yy.Operation($3)));  }     
+    | ID IGUAL exp                      {$$ = new yy.Asignacion(new yy.Token($1,this._$.first_column, this._$.first_line),  new yy.Operation($3));}       
     ;
 
 /*gramatica para expresiones*/
