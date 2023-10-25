@@ -1,0 +1,64 @@
+<div>
+  <h1 class="text-center">Errores Lexicos</h1>
+  <table class="table table-dark">
+    <thead class="table-success text-center">
+      <tr>
+        <th>Linea</th>
+        <th>columna</th>
+        <th>Lexema</th>
+        <th>Descripcion</th>
+      </tr>
+    </thead>
+    <tbody class="text-center">
+      <tr *ngFor="let error of errores.errLex">
+        <td>{{error.getLine()}}</td>
+        <td>{{error.getColumn()}}</td>
+        <td>{{error.getLexeme()}}</td>
+        <td>{{error.getMessage()}}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<div>
+  <h1 class="text-center">Errores Sintacticos</h1>
+  <table class="table table-dark">
+    <thead class="table-success text-center">
+      <tr>
+        <th>Linea</th>
+        <th>columna</th>
+        <th>Token</th>
+        <th>Descripcion</th>
+      </tr>
+    </thead>
+    <tbody class="text-center">
+        <tr *ngFor="let error of errores.errSint">
+          <td>{{error.getLine()}}</td>
+          <td>{{error.getColumn()}}</td>
+          <td>{{error.getLexeme()}}</td>
+          <td>{{error.getMessage()}}</td>
+        </tr>
+    </tbody>
+  </table>
+</div>
+
+<div>
+  <h1 class="text-center">Errores Semanticos</h1>
+  <table class="table table-dark">
+    <thead class="table-success text-center">
+      <tr>
+        <th>Linea</th>
+        <th>columna</th>
+        <th>Token</th>
+        <th>Descripcion</th>
+      </tr>
+    </thead>
+    <tbody class="text-center">
+        <tr *ngFor="let error of errores.errSema">
+          <td>{{error.getLine()}}</td>
+          <td>{{error.getColumn()}}</td>
+          <td>{{error.getLexeme()}}</td>
+          <td>{{error.getMessage()}}</td>
+        </tr>
+    </tbody>
+  </table>
+</div>

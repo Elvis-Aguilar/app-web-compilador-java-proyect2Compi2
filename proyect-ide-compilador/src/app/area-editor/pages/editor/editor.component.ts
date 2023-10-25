@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { SesionService } from 'src/app/services/sesion.service';
 
 @Component({
   selector: 'app-editor',
@@ -7,4 +8,7 @@ import { Component } from '@angular/core';
 })
 export class EditorComponent {
 
+  constructor(public sesion:SesionService){
+
+  }
 }

@@ -6,8 +6,11 @@
                 <app-directorio></app-directorio>
             </div>
             <div class="col-9">
-                <div class="text-area">
+                <div *ngIf="sesion.areaTrabajo === 0" class="text-area">
                     <app-text-area></app-text-area>
+                </div>
+                <div *ngIf="sesion.areaTrabajo === 1" class="text-area">
+                    <app-table-errors></app-table-errors>
                 </div>
                 <!--<h3>consola</h3>
                 <div class="consle">

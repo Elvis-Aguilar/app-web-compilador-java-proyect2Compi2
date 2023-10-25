@@ -28,9 +28,9 @@ export class VisitorExecute extends Visitor {
     if (!nodo.typeOp && nodo.dato !== null) {
       return nodo.dato;
     }
-    const tmp = new Dato(TypeDato.INTEGER);
-    const datoLeft = nodo.opLeft?.execute(this) || new Dato(TypeDato.INTEGER);
-    const datoRight = nodo.opRight?.execute(this) || new Dato(TypeDato.INTEGER);
+    const tmp = new Dato(TypeDato.INT);
+    const datoLeft = nodo.opLeft?.execute(this) || new Dato(TypeDato.INT);
+    const datoRight = nodo.opRight?.execute(this) || new Dato(TypeDato.INT);
     const operacion = new OperationCasteo();
     if (nodo.typeOp ) {
       return operacion.getDato(datoLeft, datoRight, nodo.typeOp);

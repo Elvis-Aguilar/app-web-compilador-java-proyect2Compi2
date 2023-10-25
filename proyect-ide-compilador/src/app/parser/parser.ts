@@ -14,7 +14,9 @@ import { AsignacionArr } from "../logic/instructions/declare-asig/asiganacion-ar
 import { Asignacion } from "../logic/instructions/declare-asig/asignacion";
 import { Declaration } from "../logic/instructions/declare-asig/declaration";
 import { DeclarationArr } from "../logic/instructions/declare-asig/declaration-arr";
+import { FunMath } from "../logic/instructions/fun-nativas/fun-math";
 import { Sout } from "../logic/instructions/fun-nativas/sout";
+import { TypeFunMath } from "../logic/instructions/fun-nativas/type-fun-math";
 import { Funcion } from "../logic/instructions/funcion/funcion";
 import { Instruction } from "../logic/instructions/instruction";
 import { NodoOperation } from "../logic/instructions/operations/nodo-operation";
@@ -42,7 +44,7 @@ export class Parser {
         parser.yy.TypeDato = TypeDato;
         parser.yy.Token = Token;
         parser.yy.Declaration = Declaration;
-        parser.yy.Errores = ErrorSingleton.getInstance();
+        parser.yy.Errores = ErrorSingleton;
         parser.yy.ErrorSintx = Error;
         parser.yy.TypeError = TypeError;
         parser.yy.Visibilidad = Visibilidad;
@@ -62,6 +64,8 @@ export class Parser {
         parser.yy.Constructor = Constructor;
         parser.yy.DeclarationArr = DeclarationArr;
         parser.yy.AsignacionArr = AsignacionArr;
+        parser.yy.FunMath = FunMath;
+        parser.yy.TypeFunMath = TypeFunMath;
     }
 
     /**
@@ -77,7 +81,7 @@ export class Parser {
             //instructions.forEach(inst => {
               //  inst.genericQuartet(visGeneQuarte);
             //});
-            //console.log(parser.yy.Errores)
+            console.log(parser.yy.Errores.getInstance())
             //console.log(visGeneQuarte.qh)
         } catch (error) {
             console.error(error);

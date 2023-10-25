@@ -11,6 +11,7 @@ import { DirectorioComponent } from './components/directorio/directorio.componen
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { SideBarComponent } from './components/side-bar/side-bar.component';
 import { FolderComponent } from './components/folder/folder.component';
+import { TableErrorsComponent } from './components/table-errors/table-errors.component';
 
 
 @NgModule({
@@ -21,7 +22,8 @@ import { FolderComponent } from './components/folder/folder.component';
     DirectorioComponent,
     NavbarComponent,
     SideBarComponent,
-    FolderComponent
+    FolderComponent,
+    TableErrorsComponent
 
   ],
   imports: [

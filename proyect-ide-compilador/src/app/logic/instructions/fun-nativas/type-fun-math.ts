@@ -1,0 +1,16 @@
+export enum TypeFunMath{
+    MATHABS,
+    MATHCEIL,
+    MATHFLOOR,
+    MATHROUND,
+    MATHMAX,
+    MATHMIN,
+    MATHPOW,
+    MATHSQRT,
+    MATHRANDOM,
+    MATHTORADIANS,
+    MATHACOS,
+    MATHSIN,
+    MATHATAN,
+    MATHEXP
+}

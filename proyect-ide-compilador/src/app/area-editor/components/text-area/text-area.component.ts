@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { ErrorSingleton } from 'src/app/logic/errors/error-singleton';
 import {Parser} from 'src/app/parser/parser'
 import { SesionService } from 'src/app/services/sesion.service';
 import Swal from 'sweetalert2';
@@ -36,6 +37,7 @@ export class TextAreaComponent {
   }
 
   onCompilar() {
+    ErrorSingleton.getInstance().limpiar();
     const parser = new Parser(this.content);
     if(this.content === undefined || this.content === "") {
       this.msTxtVacio()
