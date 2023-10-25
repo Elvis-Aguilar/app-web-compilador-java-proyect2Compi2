@@ -1,3 +1,4 @@
+import { Clase } from '../class/clase';
 import { CaseSwitchInstruction } from '../instructions/bifurcaciones/case-switch-instruction';
 import { DoWhileInstruction } from '../instructions/bifurcaciones/do-while-instruction';
 import { ElseInstruction } from '../instructions/bifurcaciones/Else-Instruction';
@@ -5,6 +6,7 @@ import { IfInstruction } from '../instructions/bifurcaciones/If-instruction';
 import { SwitchInstruction } from '../instructions/bifurcaciones/switch-instruction';
 import { WhileInstruction } from '../instructions/bifurcaciones/while-Instruction';
 import { Declaration } from '../instructions/declare-asig/declaration';
+import { Funcion } from '../instructions/funcion/funcion';
 import { NodoOperation } from '../instructions/operations/nodo-operation';
 import { Operation } from '../instructions/operations/operation';
 import { OperationCasteo } from '../instructions/operations/operation-casteo';
@@ -14,7 +16,14 @@ import { Visitor } from './visitor';
 
 export class VisitorExecute extends Visitor {
 
-  
+  visitClass(clas: Clase): void {
+    throw new Error('Method not implemented.');
+  }
+
+  visitFuncion(fun: Funcion): void {
+    throw new Error('Method not implemented.');
+  }
+
   visitOp(op: Operation): Dato | void {
     return op.rootOp.execute(this);
   }
@@ -32,20 +41,17 @@ export class VisitorExecute extends Visitor {
     const datoLeft = nodo.opLeft?.execute(this) || new Dato(TypeDato.INT);
     const datoRight = nodo.opRight?.execute(this) || new Dato(TypeDato.INT);
     const operacion = new OperationCasteo();
-    if (nodo.typeOp ) {
+    if (nodo.typeOp) {
       return operacion.getDato(datoLeft, datoRight, nodo.typeOp);
     }
     return tmp;
   }
 
-  visitDeclaration(dec: Declaration): void {
-    throw new Error('Method not implemented.');
-  }
-
+  visitDeclaration(dec: Declaration): void {}
 
   visitIf(ifI: IfInstruction): void {
     ifI.volorCondicion(this);
-    ifI.instructions.forEach(instru => {
+    ifI.instructions.forEach((instru) => {
       instru.execute(this);
     });
     if (ifI.ElseIfInstruction) {
@@ -57,23 +63,31 @@ export class VisitorExecute extends Visitor {
   }
 
   visitElse(elseI: ElseInstruction): void {
-    elseI.instructions.forEach(instru => {
+    elseI.instructions.forEach((instru) => {
       instru.execute(this);
     });
   }
 
   visitWhile(whileI: WhileInstruction): void {
-    //TODO: Method not implemented.
+    whileI.valorCondicion(this);
+    whileI.instructions.forEach((instru) => {
+      instru.execute(this);
+    });
   }
   visitDoWhile(doWhileI: DoWhileInstruction): void {
-    //TODO: Method not implemented.
+    doWhileI.instructions.forEach((instr) => {
+      instr.execute(this);
+    });
+    doWhileI.valorCondicion(this);
   }
 
   visitSwitch(swit: SwitchInstruction): void {
-    //TODO: Method not implemented.
+    swit.validar(this);
   }
+
   visitCaseSwitch(caseSwitchI: CaseSwitchInstruction): void {
-    //TODO: Method not implemented.
+    caseSwitchI.instructions.forEach((instr) => {
+      instr.execute(this);
+    });
   }
- 
 }

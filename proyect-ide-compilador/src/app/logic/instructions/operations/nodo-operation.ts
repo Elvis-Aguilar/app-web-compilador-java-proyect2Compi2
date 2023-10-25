@@ -33,6 +33,16 @@ export class NodoOperation {
     return vi.visitNodoOP(this);
   }
 
+  referenciarSymbolTable(vi: Visitor, symbolTablePadre: SymbolTable): void {
+    this.symbolTable = symbolTablePadre;
+    if (this.opLeft) {
+      this.opLeft.referenciarSymbolTable(vi, this.symbolTable);
+    }
+    if (this.opRight) {
+      this.opRight.referenciarSymbolTable(vi, this.symbolTable);
+    }
+  }
+
   //TODO: implementacion de la funcion para ejecutar la operacion como tal
   executetss(symbolTable: SymbolTable): Dato {
     if (!this.typeOp && this.dato !== null) {

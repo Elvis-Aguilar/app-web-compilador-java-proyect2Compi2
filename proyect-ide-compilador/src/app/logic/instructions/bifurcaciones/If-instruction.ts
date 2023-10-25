@@ -11,6 +11,7 @@ import { Operation } from '../operations/operation';
 import { ElseInstruction } from './Else-Instruction';
 
 export class IfInstruction extends Instruction {
+
   instructions: Instruction[] = [];
   condition: Operation;
   symbolTable!: SymbolTable;
@@ -35,6 +36,12 @@ export class IfInstruction extends Instruction {
 
   execute(vi: Visitor): void {
     vi.visitIf(this)
+  }
+
+  referenciarSymbolTable(vi: Visitor, symbolTablePadre: SymbolTable): void {
+    this.symbolTable = new SymbolTable('if');
+    this.symbolTable.symbolTablePadre = symbolTablePadre;
+    vi.visitIf(this);
   }
 
   volorCondicion(vi:Visitor): boolean{

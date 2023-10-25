@@ -26,6 +26,23 @@ export class SwitchInstruction extends Instruction {
     vi.visitSwitch(this);
   }
   genericQuartet(vi: Visitor): void {
-    throw new Error('Method not implemented.');
+    //TODO:Method not implemented.
+  }
+
+  referenciarSymbolTable(vi: Visitor, symbolTablePadre: SymbolTable): void {
+    this.symbolTable = symbolTablePadre;
+    vi.visitSwitch(this);
+  }
+
+  validar(vi: Visitor): boolean {
+    //TODO:obtener el dato de varSwitch, si existe o reportar error
+    this.casos.forEach((caso) => {
+      if (this.varSwintch.dato) {
+        caso.datoSwintch = this.varSwintch.dato;
+        caso.comprobarCasos();
+      }
+      caso.execute(vi);
+    });
+    return true;
   }
 }

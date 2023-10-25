@@ -11,6 +11,7 @@ import { Instruction } from '../instruction';
 import { Operation } from '../operations/operation';
 
 export class DeclarationArr extends Instruction {
+
   token: Token;
   result = '';
   typeDato!: TypeDato;
@@ -42,6 +43,11 @@ export class DeclarationArr extends Instruction {
 
   execute(vi: Visitor): void {
     //TODO:Method not implemented.
+  }
+
+  referenciarSymbolTable(vi: Visitor, symbolTablePadre: SymbolTable): void {
+    this.symbolTable = symbolTablePadre;
+    vi.visitDeclareArr(this);
   }
 
   mismoType(TypeDatoValidacion?: TypeDato){

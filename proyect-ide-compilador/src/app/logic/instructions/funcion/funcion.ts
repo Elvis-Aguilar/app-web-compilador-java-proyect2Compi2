@@ -34,6 +34,12 @@ export class Funcion extends Instruction {
     throw new Error('Method not implemented.');
   }
 
+  referenciarSymbolTable(vi: Visitor, symbolTablePadre:SymbolTable){
+    this.symbolTable = new SymbolTable('funcion');
+    this.symbolTable.symbolTablePadre = symbolTablePadre;
+    vi.visitFuncion(this);
+  }
+
   construiConfig(config:any){
     if (config instanceof Array) {
         this.visibilidad = config[0];

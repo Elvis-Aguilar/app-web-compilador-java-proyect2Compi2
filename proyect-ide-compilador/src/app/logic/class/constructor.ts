@@ -5,6 +5,7 @@ import { Variable } from '../table-simbol/variable';
 import { Visitor } from '../visitors/visitor';
 
 export class Constructor extends Instruction {
+
   symbolTable!: SymbolTable;
   instructions: Instruction[];
   parametros: Variable[];
@@ -24,6 +25,12 @@ export class Constructor extends Instruction {
   }
   genericQuartet(vi: Visitor): void {
     throw new Error('Method not implemented.');
+  }
+
+  referenciarSymbolTable(vi: Visitor, symbolTablePadre: SymbolTable): void {
+    this.symbolTable = new SymbolTable('funcion');
+    this.symbolTable.symbolTablePadre = symbolTablePadre;
+    vi.visitConstruct(this)
   }
 
 }

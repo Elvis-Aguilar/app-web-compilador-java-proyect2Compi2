@@ -7,6 +7,7 @@ import { Instruction } from '../instruction';
 import { Operation } from '../operations/operation';
 
 export class Declaration extends Instruction {
+
   token: Token;
   op: Operation | null;
   result = '';
@@ -27,6 +28,11 @@ export class Declaration extends Instruction {
   }
 
   execute(vi: Visitor): void {
-    throw new Error('Method not implemented.');
+    vi.visitDeclaration(this);
+  }
+
+  referenciarSymbolTable(vi: Visitor, symbolTablePadre: SymbolTable): void {
+    this.symbolTable = symbolTablePadre;
+    vi.visitDeclaration(this);
   }
 }

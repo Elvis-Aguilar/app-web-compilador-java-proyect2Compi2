@@ -6,21 +6,24 @@ import { Operation } from '../operations/operation';
 
 export class Asignacion extends Instruction {
   symbolTable!: SymbolTable;
-  token:Token;
+  token: Token;
   op: Operation;
 
-  constructor(token:Token, op: Operation){
+  constructor(token: Token, op: Operation) {
     super();
     this.token = token;
     this.op = op;
   }
-
-  
 
   execute(vi: Visitor): void {
     //TODO: Method not implemented.
   }
   genericQuartet(vi: Visitor): void {
     //TODO: Method not implemented.
+  }
+
+  referenciarSymbolTable(vi: Visitor, symbolTablePadre: SymbolTable): void {
+    this.symbolTable = symbolTablePadre;
+    vi.visitAsig(this);
   }
 }

@@ -1,3 +1,4 @@
+import { Clase } from '../class/clase';
 import { CaseSwitchInstruction } from '../instructions/bifurcaciones/case-switch-instruction';
 import { DoWhileInstruction } from '../instructions/bifurcaciones/do-while-instruction';
 import { ElseInstruction } from '../instructions/bifurcaciones/Else-Instruction';
@@ -16,13 +17,17 @@ export class VisitorGenericQuartet extends Visitor {
 
 
   
-    readonly POINTER: string = 'ptr';
-    qh: QuartHandler;
+  readonly POINTER: string = 'ptr';
+  qh: QuartHandler;
 
-    constructor(){
-        super();
-        this.qh = new QuartHandler();
-    }
+  constructor(){
+      super();
+      this.qh = new QuartHandler();
+  }
+  
+  visitClass(clas: Clase): void {
+    throw new Error('Method not implemented.');
+  }
 
   visitDeclaration(dec: Declaration): void {
     if (dec.op === null) {

@@ -6,9 +6,9 @@ import { Instruction } from '../instruction';
 export class ElseInstruction extends Instruction {
   instructions: Instruction[] = [];
   symbolTable!: SymbolTable;
-  token:Token
+  token: Token;
 
-  constructor(instructions: Instruction[], token:Token) {
+  constructor(instructions: Instruction[], token: Token) {
     super();
     this.instructions = instructions;
     this.token = token;
@@ -20,5 +20,11 @@ export class ElseInstruction extends Instruction {
 
   genericQuartet(vi: Visitor): void {
     //TODO: Method not implemented.
+  }
+
+  referenciarSymbolTable(vi: Visitor, symbolTablePadre: SymbolTable): void {
+    this.symbolTable = new SymbolTable('else');
+    this.symbolTable.symbolTablePadre = symbolTablePadre;
+    vi.visitElse(this);
   }
 }

@@ -1,10 +1,19 @@
+import { Clase } from "../class/clase";
+import { Constructor } from "../class/constructor";
 import { CaseSwitchInstruction } from "../instructions/bifurcaciones/case-switch-instruction";
 import { DoWhileInstruction } from "../instructions/bifurcaciones/do-while-instruction";
 import { ElseInstruction } from "../instructions/bifurcaciones/Else-Instruction";
+import { ForInstrction } from "../instructions/bifurcaciones/for-instruction";
 import { IfInstruction } from "../instructions/bifurcaciones/If-instruction";
 import { SwitchInstruction } from "../instructions/bifurcaciones/switch-instruction";
 import { WhileInstruction } from "../instructions/bifurcaciones/while-Instruction";
+import { AsignacionArr } from "../instructions/declare-asig/asiganacion-arr";
+import { Asignacion } from "../instructions/declare-asig/asignacion";
 import { Declaration } from "../instructions/declare-asig/declaration";
+import { DeclarationArr } from "../instructions/declare-asig/declaration-arr";
+import { FunMath } from "../instructions/fun-nativas/fun-math";
+import { Sout } from "../instructions/fun-nativas/sout";
+import { Funcion } from "../instructions/funcion/funcion";
 import { NodoOperation } from "../instructions/operations/nodo-operation";
 import { Operation } from "../instructions/operations/operation";
 import { Dato } from "../table-simbol/dato";
@@ -20,5 +29,15 @@ export abstract class Visitor {
     abstract visitDoWhile(doWhileI: DoWhileInstruction): void;
     abstract visitSwitch(swit: SwitchInstruction):void;
     abstract visitCaseSwitch(caseSwitchI: CaseSwitchInstruction): void;
+    abstract visitClass(clas:Clase):void;
+    abstract visitFuncion(fun:Funcion):void;
+    abstract visitConstruct(fun:Constructor):void;
+    abstract visitfor(fo:ForInstrction):void;
+    abstract visitAsigArr(asi:AsignacionArr):void;
+    abstract visitAsig(asi:Asignacion):void;
+    abstract visitDeclareArr(dec:DeclarationArr):void;
+    abstract visitFunMath(funMath:FunMath):void;
+    abstract visitSout(sout:Sout):void;
+
 
 }

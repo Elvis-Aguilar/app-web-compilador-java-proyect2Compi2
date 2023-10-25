@@ -81,7 +81,6 @@ export class Parser {
             //instructions.forEach(inst => {
               //  inst.genericQuartet(visGeneQuarte);
             //});
-            console.log(parser.yy.Errores.getInstance())
             //console.log(visGeneQuarte.qh)
         } catch (error) {
             console.error(error);

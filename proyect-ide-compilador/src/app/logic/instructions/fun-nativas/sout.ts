@@ -8,8 +8,7 @@ export class Sout extends Instruction {
   salto: boolean;
   symbolTable!: SymbolTable;
 
-
-  constructor(op:Operation, salto:boolean) {
+  constructor(op: Operation, salto: boolean) {
     super();
     this.op = op;
     this.salto = salto;
@@ -20,5 +19,10 @@ export class Sout extends Instruction {
   }
   genericQuartet(vi: Visitor): void {
     //TODO: Method not implemented.
+  }
+
+  referenciarSymbolTable(vi: Visitor, symbolTablePadre: SymbolTable): void {
+    this.symbolTable = symbolTablePadre;
+    vi.visitSout(this);
   }
 }

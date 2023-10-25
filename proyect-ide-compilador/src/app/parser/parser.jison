@@ -655,7 +655,7 @@ fun_math
     | MATHPOW PARENTESA exp COMA exp PARENTESC PUNTOCOMA    {$$ = new yy.FunMath();}
     | MATHSQRT PARENTESA exp PARENTESC PUNTOCOMA            {$$ = new yy.FunMath();}
     | MATHRANDOM PARENTESA PARENTESC PUNTOCOMA              {$$ = new yy.FunMath();}
-    | MATHTORADIANS PARENTESA PARENTESC PUNTOCOMA           {$$ = new yy.FunMath();}  
+    | MATHTORADIANS PARENTESA exp PARENTESC PUNTOCOMA       {$$ = new yy.FunMath();}  
     | MATHACOS PARENTESA exp PARENTESC PUNTOCOMA            {$$ = new yy.FunMath();}  
     | MATHSIN PARENTESA exp PARENTESC PUNTOCOMA             {$$ = new yy.FunMath();}    
     | MATHATAN PARENTESA exp PARENTESC PUNTOCOMA            {$$ = new yy.FunMath();}  

@@ -3,6 +3,7 @@ import { Error } from '../errors/errors';
 import { TypeError } from '../errors/type-error';
 import { Funcion } from '../instructions/funcion/funcion';
 import { Instruction } from '../instructions/instruction';
+import { SymbolTable } from '../table-simbol/symbol-table';
 import { Constructor } from './constructor';
 import { FunMain } from './fun-main';
 
@@ -14,6 +15,7 @@ export class Clase {
   funciones:Funcion[] =[];
   funMain!:FunMain;
   constructors: Constructor[] =[];
+  symbolTable!:SymbolTable;
 
   constructor(nombre: string) {
     this.nombre = nombre;
