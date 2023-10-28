@@ -1,3 +1,5 @@
+import { Archivo } from "../area-editor/objects/archivo";
+import { Folder } from "../area-editor/objects/folder";
 import { Clase } from "../logic/class/clase";
 import { Constructor } from "../logic/class/constructor";
 import { FunMain } from "../logic/class/fun-main";
@@ -26,7 +28,9 @@ import { Dato } from "../logic/table-simbol/dato";
 import { TypeDato } from "../logic/table-simbol/type-dato";
 import { Variable } from "../logic/table-simbol/variable";
 import { Visibilidad } from "../logic/table-simbol/visibilidad";
+import { VisitorExecute } from "../logic/visitors/visitor-execute";
 import { VisitorGenericQuartet } from "../logic/visitors/visitor-generic-quartet";
+import { SesionService } from "../services/sesion.service";
 import { AuxFun } from "./aux-fun";
 import { Token } from "./token";
 
@@ -34,9 +38,14 @@ declare var parser:  any;
 
 export class Parser {
     private txtEntrada:String = "";
+    private archivoTmp:Archivo;
+    private archivos: Array<Archivo> = [];
+    private proyect:Folder
 
-    constructor(txtEntrada:String) {
-        this.txtEntrada = txtEntrada;
+    constructor(archivoTmp:Archivo, proyect:Folder) {
+        this.archivoTmp = archivoTmp;
+        this.txtEntrada = archivoTmp.contenido;
+        this.proyect = proyect;
         parser.yy.NodoOperation = NodoOperation;
         parser.yy.Operation = Operation;
         parser.yy.TypeOperation = TypeOperation;
@@ -72,18 +81,35 @@ export class Parser {
      * funcion para ejecutar el analisis lexico-sintactico del parser
      */
     parse(){
-        try {
-            const ssss: Clase[] = [];
-            //const instructions:instruction[] = parser.parse(this.txtEntrada);
-            const clase:Clase = parser.parse(this.txtEntrada);
-            console.log(clase);
-            const visGeneQuarte = new VisitorGenericQuartet();
-            //instructions.forEach(inst => {
-              //  inst.genericQuartet(visGeneQuarte);
-            //});
-            //console.log(visGeneQuarte.qh)
-        } catch (error) {
-            console.error(error);
+        this.archivos = this.proyect.getArchivos();
+        this.ponerPrimeroArchivo();
+        const visGeneQuarte = new VisitorGenericQuartet();
+        const vistExecute = new VisitorExecute();
+        const clases:Clase[] = [];
+        for (let index = 0; index <  this.archivos.length; index++) {
+            const arch =  this.archivos[index];
+            try {
+                const clase:Clase = parser.parse(arch.contenido);
+                clases.push(clase);
+                //clase.execute(vistExecute);
+                console.log(clase);
+                //instructions.forEach(inst => {
+                  //  inst.genericQuartet(visGeneQuarte);
+                //});
+                //console.log(visGeneQuarte.qh)
+            } catch (error) {
+                console.error(error);
+            }
+            
+        }
+        //realizar el execute si no hay errores sintacticos o lexicos
+    }
+
+    private ponerPrimeroArchivo(){
+        const index = this.archivos.indexOf(this.archivoTmp);
+        if (index !== -1) {
+            this.archivos.splice(index, 1);
+            this.archivos.unshift(this.archivoTmp); 
         }
     }
 }

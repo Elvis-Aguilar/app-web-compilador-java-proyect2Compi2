@@ -21,7 +21,7 @@ export class Constructor extends Instruction {
   }
 
   execute(vi: Visitor): void {
-    throw new Error('Method not implemented.');
+    vi.visitConstruct(this);
   }
   genericQuartet(vi: Visitor): void {
     throw new Error('Method not implemented.');

@@ -12,6 +12,8 @@ entero              [0-9]+
 cadena              \"[^\"]*\"
 caracter            "'"[^]"'" 
 
+
+
 //para comentarios 
 lineTerminator      \r|\n|\r\n
 whitespace          {lineTerminator}|[ \t\f]
@@ -81,10 +83,10 @@ decre                           "--"
 masigul                         "+="
 
 //aritmeticos
-mas 						  	            "+"
-menos 						  	          "-"
-por 			  				            "*"
-division		  				          "/"
+mas                             "+"
+menos 			                "-"
+por                             "*"
+division                        "/"
 modulo                          "%"
 
 //relacionales
@@ -123,17 +125,16 @@ id                  [a-zA-Z_][a-zA-Z_0-9]*
 
 /*%% gramatica lexica */
 %%
-
 {whitespace}                /* skip */
 {decimal}                   return "DECIMAL"
 {entero}                    return "ENTERO"
 {incre}                     return "INCRE"
 {decre}                     return "DECRE"
 {masigul}                   return "MASIGUAL"
-{mas} 						          return "MAS"
-{menos} 					          return "MENOS"
-{por} 			  			        return "POR"
-{division}		  			      return "DIVISION"
+{mas} 						return "MAS"
+{menos} 					return "MENOS"
+{por} 			  			return "POR"
+{division}		  			return "DIVISION"
 {modulo}                    return "MODULO"
 {mayorOI}                   return "MAYOROI"                          
 {menorOI}                   return "MENOROI"
@@ -269,7 +270,8 @@ term_imprt
 
 /*gramatica para clases: public class id {...} || class id {...}*/
 clase 
-  : visi_class clas_name LLAVEA sente_glos LLAVEC       {$$ = claseAux; $$.isFinal = $1; $$.instructions = $4;}         
+  : visi_class clas_name LLAVEA sente_glos LLAVEC               {$$ = claseAux; $$.isFinal = $1; $$.instructions = $4;}         
+  | getSet visi_class clas_name LLAVEA sente_glos LLAVEC
   ; 
 
 clas_name
@@ -296,14 +298,13 @@ sent_glo
     | main_fun                                  {$$ = null; claseAux.pushMain($1);}
     | constr                                    {$$ = null; claseAux.pushConstructor($1);}
     | declar_obj_glo
-    | getSet PUNTOCOMA                          {$$ = null;}
     ;
 
 
 /*declaracion variable global*/
 declar_var_glo
     : agrup items PUNTOCOMA                   {$$ = yy.AuxFun.completDeclacionGlobla($2,$1);}
-    | getSet agrup items PUNTOCOMA            //
+    | getSet agrup items PUNTOCOMA            {$$ = yy.AuxFun.completDeclacionGlobla($3,$2);     /*resto de logica*/}
     ;
   
 declar_obj_glo
@@ -478,12 +479,11 @@ asig
   ;
 
 asi_arr_comp
-  : ID IGUAL NEW type cochets_val PUNTOCOMA           {$$ = new yy.AsignacionArr(new yy.Token($1,this._$.first_column, this._$.first_line), $4, $5, null,false);}      
-  | THIS PUNTO ID IGUAL NEW type cochets_val PUNTOCOMA
+  : ID IGUAL NEW type cochets_vla PUNTOCOMA             {$$ = new yy.AsignacionArr(new yy.Token($1,this._$.first_column, this._$.first_line), $4, $5, null,false);}      
   ;
 
 asi_arr_ind
-    : ID cochets_val IGUAL exp PUNTOCOMA              {$$ = new yy.AsignacionArr(new yy.Token($1,this._$.first_column, this._$.first_line), undefined, $2,  new yy.Operation($4),true);}
+    : ID cochets_val IGUAL exp PUNTOCOMA                {$$ = new yy.AsignacionArr(new yy.Token($1,this._$.first_column, this._$.first_line), undefined, $2,  new yy.Operation($4),true);}
     | THIS PUNTO ID cochets_val IGUAL exp PUNTOCOMA 
     ;
 

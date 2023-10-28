@@ -1,35 +1,82 @@
-import { Token } from "src/app/parser/token";
-import { TypeDato } from "./type-dato";
-import { Variable } from "./variable";
-import { Visibilidad } from "./visibilidad";
+import { Token } from 'src/app/parser/token';
+import { Arreglo } from '../arreglos/arreglo';
+import { ErrorSingleton } from '../errors/error-singleton';
+import { Error } from '../errors/errors';
+import { TypeError } from '../errors/type-error';
+import { TypeDato } from './type-dato';
+import { Variable } from './variable';
+import { Visibilidad } from './visibilidad';
 
 export class SymbolTable {
-    nameReference: string;
-    variables: Array<Variable> = [];
-    symbolTablePadre!:SymbolTable;
+  nameReference: string;
+  variables: Array<Variable> = [];
+  symbolTablePadre!: SymbolTable;
+  arreglos:Array<Arreglo> = [];
 
-    constructor(nameReference:string){
-        this.nameReference = nameReference;
-    }
+  constructor(nameReference: string) {
+    this.nameReference = nameReference;
+  }
 
-    addVariable(variable: Variable) {
-        const variableExistente = this.variables.find(v => v.id === variable.id);
-        if (variableExistente) {
-            //console.error(`La variable con ID ${variable.id} ya existe.`);
-        } else {
-            this.variables.push(variable);
-        }
+  addVariable(variable: Variable) {
+    const variableExistente = this.buscarEnCadaSubTabla(variable.token);
+    if (variableExistente) {
+      const msj = 'La variable ya existe';
+      ErrorSingleton.getInstance().push(
+        new Error(
+          variable.token.line,
+          variable.token.column,
+          variable.token.id,
+          `${msj}`,
+          TypeError.SEMANTICO
+        )
+      );
+    } else {
+      this.variables.push(variable);
     }
+  }
 
-    // TODO: buscar en las tablas padres si existieran
-    getById(tok:Token):Variable {
-        const variable = this.variables.find(v => v.id === tok.id)
-        if (variable) {
-            return variable;
-        } else {
-            //error semantico no existe la variable
-            return new Variable(Visibilidad.PUBLIC,false,false,TypeDato.INT,tok.id);
-        }
+  getById(tok: Token): Variable | void {
+    const variable =  this.buscarEnCadaSubTabla(tok);
+    if (variable) {
+      return variable;
+    } else {
+      if (this.symbolTablePadre) {
+        return this.symbolTablePadre.getById(tok);
+      } else {
+        const msj = 'Variable no existe';
+        ErrorSingleton.getInstance().push(
+          new Error(tok.line, tok.column, tok.id, `${msj}`, TypeError.SEMANTICO)
+        );
+        return undefined
+      }
     }
-    
+  }
+
+  getByIdGlobal(tok: Token): Variable | void{
+    if (this.symbolTablePadre) {
+      return this.symbolTablePadre.getByIdGlobal(tok);
+    }
+    const variable =  this.buscarEnCadaSubTabla(tok);
+    if (variable) {
+      return variable;
+    } else {
+      const msj = 'Variable no existe';
+      ErrorSingleton.getInstance().push(
+        new Error(tok.line, tok.column, tok.id, `${msj}`, TypeError.SEMANTICO)
+      );
+      return undefined
+    }
+  }
+
+  private buscarEnCadaSubTabla(tok:Token):Variable | void{
+    let variable = this.variables.find((v) => v.id === tok.id);
+    if (variable) {
+        return variable;
+    }
+    //TODO: buscar en la tabla de objetos
+  }
+
+  getPosition():number{
+    return this.arreglos.length+this.variables.length
+  }
 }

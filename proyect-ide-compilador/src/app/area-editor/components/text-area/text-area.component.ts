@@ -15,7 +15,7 @@ import { Archivo } from '../../objects/archivo';
 
 export class TextAreaComponent {
   content:string="";
-  archivoTmp!:Archivo
+  archivoTmp!:Archivo;
 
   constructor(public sesion:SesionService) {
 
@@ -38,7 +38,8 @@ export class TextAreaComponent {
 
   onCompilar() {
     ErrorSingleton.getInstance().limpiar();
-    const parser = new Parser(this.content);
+    this.archivoTmp.contenido = this.content
+    const parser = new Parser(this.archivoTmp, this.sesion.proyect);
     if(this.content === undefined || this.content === "") {
       this.msTxtVacio()
     }else{      

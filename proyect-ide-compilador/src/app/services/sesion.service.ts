@@ -14,5 +14,9 @@ export class SesionService {
   
   constructor() { }
 
+  public getProyect(): Archivo[]{
+    return this.proyect.getArchivos();
+  }
+
 
 }

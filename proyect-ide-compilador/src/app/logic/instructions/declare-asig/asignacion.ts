@@ -8,15 +8,17 @@ export class Asignacion extends Instruction {
   symbolTable!: SymbolTable;
   token: Token;
   op: Operation;
+  global:boolean;
 
-  constructor(token: Token, op: Operation) {
+  constructor(token: Token, op: Operation, global?:boolean) {
     super();
     this.token = token;
     this.op = op;
+    this.global = global !== undefined ? global : false;
   }
 
   execute(vi: Visitor): void {
-    //TODO: Method not implemented.
+    vi.visitAsig(this);
   }
   genericQuartet(vi: Visitor): void {
     //TODO: Method not implemented.

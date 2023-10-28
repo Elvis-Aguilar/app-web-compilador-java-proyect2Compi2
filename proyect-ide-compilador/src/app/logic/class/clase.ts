@@ -4,6 +4,7 @@ import { TypeError } from '../errors/type-error';
 import { Funcion } from '../instructions/funcion/funcion';
 import { Instruction } from '../instructions/instruction';
 import { SymbolTable } from '../table-simbol/symbol-table';
+import { Visitor } from '../visitors/visitor';
 import { Constructor } from './constructor';
 import { FunMain } from './fun-main';
 
@@ -33,6 +34,10 @@ export class Clase {
     }else{
       this.funMain = funMain;
     }
+  }
+
+  execute(vi:Visitor){
+    vi.visitClass(this);
   }
 
   pushConstructor(constr:Constructor){

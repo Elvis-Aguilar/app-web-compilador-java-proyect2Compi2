@@ -1,11 +1,19 @@
 import { Clase } from '../class/clase';
+import { Constructor } from '../class/constructor';
 import { CaseSwitchInstruction } from '../instructions/bifurcaciones/case-switch-instruction';
 import { DoWhileInstruction } from '../instructions/bifurcaciones/do-while-instruction';
 import { ElseInstruction } from '../instructions/bifurcaciones/Else-Instruction';
+import { ForInstrction } from '../instructions/bifurcaciones/for-instruction';
 import { IfInstruction } from '../instructions/bifurcaciones/If-instruction';
 import { SwitchInstruction } from '../instructions/bifurcaciones/switch-instruction';
 import { WhileInstruction } from '../instructions/bifurcaciones/while-Instruction';
+import { AsignacionArr } from '../instructions/declare-asig/asiganacion-arr';
+import { Asignacion } from '../instructions/declare-asig/asignacion';
 import { Declaration } from '../instructions/declare-asig/declaration';
+import { DeclarationArr } from '../instructions/declare-asig/declaration-arr';
+import { FunMath } from '../instructions/fun-nativas/fun-math';
+import { Sout } from '../instructions/fun-nativas/sout';
+import { Funcion } from '../instructions/funcion/funcion';
 import { NodoOperation } from '../instructions/operations/nodo-operation';
 import { Operation } from '../instructions/operations/operation';
 import { Quartet } from '../quartets/quartet';
@@ -15,8 +23,6 @@ import { Visitor } from './visitor';
 
 export class VisitorGenericQuartet extends Visitor {
 
-
-  
   readonly POINTER: string = 'ptr';
   qh: QuartHandler;
 
@@ -88,4 +94,30 @@ export class VisitorGenericQuartet extends Visitor {
   visitCaseSwitch(caseSwitchI: CaseSwitchInstruction): void {
     throw new Error('Method not implemented.');
   }
+
+  visitFuncion(fun: Funcion): void {
+    throw new Error('Method not implemented.');
+  }
+  visitConstruct(fun: Constructor): void {
+    throw new Error('Method not implemented.');
+  }
+  visitfor(fo: ForInstrction): void {
+    throw new Error('Method not implemented.');
+  }
+  visitAsigArr(asi: AsignacionArr): void {
+    throw new Error('Method not implemented.');
+  }
+  visitAsig(asi: Asignacion): void {
+    throw new Error('Method not implemented.');
+  }
+  visitDeclareArr(dec: DeclarationArr): void {
+    throw new Error('Method not implemented.');
+  }
+  visitFunMath(funMath: FunMath): void {
+    throw new Error('Method not implemented.');
+  }
+  visitSout(sout: Sout): void {
+    throw new Error('Method not implemented.');
+  }
+
 }

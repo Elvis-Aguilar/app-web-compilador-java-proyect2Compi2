@@ -1,3 +1,4 @@
+import { Token } from 'src/app/parser/token';
 import { Dato } from './dato';
 import { TypeDato } from './type-dato';
 import { Visibilidad } from './visibilidad';
@@ -10,6 +11,8 @@ export class Variable {
   visibilidad: Visibilidad;
   isStatik: boolean;
   isFinal: boolean;
+  pos: number = 0;
+  token:Token;
 
   constructor(
     visibilidad: Visibilidad,
@@ -17,7 +20,9 @@ export class Variable {
     isFinal: boolean,
     typeDato: TypeDato,
     id: string,
+    token:Token,
     dato?: Dato
+    
   ) {
     this.visibilidad = visibilidad;
     this.isStatik = isStatik;
@@ -25,12 +30,13 @@ export class Variable {
     this.typeDato = typeDato;
     this.id = id;
     this.dato = dato || null;
-    this.actulizarType();
+    this.token = token;
+    this.actulizarEstadoInicializado();
   }
 
-  actulizarType(){
+  actulizarEstadoInicializado(){
     if (this.dato) {
-      this.dato.typeDato = this.typeDato;
+      this.inizializado = true;
     }
   }
 }
