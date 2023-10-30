@@ -24,6 +24,7 @@ export class ElseInstruction extends Instruction {
 
   referenciarSymbolTable(vi: Visitor, symbolTablePadre: SymbolTable): void {
     this.symbolTable = new SymbolTable('else');
+    this.symbolTable.pos = symbolTablePadre.pos+1;
     this.symbolTable.symbolTablePadre = symbolTablePadre;
     vi.visitElse(this);
   }

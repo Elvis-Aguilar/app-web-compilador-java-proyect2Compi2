@@ -12,10 +12,12 @@
                 <div *ngIf="sesion.areaTrabajo === 1" class="text-area">
                     <app-table-errors></app-table-errors>
                 </div>
-                <!--<h3>consola</h3>
-                <div class="consle">
-                    <app-console></app-console>
-                </div> -->
+                <div *ngIf="sesion.areaTrabajo === 3" class="text-area">
+                    <app-console-clike></app-console-clike>
+                </div>
+                <div *ngIf="sesion.areaTrabajo === 2" class="text-area">
+                    <app-console-assemble></app-console-assemble>
+                </div>
             </div>
             <div class="col-1">
                 <app-side-bar></app-side-bar>

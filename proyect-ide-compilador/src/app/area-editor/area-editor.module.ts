@@ -12,6 +12,8 @@ import { NavbarComponent } from './components/navbar/navbar.component';
 import { SideBarComponent } from './components/side-bar/side-bar.component';
 import { FolderComponent } from './components/folder/folder.component';
 import { TableErrorsComponent } from './components/table-errors/table-errors.component';
+import { ConsoleClikeComponent } from './components/console-clike/console-clike.component';
+import { ConsoleAssembleComponent } from './components/console-assemble/console-assemble.component';
 
 
 @NgModule({
@@ -23,7 +25,9 @@ import { TableErrorsComponent } from './components/table-errors/table-errors.com
     NavbarComponent,
     SideBarComponent,
     FolderComponent,
-    TableErrorsComponent
+    TableErrorsComponent,
+    ConsoleClikeComponent,
+    ConsoleAssembleComponent
 
   ],
   imports: [

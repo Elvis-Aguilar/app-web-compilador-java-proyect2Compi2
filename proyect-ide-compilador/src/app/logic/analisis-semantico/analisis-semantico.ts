@@ -1,3 +1,4 @@
+import { Token } from 'src/app/parser/token';
 import { Clase } from '../class/clase';
 import { Constructor } from '../class/constructor';
 import { ErrorSingleton } from '../errors/error-singleton';
@@ -8,6 +9,12 @@ import { Funcion } from '../instructions/funcion/funcion';
 export class AnalisisSemantico {
   public validarConstructores(clas: Clase) {
     const construcAuxs: Constructor[] = [];
+    if (clas.constructors.length === 0) {
+      //construtor por defecto
+      const cos = new Constructor(clas.nombre, [],[],new Token(`${clas.nombre}`,0,0));
+      clas.constructors.push(cos);
+      return
+    }
     clas.constructors.forEach((constr) => {
       for (const tmpConstr of construcAuxs) {
         if (this.compararConstrIguales(constr, tmpConstr)) {

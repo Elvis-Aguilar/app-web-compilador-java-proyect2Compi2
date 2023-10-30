@@ -17,6 +17,10 @@ export class Clase {
   funMain!:FunMain;
   constructors: Constructor[] =[];
   symbolTable!:SymbolTable;
+  clases:Clase[]=[];
+  yaEjecuta:boolean = false;
+  imports:Array<string> = [];
+
 
   constructor(nombre: string) {
     this.nombre = nombre;
@@ -40,6 +44,12 @@ export class Clase {
     vi.visitClass(this);
   }
 
+  referenciarSymbolTable(vi: Visitor){
+    this.symbolTable = new SymbolTable(this.nombre);
+    vi.visitClass(this);
+  }
+
+
   pushConstructor(constr:Constructor){
     if (constr.nombre === this.nombre) {
       this.constructors.push(constr);
@@ -47,6 +57,24 @@ export class Clase {
       const msj = 'Construcotor invalido, debe de llamarse igual a la Clase'
       ErrorSingleton.getInstance().push(new Error(constr.token.line,constr.token.column,constr.token.id,`${msj}`,TypeError.SEMANTICO));
     }
+  }
+
+  obtenerImports(impor:string[]){
+    const importaciones:string[] = []
+    impor.forEach(imp => {
+      const limpi = this.limpiarImport(imp);
+      importaciones.push(limpi);
+    });
+    this.imports = importaciones;
+  }
+
+  private limpiarImport(cadena:string):string{
+    const partes = cadena.split(".");
+    if (partes.length > 1) {
+      partes.pop();
+      return partes.join(".");
+    }
+    return cadena;
   }
 
 }

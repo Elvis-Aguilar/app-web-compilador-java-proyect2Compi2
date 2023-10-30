@@ -23,4 +23,12 @@ export class SideBarComponent {
     this.sesion.areaTrabajo = AreaTrabajo.EDITOR;
   }
 
+  goCLike(){
+    this.sesion.areaTrabajo = AreaTrabajo.CODIGO3D;
+  }
+
+  goAssemble(){
+    this.sesion.areaTrabajo = AreaTrabajo.ASSEMBLER;
+  }
+
 }

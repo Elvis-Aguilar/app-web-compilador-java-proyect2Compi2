@@ -36,6 +36,7 @@ export class NavbarComponent {
     }).then((result) => {
       if (result.isConfirmed) {
         this.sesion.proyect.nombre = result.value
+        this.sesion.proyect.packageCompleto = result.value
         this.sesion.proyect.folders.splice(0,this.sesion.proyect.folders.length)
         this.sesion.proyect.archivos.splice(0,this.sesion.proyect.archivos.length)
         //TODO: limpiar las pestanias

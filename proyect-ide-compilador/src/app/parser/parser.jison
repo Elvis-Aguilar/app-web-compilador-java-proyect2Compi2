@@ -238,7 +238,7 @@ initial
 
 /*gramatica para un archivo valido: impor ... class || class*/
 program 
-    : pack imprts clase                   {$$ = $3;}
+    : pack imprts clase                   {$$ = $3; $$.obtenerImports($2);}
     ;
 
 
@@ -250,21 +250,21 @@ pack
 
 /*gramatica para importaciones: import id.id.id.*; || import id.*; || id.id; || id;*/
 imprts
-    : imprts imprt          //import1; import2;
-    |
+    : imprts imprt          {$$ = $1; $$.push($2)}
+    |                       {$$ = [];}
     ;
 
 imprt
-    : IMPORT ids_imprt term_imprt   //com.id.id.*   
+    : IMPORT ids_imprt term_imprt    {$$ = `${$2}`+ `${$3}` } 
     ;
 
 ids_imprt 
-    : ids_imprt PUNTO ID        {$$ = $1+ `${$2}` + `${$3}`} //com.id.id.id
+    : ids_imprt PUNTO ID        {$$ = `${$1}`+ `${$2}` + `${$3}`} //com.id.id.id
     | ID                      {$$ = `${$1}`;}      //com
     ;
   
 term_imprt
-    : PUNTO POR PUNTOCOMA    {$$ = $1+"" +$2;}  //.*
+    : PUNTO POR PUNTOCOMA    {$$ = `${$1}` +`${$2}`;}  //.*
     | PUNTOCOMA              {$$ = "";}
     ;
 
@@ -308,7 +308,7 @@ declar_var_glo
     ;
   
 declar_obj_glo
-    : agrup ID IGUAL NEW ID PARENTESA paramets PARENTESC PUNTOCOMA
+    : agrup ID IGUAL NEW ID PARENTESA argumens PARENTESC PUNTOCOMA          {$$ = new yy.DeclarObject($1,new yy.Token($2,this._$.first_column, this._$.first_line), $7,$5);}
     ;
 
 getSet
@@ -435,10 +435,12 @@ sentencia
     | def_do_while                    {$$ = $1;}
     | def_for                         {$$ = $1;}
     | incr_decr                       {$$ = $1;}
-    | llamad_fun PUNTOCOMA
-    | llamad_fun_obj PUNTOCOMA
-    | BREAK PUNTOCOMA
-    | CONTINUE PUNTOCOMA 
+    | asig_object                     {$$ = $1;}  
+    | declar_obj                      {$$ = $1;}  
+    | llamad_fun PUNTOCOMA            {$$ = new yy.LlamadaFunGen($1);}
+    | llamad_fun_obj PUNTOCOMA        {$$ = new yy.LlamadaFunGen($1);}
+    | BREAK PUNTOCOMA                 {$$ = $1;}
+    | CONTINUE PUNTOCOMA              {$$ = $1;}
     | def_return                      {$$ = $1;}                     
     ;
 
@@ -449,13 +451,15 @@ def_return
 /*gramatica para declaracion de variables anidadas*/
 declaracion_var 
             : type items  PUNTOCOMA      {$$ = yy.AuxFun.agregarType($1, $2);}
-            | ID items  PUNTOCOMA
+            | ID items  PUNTOCOMA        {$$ = yy.AuxFun.agregarType($1, $2);}
             ;
 
+declar_obj
+    : ID ID IGUAL NEW ID PARENTESA argumens PARENTESC PUNTOCOMA          {$$ = new yy.DeclarObject($1,new yy.Token($2,this._$.first_column, this._$.first_line), $7,$5);}
+    ;
+
 items 
-    : items COMA ID                       {$$ = $1; $$.push(new yy.Declaration(new yy.Token($3,this._$.first_column, this._$.first_line)));}
-    | items COMA ID IGUAL exp             {$$ = $1; $$.push(new yy.Declaration(new yy.Token($3,this._$.first_column, this._$.first_line), new yy.Operation($5)));}
-    | ID IGUAL exp                        {$$ = []; $$.push(new yy.Declaration(new yy.Token($1,this._$.first_column, this._$.first_line), new yy.Operation($3)));}
+    : ID IGUAL exp                        {$$ = []; $$.push(new yy.Declaration(new yy.Token($1,this._$.first_column, this._$.first_line), new yy.Operation($3)));}
     | ID                                  {$$ = []; $$.push(new yy.Declaration(new yy.Token($1,this._$.first_column, this._$.first_line)));}
     ;
 
@@ -468,55 +472,58 @@ declar_arr
 
 /*gramatica para asignacion de variables*/
 asig 
-  : ID IGUAL exp PUNTOCOMA                        {$$ = new yy.Asignacion(new yy.Token($1,this._$.first_column, this._$.first_line),  new yy.Operation($3));}
-  | ID MASIGUAL exp PUNTOCOMA                     {$$ = yy.AuxFun.configMasIgual(new yy.Operation($3), new yy.Token($1,this._$.first_column, this._$.first_line));}
-  | ID PUNTO ID IGUAL exp PUNTOCOMA
-  | ID PUNTO ID MASIGUAL exp PUNTOCOMA
-  | THIS PUNTO ID IGUAL exp PUNTOCOMA
-  | THIS PUNTO ID MASIGUAL exp PUNTOCOMA
-  | THIS PUNTO ID PUNTO ID IGUAL exp PUNTOCOMA
-  | THIS PUNTO ID PUNTO ID  MASIGUAL exp PUNTOCOMA
+  : ID IGUAL exp PUNTOCOMA                                      {$$ = new yy.Asignacion(new yy.Token($1,this._$.first_column, this._$.first_line),  new yy.Operation($3));}
+  | ID MASIGUAL exp PUNTOCOMA                                   {$$ = yy.AuxFun.configMasIgual(new yy.Operation($3), new yy.Token($1,this._$.first_column, this._$.first_line));}
+  | ID PUNTO ID IGUAL exp PUNTOCOMA                             {$$ = new yy.Asignacion(new yy.Token($3,this._$.first_column, this._$.first_line),  new yy.Operation($5), false, $1);}
+  | ID PUNTO ID MASIGUAL exp PUNTOCOMA                          {$$ = yy.AuxFun.configMasIgual(new yy.Operation($5), new yy.Token($3,this._$.first_column, this._$.first_line), false, $1);}
+  | THIS PUNTO ID IGUAL exp PUNTOCOMA                           {$$ = new yy.Asignacion(new yy.Token($3,this._$.first_column, this._$.first_line),  new yy.Operation($5), true);}
+  | THIS PUNTO ID MASIGUAL exp PUNTOCOMA                        {$$ = yy.AuxFun.configMasIgual(new yy.Operation($5), new yy.Token($3,this._$.first_column, this._$.first_line), true);}
+  | THIS PUNTO ID PUNTO ID IGUAL exp PUNTOCOMA                  {$$ = new yy.Asignacion(new yy.Token($5,this._$.first_column, this._$.first_line),  new yy.Operation($7), true, $3);}   
+  | THIS PUNTO ID PUNTO ID  MASIGUAL exp PUNTOCOMA              {$$ = yy.AuxFun.configMasIgual(new yy.Operation($7), new yy.Token($5,this._$.first_column, this._$.first_line), true, $3);}             
   ;
+
+asig_object
+        : ID IGUAL NEW ID PARENTESA argumens PARENTESC PUNTOCOMA                {$$ = new yy.AsignObject(new yy.Token($1,this._$.first_column, this._$.first_line), $6, false, $4);}
+        | THIS PUNTO ID IGUAL NEW ID PARENTESA argumens PARENTESC PUNTOCOMA     {$$ = new yy.AsignObject(new yy.Token($3,this._$.first_column, this._$.first_line), $8, true,  $6);}
+        ;
 
 asi_arr_comp
   : ID IGUAL NEW type cochets_vla PUNTOCOMA             {$$ = new yy.AsignacionArr(new yy.Token($1,this._$.first_column, this._$.first_line), $4, $5, null,false);}      
   ;
 
 asi_arr_ind
-    : ID cochets_val IGUAL exp PUNTOCOMA                {$$ = new yy.AsignacionArr(new yy.Token($1,this._$.first_column, this._$.first_line), undefined, $2,  new yy.Operation($4),true);}
+    : ID cochets_val IGUAL exp PUNTOCOMA                    {$$ = new yy.AsignacionArr(new yy.Token($1,this._$.first_column, this._$.first_line), undefined, $2,  new yy.Operation($4),true);}
     | THIS PUNTO ID cochets_val IGUAL exp PUNTOCOMA 
     ;
 
 incr_decr
-    : ID INCRE PUNTOCOMA                  {$$ = yy.AuxFun.configIncremet(new yy.Token($1,this._$.first_column, this._$.first_line), yy.TypeOperation.SUMA);}
-    | ID DECRE PUNTOCOMA                  {$$ = yy.AuxFun.configIncremet(new yy.Token($1,this._$.first_column, this._$.first_line), yy.TypeOperation.RESTA);}
-    | THIS PUNTO ID INCRE PUNTOCOMA
-    | THIS PUNTO ID DECRE PUNTOCOMA
-    | THIS PUNTO ID PUNTO ID INCRE PUNTOCOMA
-    | THIS PUNTO ID PUNTO ID DECRE PUNTOCOMA
+    : ID INCRE PUNTOCOMA                                {$$ = yy.AuxFun.configIncremet(new yy.Token($1,this._$.first_column, this._$.first_line), yy.TypeOperation.SUMA);}
+    | ID DECRE PUNTOCOMA                                {$$ = yy.AuxFun.configIncremet(new yy.Token($1,this._$.first_column, this._$.first_line), yy.TypeOperation.RESTA);}
+    | THIS PUNTO ID INCRE PUNTOCOMA                     {$$ = yy.AuxFun.configIncremet(new yy.Token($3,this._$.first_column, this._$.first_line), yy.TypeOperation.SUMA, true );}
+    | THIS PUNTO ID DECRE PUNTOCOMA                     {$$ = yy.AuxFun.configIncremet(new yy.Token($3,this._$.first_column, this._$.first_line), yy.TypeOperation.RESTA, true);}
     ;
 
 /*gramatica para la llamada de funciones*/
 llamad_fun 
-    : ID PARENTESA argumens PARENTESC 
-    | THIS PUNTO ID PARENTESA argumens PARENTESC 
+    : ID PARENTESA argumens PARENTESC                   {$$ = new yy.LlamadaFun(new yy.Token($1,this._$.first_column, this._$.first), $3, false, '');}
+    | THIS PUNTO ID PARENTESA argumens PARENTESC        {$$ = new yy.LlamadaFun(new yy.Token($3,this._$.first_column, this._$.first), $5,true, '');}
     ;
 
 llamad_fun_obj 
-    : ID PUNTO ID PARENTESA argumens PARENTESC
-    | THIS PUNTO ID PUNTO ID PARENTESA argumens PARENTESC
+    : ID PUNTO ID PARENTESA argumens PARENTESC                  {$$ = new yy.LlamadaFun(new yy.Token($3,this._$.first_column, this._$.first), $5, false, $1);}
+    | THIS PUNTO ID PUNTO ID PARENTESA argumens PARENTESC       {$$ = new yy.LlamadaFun(new yy.Token($1,this._$.first_column, this._$.first), $7, true, $3);}
     ;
 
 
 /*argumentos de la llamada de una funcion  exp, exp, exp....*/
 argumens  
-    : argumen
-    | 
+    : argumen               {$$ = $1;}
+    |                       {$$ = [];}
     ;
 
 argumen
-    : argumen COMA exp
-    | exp
+    : argumen COMA exp          {$$=$1; $$.push(new yy.Operation($3));}
+    | exp                       {$$=[new yy.Operation($1)];}
     ;
 
 /*grmatica para system.out.print || println*/
@@ -627,21 +634,21 @@ exp
   | ter_exp                                 {$$ = new yy.NodoOperation($1);}
   | PARENTESA exp PARENTESC                 {$$ = new yy.NodoOperation($1);}
   | fun_math                                {$$ = $1;}
-  | llamad_fun
-  | llamad_fun_obj 
+  | llamad_fun                              {$$ = $1;}
+  | llamad_fun_obj                          {$$ = $1;}
   ;
 
 ter_exp
-      : ENTERO                    {$$ = new yy.Dato(yy.TypeDato.INT, parseInt($1), "", false, new yy.Token($1,this._$.first_column, this._$.first_line));}
-      | DECIMAL                   {$$ = new yy.Dato(yy.TypeDato.FLOAT, parseFloat($1), "", false, new yy.Token($1,this._$.first_column, this._$.first_line));}
-      | CADENA                    {$$ = new yy.Dato(yy.TypeDato.STRING, 1,$1.substr(1,yyleng-2), false, new yy.Token($1,this._$.first_column, this._$.first_line));}  
-      | CARACTER                  {$$ = new yy.Dato(yy.TypeDato.CHAR, 1,$1.substr(1,yyleng-2), false, new yy.Token($1,this._$.first_column, this._$.first_line));}  
-      | TRUE                      {$$ = new yy.Dato(yy.TypeDato.BOOLEAN, 1,"", true, new yy.Token($1,this._$.first_column, this._$.first_line));}
-      | FALSE                     {$$ = new yy.Dato(yy.TypeDato.BOOLEAN, 1,"", false, new yy.Token($1,this._$.first_column, this._$.first_line));}
-      | ID                        {$$ = new yy.Dato(yy.TypeDato.INT, 1,"", false, new yy.Token($1,this._$.first_column, this._$.first_line), true);}
-      | THIS PUNTO ID
-      | ID PUNTO ID
-      | THIS PUNTO ID PUNTO ID
+      : ENTERO                                      {$$ = new yy.Dato(yy.TypeDato.INT, parseInt($1), "", false, new yy.Token($1,this._$.first_column, this._$.first_line));}
+      | DECIMAL                                     {$$ = new yy.Dato(yy.TypeDato.FLOAT, parseFloat($1), "", false, new yy.Token($1,this._$.first_column, this._$.first_line));}
+      | CADENA                                      {$$ = new yy.Dato(yy.TypeDato.STRING, 1,$1.substr(1,yyleng-2), false, new yy.Token($1,this._$.first_column, this._$.first_line));}  
+      | CARACTER                                    {$$ = new yy.Dato(yy.TypeDato.CHAR, 1,$1.substr(1,yyleng-2), false, new yy.Token($1,this._$.first_column, this._$.first_line));}  
+      | TRUE                                        {$$ = new yy.Dato(yy.TypeDato.BOOLEAN, 1,"", true, new yy.Token($1,this._$.first_column, this._$.first_line));}
+      | FALSE                                       {$$ = new yy.Dato(yy.TypeDato.BOOLEAN, 1,"", false, new yy.Token($1,this._$.first_column, this._$.first_line));}
+      | ID                                          {$$ = new yy.Dato(yy.TypeDato.INT, 1,"", false, new yy.Token($1,this._$.first_column, this._$.first_line), true);}
+      | THIS PUNTO ID                               {$$ = new yy.Dato(yy.TypeDato.INT, 1, '',false, new yy.Token($3, this._$.first_column, this._$.first_line), true,  true );}
+      | ID PUNTO ID                                 {$$ = new yy.Dato(yy.TypeDato.INT, 1, '',false, new yy.Token($3, this._$.first_column, this._$.first_line), true,  false, $1);}
+      | THIS PUNTO ID PUNTO ID                      {$$ = new yy.Dato(yy.TypeDato.INT, 1, '',false, new yy.Token($5, this._$.first_column, this._$.first_line), true,  true, $3);}
       ;
 
 /*gramatica para las clases math*/

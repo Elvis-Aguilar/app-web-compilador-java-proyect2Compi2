@@ -44,8 +44,8 @@ export class FolderComponent {
     }).then((result) => {
       if (result.isConfirmed) {
         const file = new Folder(result.value);
+        file.packageCompleto= this.folder.packageCompleto + '.' + result.value
         this.folder.folders.push(file);
-        console.log(this.sesion.proyect)
       }
     })
   }
@@ -70,6 +70,7 @@ export class FolderComponent {
     }).then((result) => {
       if (result.isConfirmed) {
         const archivo = new Archivo(result.value, "java");
+        archivo.packageCompleto = this.folder.packageCompleto
         this.folder.archivos.push(archivo);
       }
     })

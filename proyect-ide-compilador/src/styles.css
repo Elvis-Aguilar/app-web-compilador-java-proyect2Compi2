@@ -2,6 +2,7 @@
 @import '~codemirror/lib/codemirror';
 @import '~codemirror/theme/darcula';
 @import '~codemirror/theme/yonce';
+@import '~codemirror/theme/the-matrix';
 body{
     border: 0;
     padding: 0;

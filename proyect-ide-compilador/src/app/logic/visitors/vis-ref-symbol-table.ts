@@ -9,8 +9,10 @@ import { SwitchInstruction } from '../instructions/bifurcaciones/switch-instruct
 import { WhileInstruction } from '../instructions/bifurcaciones/while-Instruction';
 import { AsignacionArr } from '../instructions/declare-asig/asiganacion-arr';
 import { Asignacion } from '../instructions/declare-asig/asignacion';
+import { asignacionObjec } from '../instructions/declare-asig/asignacion-objc';
 import { Declaration } from '../instructions/declare-asig/declaration';
 import { DeclarationArr } from '../instructions/declare-asig/declaration-arr';
+import { DeclarationObject } from '../instructions/declare-asig/declaration-object';
 import { FunMath } from '../instructions/fun-nativas/fun-math';
 import { Sout } from '../instructions/fun-nativas/sout';
 import { Funcion } from '../instructions/funcion/funcion';
@@ -21,8 +23,8 @@ import { SymbolTable } from '../table-simbol/symbol-table';
 import { Visitor } from './visitor';
 
 export class VisRefSymbolTable extends Visitor {
+ 
   visitClass(clas: Clase): void {
-    clas.symbolTable = new SymbolTable(clas.nombre);
     clas.funciones.forEach((fun) => {
       fun.referenciarSymbolTable(this, clas.symbolTable);
     });
@@ -130,6 +132,18 @@ export class VisRefSymbolTable extends Visitor {
 
   visitSout(sout: Sout): void {
     sout.op.referenciarSymbolTable(this, sout.symbolTable);
+  }
+
+  visitDeclareObject(decOb: DeclarationObject): void {
+    decOb.ops.forEach((op) =>{
+      op.referenciarSymbolTable(this, decOb.symbolTable)
+    })
+  }
+
+  visitAsigObj(asigOb: asignacionObjec): void {
+    asigOb.opers.forEach((asg) =>{
+      asg.referenciarSymbolTable(this, asigOb.symbolTable)
+    })
   }
 
   

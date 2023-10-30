@@ -12,6 +12,7 @@ export class SymbolTable {
   variables: Array<Variable> = [];
   symbolTablePadre!: SymbolTable;
   arreglos:Array<Arreglo> = [];
+  pos:number=0;
 
   constructor(nameReference: string) {
     this.nameReference = nameReference;
@@ -77,6 +78,7 @@ export class SymbolTable {
   }
 
   getPosition():number{
-    return this.arreglos.length+this.variables.length
+    this.pos +=  this.arreglos.length+this.variables.length;
+    return this.pos
   }
 }

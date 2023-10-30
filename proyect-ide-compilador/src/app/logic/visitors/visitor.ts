@@ -9,8 +9,10 @@ import { SwitchInstruction } from "../instructions/bifurcaciones/switch-instruct
 import { WhileInstruction } from "../instructions/bifurcaciones/while-Instruction";
 import { AsignacionArr } from "../instructions/declare-asig/asiganacion-arr";
 import { Asignacion } from "../instructions/declare-asig/asignacion";
+import { asignacionObjec } from "../instructions/declare-asig/asignacion-objc";
 import { Declaration } from "../instructions/declare-asig/declaration";
 import { DeclarationArr } from "../instructions/declare-asig/declaration-arr";
+import { DeclarationObject } from "../instructions/declare-asig/declaration-object";
 import { FunMath } from "../instructions/fun-nativas/fun-math";
 import { Sout } from "../instructions/fun-nativas/sout";
 import { Funcion } from "../instructions/funcion/funcion";
@@ -38,6 +40,7 @@ export abstract class Visitor {
     abstract visitDeclareArr(dec:DeclarationArr):void;
     abstract visitFunMath(funMath:FunMath):void;
     abstract visitSout(sout:Sout):void;
-
+    abstract visitDeclareObject(decOb:DeclarationObject):void;
+    abstract visitAsigObj(asigOb:asignacionObjec):void;
 
 }

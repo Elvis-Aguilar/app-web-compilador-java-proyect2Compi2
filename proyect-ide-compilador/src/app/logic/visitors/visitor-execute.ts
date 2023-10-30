@@ -14,8 +14,10 @@ import { SwitchInstruction } from '../instructions/bifurcaciones/switch-instruct
 import { WhileInstruction } from '../instructions/bifurcaciones/while-Instruction';
 import { AsignacionArr } from '../instructions/declare-asig/asiganacion-arr';
 import { Asignacion } from '../instructions/declare-asig/asignacion';
+import { asignacionObjec } from '../instructions/declare-asig/asignacion-objc';
 import { Declaration } from '../instructions/declare-asig/declaration';
 import { DeclarationArr } from '../instructions/declare-asig/declaration-arr';
+import { DeclarationObject } from '../instructions/declare-asig/declaration-object';
 import { FunMath } from '../instructions/fun-nativas/fun-math';
 import { Sout } from '../instructions/fun-nativas/sout';
 import { Funcion } from '../instructions/funcion/funcion';
@@ -28,7 +30,10 @@ import { Variable } from '../table-simbol/variable';
 import { Visitor } from './visitor';
 
 export class VisitorExecute extends Visitor {
+
+
   private analizador = new AnalisisSemantico();
+  nameClas:String = ''
 
   visitClass(clas: Clase): void {
     //TODO: validar paquete y nombre archivo, realizar la herencia con el import
@@ -37,6 +42,27 @@ export class VisitorExecute extends Visitor {
     });
     this.analizador.validarRepitenciaFunClase(clas);
     this.analizador.validarConstructores(clas);
+    this.nameClas = clas.nombre;
+    clas.funciones.forEach((fun)=>{
+      fun.execute(this)
+    });
+  }
+
+  visitFuncion(fun: Funcion): void {
+    fun.nombre3Direc = `${this.nameClas}_${fun.nombre}`
+    fun.parametros.forEach((param) => {
+      const val = param.typeDato.toString().toLowerCase();
+      fun.nombre3Direc = `${fun.nombre3Direc}_${val}`
+    })
+    fun.instructions.forEach((instr) =>{
+      instr.execute(this);
+    })
+  }
+
+  visitConstruct(fun: Constructor): void {
+    fun.instructions.forEach((instr) => {
+      instr.execute(this);
+    });
   }
 
   visitOp(op: Operation): Dato | void {
@@ -96,6 +122,32 @@ export class VisitorExecute extends Visitor {
     dec.symbolTable.addVariable(newVar);
   }
 
+  visitAsig(asig: Asignacion): void {
+    const dato = asig.op.execute(this);
+    let variable:Variable | void;
+    if (asig.global) {
+      variable = asig.symbolTable.getByIdGlobal(asig.token);
+    }else{
+      variable = asig.symbolTable.getById(asig.token);
+    }
+    if (dato && variable) {
+      if (variable.inizializado && variable.isFinal) {
+        const msj = 'La variable es FINAL no se puede reasignar valores'
+        ErrorSingleton.getInstance().push(
+          new Error(asig.token.line, asig.token.column, asig.token.id ,`${msj}`, TypeError.SEMANTICO
+        ));
+        return
+      }
+      if (variable.typeDato !== dato.typeDato) {
+        const msj = 'El dato a Asignar no es equivalente al valor esperado'
+        ErrorSingleton.getInstance().push(
+          new Error(asig.token.line, asig.token.column, asig.token.id ,`${msj}`, TypeError.SEMANTICO
+        ));
+      }
+      
+    }
+  }
+
   visitIf(ifI: IfInstruction): void {
     ifI.volorCondicion(this);
     ifI.instructions.forEach((instru) => {
@@ -139,12 +191,6 @@ export class VisitorExecute extends Visitor {
     });
   }
 
-  visitConstruct(fun: Constructor): void {
-    fun.instructions.forEach((instr) => {
-      instr.execute(this);
-    });
-  }
-
   visitfor(fo: ForInstrction): void {
     fo.instrcInicial.execute(this);
     fo.valorCondicion(this);
@@ -153,31 +199,6 @@ export class VisitorExecute extends Visitor {
     });
   }
 
-  visitAsig(asig: Asignacion): void {
-    const dato = asig.op.execute(this);
-    let variable:Variable | void;
-    if (asig.global) {
-      variable = asig.symbolTable.getByIdGlobal(asig.token);
-    }else{
-      variable = asig.symbolTable.getById(asig.token);
-    }
-    if (dato && variable) {
-      if (variable.inizializado && variable.isFinal) {
-        const msj = 'La variable es FINAL no se puede reasignar valores'
-        ErrorSingleton.getInstance().push(
-          new Error(asig.token.line, asig.token.column, asig.token.id ,`${msj}`, TypeError.SEMANTICO
-        ));
-        return
-      }
-      if (variable.typeDato !== dato.typeDato) {
-        const msj = 'El dato a Asignar no es equivalente al valor esperado'
-        ErrorSingleton.getInstance().push(
-          new Error(asig.token.line, asig.token.column, asig.token.id ,`${msj}`, TypeError.SEMANTICO
-        ));
-      }
-      
-    }
-  }
 
   visitDeclareArr(dec: DeclarationArr): void {
     const pos = dec.symbolTable.getPosition();
@@ -218,6 +239,14 @@ export class VisitorExecute extends Visitor {
 
 
   }
+
+  visitDeclareObject(decOb: DeclarationObject): void {
+    
+  }
+
+  visitAsigObj(asigOb: asignacionObjec): void {
+    //TODO:Method not implemented
+  }
   
   visitAsigArr(asi: AsignacionArr): void {
     //TODO:Method not implemented
@@ -229,7 +258,6 @@ export class VisitorExecute extends Visitor {
     //TODO:Method not implemented
   }
 
-  visitFuncion(fun: Funcion): void {
-    //TODO:Method not implemented
-  }
+
+
 }

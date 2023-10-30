@@ -43,21 +43,6 @@ export class NodoOperation {
     }
   }
 
-  //TODO: implementacion de la funcion para ejecutar la operacion como tal
-  executetss(symbolTable: SymbolTable): Dato {
-    if (!this.typeOp && this.dato !== null) {
-      return this.dato;
-    }
-    if (this.tok !== null) {
-      //TODO: buscar variable
-      //return symboltable.getVar implementar
-    }
-    const tmp = new Dato(TypeDato.INT);
-    //const datoLeft = this.opLeft?.execute(symbolTable);
-    //const datoRight = this.opRight?.execute(symbolTable);
-    return tmp;
-  }
-
   genericQuatern(vi: Visitor) {
     vi.visitNodoOP(this);
   }

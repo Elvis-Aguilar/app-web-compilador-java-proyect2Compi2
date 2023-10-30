@@ -11,6 +11,7 @@ import { AsignacionArr } from '../instructions/declare-asig/asiganacion-arr';
 import { Asignacion } from '../instructions/declare-asig/asignacion';
 import { Declaration } from '../instructions/declare-asig/declaration';
 import { DeclarationArr } from '../instructions/declare-asig/declaration-arr';
+import { DeclarationObject } from '../instructions/declare-asig/declaration-object';
 import { FunMath } from '../instructions/fun-nativas/fun-math';
 import { Sout } from '../instructions/fun-nativas/sout';
 import { Funcion } from '../instructions/funcion/funcion';
@@ -22,6 +23,9 @@ import { TypeOperationQuartet } from '../quartets/type-operation-quartet';
 import { Visitor } from './visitor';
 
 export class VisitorGenericQuartet extends Visitor {
+  visitDeclareObject(decOb: DeclarationObject): void {
+    throw new Error('Method not implemented.');
+  }
 
   readonly POINTER: string = 'ptr';
   qh: QuartHandler;

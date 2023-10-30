@@ -9,12 +9,14 @@ export class Asignacion extends Instruction {
   token: Token;
   op: Operation;
   global:boolean;
+  objeto:string;
 
-  constructor(token: Token, op: Operation, global?:boolean) {
+  constructor(token: Token, op: Operation, global?:boolean, objeto?:string) {
     super();
     this.token = token;
     this.op = op;
     this.global = global !== undefined ? global : false;
+    this.objeto = objeto || '';
   }
 
   execute(vi: Visitor): void {

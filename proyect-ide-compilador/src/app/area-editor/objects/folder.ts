@@ -2,6 +2,7 @@ import { Archivo } from './archivo';
 
 export class Folder {
   nombre: String = '';
+  packageCompleto:String = ''
   folders: Array<Folder> = [];
   archivos: Array<Archivo> = [];
 

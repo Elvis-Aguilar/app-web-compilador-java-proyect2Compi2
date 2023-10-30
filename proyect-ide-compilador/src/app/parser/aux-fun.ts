@@ -57,20 +57,20 @@ export class AuxFun {
     return decs;
   }
   
-  configMasIgual(op:Operation, token:Token): Asignacion{
+  configMasIgual(op:Operation, token:Token, globla?:boolean): Asignacion{
     const opright = op.rootOp;
     const opLeft = new NodoOperation(new Dato(TypeDato.INT, 1,"", false, token , true));
     const nodoRoot = new NodoOperation(undefined, opLeft, opright, TypeOperation.SUMA, token);
     const operation = new Operation(nodoRoot);
-    return new Asignacion(token, operation);
+    return new Asignacion(token, operation, globla);
   }
 
-  configIncremet(token:Token, typeOp: TypeOperation): Asignacion{
+  configIncremet(token:Token, typeOp: TypeOperation, globla?:boolean): Asignacion{
     const opright = new NodoOperation(new Dato(TypeDato.INT, 1,"", false, token , true));
     const opLeft = new NodoOperation(new Dato(TypeDato.INT, 1,"", false, token));
     const nodoRoot = new NodoOperation(undefined, opLeft, opright, typeOp, token);
     const operation = new Operation(nodoRoot);
-    return new Asignacion(token, operation);
+    return new Asignacion(token, operation, globla);
   }
 
   configVarIteradorFor(dec:Declaration):Declaration{

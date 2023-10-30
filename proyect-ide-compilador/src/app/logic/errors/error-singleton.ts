@@ -3,7 +3,7 @@ import { TypeError } from './type-error';
 
 export class ErrorSingleton {
   private static instance: ErrorSingleton;
-  private erros: Error[] = [];
+  public erros: Error[] = [];
   errLex: Error[] = [];
   errSint: Error[] = [];
   errSema: Error[] = [];

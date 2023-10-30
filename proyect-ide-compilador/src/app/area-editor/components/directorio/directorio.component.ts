@@ -53,6 +53,7 @@ export class DirectorioComponent {
     }).then((result) => {
       if (result.isConfirmed) {
         const file = new Folder(result.value);
+        file.packageCompleto=this.sesion.proyect.packageCompleto + '.' + result.value
         this.sesion.proyect.folders.push(file);
       }
     })
@@ -79,6 +80,7 @@ export class DirectorioComponent {
     }).then((result) => {
       if (result.isConfirmed) {
         const archivo = new Archivo(result.value, "java");
+        archivo.packageCompleto = this.sesion.proyect.packageCompleto
         this.sesion.proyect.archivos.push(archivo);
       }
     })

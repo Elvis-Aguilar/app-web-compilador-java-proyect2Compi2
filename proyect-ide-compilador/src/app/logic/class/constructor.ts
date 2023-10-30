@@ -11,6 +11,7 @@ export class Constructor extends Instruction {
   parametros: Variable[];
   token: Token;
   nombre: string = '';
+  nombre3Direc: string = '';
 
   constructor(nombre: any,parametros: Variable[],instructions: Instruction[], token: Token) {
     super();
@@ -30,7 +31,17 @@ export class Constructor extends Instruction {
   referenciarSymbolTable(vi: Visitor, symbolTablePadre: SymbolTable): void {
     this.symbolTable = new SymbolTable('funcion');
     this.symbolTable.symbolTablePadre = symbolTablePadre;
+    this.agregarParamSymbolTable()
     vi.visitConstruct(this)
+  }
+
+  private agregarParamSymbolTable(){
+    let pos = 0;
+    this.parametros.forEach((param) =>{
+      param.pos = pos;
+      pos++;
+      this.symbolTable.variables.push(param);
+    })
   }
 
 }
