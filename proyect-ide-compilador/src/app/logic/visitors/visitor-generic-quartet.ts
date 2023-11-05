@@ -1,5 +1,6 @@
 import { Clase } from '../class/clase';
 import { Constructor } from '../class/constructor';
+import { FunMain } from '../class/fun-main';
 import { CaseSwitchInstruction } from '../instructions/bifurcaciones/case-switch-instruction';
 import { DoWhileInstruction } from '../instructions/bifurcaciones/do-while-instruction';
 import { ElseInstruction } from '../instructions/bifurcaciones/Else-Instruction';
@@ -9,12 +10,15 @@ import { SwitchInstruction } from '../instructions/bifurcaciones/switch-instruct
 import { WhileInstruction } from '../instructions/bifurcaciones/while-Instruction';
 import { AsignacionArr } from '../instructions/declare-asig/asiganacion-arr';
 import { Asignacion } from '../instructions/declare-asig/asignacion';
+import { asignacionObjec } from '../instructions/declare-asig/asignacion-objc';
 import { Declaration } from '../instructions/declare-asig/declaration';
 import { DeclarationArr } from '../instructions/declare-asig/declaration-arr';
 import { DeclarationObject } from '../instructions/declare-asig/declaration-object';
 import { FunMath } from '../instructions/fun-nativas/fun-math';
 import { Sout } from '../instructions/fun-nativas/sout';
 import { Funcion } from '../instructions/funcion/funcion';
+import { LlamadaFun } from '../instructions/funcion/llamada-fun';
+import { LlamadaFunGen } from '../instructions/funcion/llamada-fun-gen';
 import { NodoOperation } from '../instructions/operations/nodo-operation';
 import { Operation } from '../instructions/operations/operation';
 import { Quartet } from '../quartets/quartet';
@@ -23,6 +27,18 @@ import { TypeOperationQuartet } from '../quartets/type-operation-quartet';
 import { Visitor } from './visitor';
 
 export class VisitorGenericQuartet extends Visitor {
+  visitMain(main: FunMain): void {
+    throw new Error('Method not implemented.');
+  }
+  visitAsigObj(asigOb: asignacionObjec): void {
+    throw new Error('Method not implemented.');
+  }
+  visitLlamdadfun(llama: LlamadaFun): void {
+    throw new Error('Method not implemented.');
+  }
+  visitLlamdadGen(llamaG: LlamadaFunGen): void {
+    throw new Error('Method not implemented.');
+  }
   visitDeclareObject(decOb: DeclarationObject): void {
     throw new Error('Method not implemented.');
   }

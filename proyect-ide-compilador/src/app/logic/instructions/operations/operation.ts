@@ -16,10 +16,7 @@ export class Operation {
     return vi.visitOp(this);
   }
 
-  executesss(symbolTable: SymbolTable): Dato {
-    const tmp = this.rootOp.executetss(symbolTable);
-    return tmp;
-  }
+  
 
   generecQuartet(vi: Visitor) {
     vi.visitOp(this);
@@ -27,6 +24,6 @@ export class Operation {
 
   referenciarSymbolTable(vi: Visitor, symbolTablePadre: SymbolTable): void {
     this.symbolTable = symbolTablePadre;
-    this.rootOp.referenciarSymbolTable(vi, this.symbolTable);
+    this.rootOp?.referenciarSymbolTable(vi, this.symbolTable);
   }
 }

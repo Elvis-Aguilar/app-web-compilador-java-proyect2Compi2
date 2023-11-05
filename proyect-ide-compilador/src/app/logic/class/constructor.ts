@@ -32,11 +32,12 @@ export class Constructor extends Instruction {
     this.symbolTable = new SymbolTable('funcion');
     this.symbolTable.symbolTablePadre = symbolTablePadre;
     this.agregarParamSymbolTable()
+    this.symbolTable.pos = 1;
     vi.visitConstruct(this)
   }
 
   private agregarParamSymbolTable(){
-    let pos = 0;
+    let pos = 1;
     this.parametros.forEach((param) =>{
       param.pos = pos;
       pos++;

@@ -15,7 +15,7 @@ export class Sout extends Instruction {
   }
 
   execute(vi: Visitor): void {
-    //TODO: Method not implemented.
+    vi.visitSout(this);
   }
   genericQuartet(vi: Visitor): void {
     //TODO: Method not implemented.

@@ -23,14 +23,22 @@ export class DeclarationObject extends Instruction{
         this.token = token;
         this.ops = ops;
         this.typeDatoAsig = typeDatoAsig;
-        this.visibilidad = config[0];
-        this.isStatik = config[1];
-        this.isFinal = config[2];
-        this.typeDato = config[3];
+        if (config instanceof Array) {
+            this.visibilidad = config[0];
+            this.isStatik = config[1];
+            this.isFinal = config[2];
+            this.typeDato = config[3];
+        }else{
+            this.typeDato = config;
+            this.visibilidad = Visibilidad.PUBLIC
+            this.isFinal = false;
+            this.isStatik = false;
+        }
+
       }
 
     execute(vi: Visitor): void {
-        throw new Error("Method not implemented.");
+       vi.visitDeclareObject(this);
     }
     genericQuartet(vi: Visitor): void {
         throw new Error("Method not implemented.");
@@ -39,5 +47,7 @@ export class DeclarationObject extends Instruction{
         this.symbolTable = symbolTablePadre;
         vi.visitDeclareObject(this);
     }
+
+
 
 }

@@ -11,7 +11,6 @@ export class OperationCasteo {
   typeOp!: TypeOperation;
 
   getDato(dato1: Dato, dato2: Dato, typeOp: TypeOperation): Dato {
-    // TODO: implemetar logica
     this.datoLeft = dato1;
     this.datoRight = dato2;
     this.typeOp = typeOp;
@@ -62,7 +61,6 @@ export class OperationCasteo {
 
   private operacionSUma(): Dato {
     let datoResult = new Dato(TypeDato.INT);
-
     switch (this.datoLeft.typeDato) {
       case TypeDato.STRING:
         datoResult.typeDato = TypeDato.STRING;

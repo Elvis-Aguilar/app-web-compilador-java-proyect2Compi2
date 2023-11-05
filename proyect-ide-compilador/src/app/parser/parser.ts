@@ -36,7 +36,6 @@ import { Visibilidad } from "../logic/table-simbol/visibilidad";
 import { VisRefSymbolTable } from "../logic/visitors/vis-ref-symbol-table";
 import { VisitorExecute } from "../logic/visitors/visitor-execute";
 import { VisitorGenericQuartet } from "../logic/visitors/visitor-generic-quartet";
-import { SesionService } from "../services/sesion.service";
 import { AuxFun } from "./aux-fun";
 import { Token } from "./token";
 
@@ -102,7 +101,6 @@ export class Parser {
             try {
                 const clase:Clase = parser.parse(arch.contenido);
                 clase.packag =` ${arch.packageCompleto}`;
-                clase.referenciarSymbolTable(visitTable);
                 clases.push(clase);
                 console.log(clase);
             } catch (error) {
@@ -111,16 +109,25 @@ export class Parser {
             
         }
         //realizar el execute si no hay errores sintacticos o lexicos
+        vistExecute.clases = clases;
         if (ErrorSingleton.getInstance().erros.length === 0) {
             for (let index = 0; index < clases.length; index++) {
                 try {
                     const clas = clases[index];
+                    ErrorSingleton.getInstance().ubicacion = clas.nombre;
+                    clas.referenciarSymbolTable(visitTable);
                     clas.clases = clases;
+                    vistExecute.claseActual = clas;
                     clas.execute(vistExecute);
                 } catch (error) {
                     console.error(error);
                 }
               
+            }
+            //ejecutando el main de la clase en la posicion [0] ya que es la clase donde se le da compilar XD
+            if (clases[0].funMain) {
+                clases[0].funMain.referenciarSymbolTable(visitTable);
+                clases[0].funMain.execute(vistExecute);
             }
         }else{
             Swal.fire(

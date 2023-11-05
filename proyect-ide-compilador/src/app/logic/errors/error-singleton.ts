@@ -7,6 +7,7 @@ export class ErrorSingleton {
   errLex: Error[] = [];
   errSint: Error[] = [];
   errSema: Error[] = [];
+  ubicacion: string = '';
 
   private constructor() {}
 
@@ -18,27 +19,35 @@ export class ErrorSingleton {
   }
 
   public push(err: Error) {
+    err.setUbicacion(this.ubicacion);
     this.erros.push(err);
   }
 
   public ordenarErrores() {
+    this.limpiarTmp();
     this.erros.forEach((err) => {
       switch (err.getTypeError()) {
         case TypeError.LEXICO:
-            this.errLex.push(err);
+          this.errLex.push(err);
           break;
         case TypeError.SINTACTICO:
-            this.errSint.push(err);
+          this.errSint.push(err);
           break;
         case TypeError.SEMANTICO:
-            this.errSema.push(err);
+          this.errSema.push(err);
           break;
       }
     });
   }
 
-  public limpiar(){
+  public limpiar() {
     this.erros.splice(0, this.erros.splice.length);
+    this.errLex.splice(0, this.errLex.splice.length);
+    this.errSint.splice(0, this.errSint.splice.length);
+    this.errSema.splice(0, this.errSema.splice.length);
+  }
+
+  private limpiarTmp() {
     this.errLex.splice(0, this.errLex.splice.length);
     this.errSint.splice(0, this.errSint.splice.length);
     this.errSema.splice(0, this.errSema.splice.length);

@@ -57,16 +57,16 @@ export class AuxFun {
     return decs;
   }
   
-  configMasIgual(op:Operation, token:Token, globla?:boolean): Asignacion{
+  configMasIgual(op:Operation, token:Token, globla?:boolean, objeto?:string): Asignacion{
     const opright = op.rootOp;
-    const opLeft = new NodoOperation(new Dato(TypeDato.INT, 1,"", false, token , true));
+    const opLeft = new NodoOperation(new Dato(TypeDato.INT, 1,"", false, token , true, globla));
     const nodoRoot = new NodoOperation(undefined, opLeft, opright, TypeOperation.SUMA, token);
     const operation = new Operation(nodoRoot);
-    return new Asignacion(token, operation, globla);
+    return new Asignacion(token, operation, globla, objeto);
   }
 
   configIncremet(token:Token, typeOp: TypeOperation, globla?:boolean): Asignacion{
-    const opright = new NodoOperation(new Dato(TypeDato.INT, 1,"", false, token , true));
+    const opright = new NodoOperation(new Dato(TypeDato.INT, 1,"", false, token , true, globla));
     const opLeft = new NodoOperation(new Dato(TypeDato.INT, 1,"", false, token));
     const nodoRoot = new NodoOperation(undefined, opLeft, opright, typeOp, token);
     const operation = new Operation(nodoRoot);

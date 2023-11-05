@@ -9,7 +9,6 @@ export class Dato {
   token: Token;
   isVariable: boolean;
   global: boolean;
-  objeto:string = ''
 
   constructor(
     typeDato: TypeDato,
@@ -19,15 +18,13 @@ export class Dato {
     token?: Token,
     isVariable?: boolean,
     global?:boolean,
-    objeto?:string
   ) {
-    this.numero = numero || 0;
+    this.numero = numero || 1;
     this.cadena = cadena || '';
     this.booleano = booleano !== undefined ? booleano : false;
     this.typeDato = typeDato;
     this.token = token || new Token('', 0, 0);
     this.isVariable = isVariable !== undefined ? isVariable : false;
     this.global = global !== undefined ? global : false;
-    this.objeto = objeto || '';
   }
 }

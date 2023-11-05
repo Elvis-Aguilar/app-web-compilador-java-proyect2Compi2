@@ -15,13 +15,14 @@ export class FunMain extends Instruction {
   }
 
   execute(vi: Visitor): void {
-    //TODO: Method not implemented
+    vi.visitMain(this);
   }
   genericQuartet(vi: Visitor): void {
     throw new Error('Method not implemented.');
   }
 
-  referenciarSymbolTable(vi: Visitor, symbolTablePadre: SymbolTable): void {
-    throw new Error('Method not implemented.');
+  referenciarSymbolTable(vi: Visitor, symbolTablePadre?: SymbolTable): void {
+    this.symbolTable = new SymbolTable('Main');
+    vi.visitMain(this)
   }
 }

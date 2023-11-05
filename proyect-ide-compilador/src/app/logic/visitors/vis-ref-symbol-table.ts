@@ -1,5 +1,6 @@
 import { Clase } from '../class/clase';
 import { Constructor } from '../class/constructor';
+import { FunMain } from '../class/fun-main';
 import { CaseSwitchInstruction } from '../instructions/bifurcaciones/case-switch-instruction';
 import { DoWhileInstruction } from '../instructions/bifurcaciones/do-while-instruction';
 import { ElseInstruction } from '../instructions/bifurcaciones/Else-Instruction';
@@ -16,6 +17,8 @@ import { DeclarationObject } from '../instructions/declare-asig/declaration-obje
 import { FunMath } from '../instructions/fun-nativas/fun-math';
 import { Sout } from '../instructions/fun-nativas/sout';
 import { Funcion } from '../instructions/funcion/funcion';
+import { LlamadaFun } from '../instructions/funcion/llamada-fun';
+import { LlamadaFunGen } from '../instructions/funcion/llamada-fun-gen';
 import { NodoOperation } from '../instructions/operations/nodo-operation';
 import { Operation } from '../instructions/operations/operation';
 import { Dato } from '../table-simbol/dato';
@@ -23,6 +26,19 @@ import { SymbolTable } from '../table-simbol/symbol-table';
 import { Visitor } from './visitor';
 
 export class VisRefSymbolTable extends Visitor {
+
+
+  visitMain(main: FunMain): void {
+    main.instructions.forEach((instr)=>{
+      instr.referenciarSymbolTable(this, main.symbolTable);
+    })
+  }
+  visitLlamdadfun(llama: LlamadaFun): void {
+    //no hay nada que implementar
+  }
+  visitLlamdadGen(llamaG: LlamadaFunGen): void {
+    //no hay nada que implementar
+  }
  
   visitClass(clas: Clase): void {
     clas.funciones.forEach((fun) => {

@@ -6,6 +6,7 @@ export class Error {
   private lexeme: string;
   private message: string;
   private typeError: TypeError;
+  private ubicacion: string = '';
 
   constructor(
     line: number,
@@ -39,5 +40,13 @@ export class Error {
 
   public getTypeError(): TypeError {
     return this.typeError;
+  }
+
+  public getUbicacion(){
+    return this.ubicacion;
+  }
+
+  public setUbicacion(value: string){
+    this.ubicacion = value;
   }
 }

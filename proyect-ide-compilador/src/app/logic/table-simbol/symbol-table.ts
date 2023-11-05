@@ -11,8 +11,8 @@ export class SymbolTable {
   nameReference: string;
   variables: Array<Variable> = [];
   symbolTablePadre!: SymbolTable;
-  arreglos:Array<Arreglo> = [];
-  pos:number=0;
+  arreglos: Array<Arreglo> = [];
+  pos: number = 0;
 
   constructor(nameReference: string) {
     this.nameReference = nameReference;
@@ -37,7 +37,7 @@ export class SymbolTable {
   }
 
   getById(tok: Token): Variable | void {
-    const variable =  this.buscarEnCadaSubTabla(tok);
+    const variable = this.buscarEnCadaSubTabla(tok);
     if (variable) {
       return variable;
     } else {
@@ -48,37 +48,43 @@ export class SymbolTable {
         ErrorSingleton.getInstance().push(
           new Error(tok.line, tok.column, tok.id, `${msj}`, TypeError.SEMANTICO)
         );
-        return undefined
+        return undefined;
       }
     }
   }
 
-  getByIdGlobal(tok: Token): Variable | void{
+  getByIdGlobal(tok: Token): Variable | void {
     if (this.symbolTablePadre) {
       return this.symbolTablePadre.getByIdGlobal(tok);
     }
-    const variable =  this.buscarEnCadaSubTabla(tok);
-    if (variable) {
-      return variable;
-    } else {
-      const msj = 'Variable no existe';
+    const variable = this.buscarEnCadaSubTabla(tok);
+    if (this.nameReference === 'Clase') {
+      if (variable) {
+        return variable;
+      } else {
+        const msj = 'Variable no existe';
+        ErrorSingleton.getInstance().push(
+          new Error(tok.line, tok.column, tok.id, `${msj}`, TypeError.SEMANTICO)
+        );
+        return undefined;
+      }
+    }else{
+      const msj = 'Variable no existe o no es Global';
       ErrorSingleton.getInstance().push(
         new Error(tok.line, tok.column, tok.id, `${msj}`, TypeError.SEMANTICO)
       );
-      return undefined
+      return undefined;
     }
   }
 
-  private buscarEnCadaSubTabla(tok:Token):Variable | void{
+  private buscarEnCadaSubTabla(tok: Token): Variable | void {
     let variable = this.variables.find((v) => v.id === tok.id);
     if (variable) {
-        return variable;
+      return variable;
     }
-    //TODO: buscar en la tabla de objetos
   }
 
-  getPosition():number{
-    this.pos +=  this.arreglos.length+this.variables.length;
-    return this.pos
+  getPosition(): number {
+    return  this.pos + this.arreglos.length + this.variables.length;
   }
 }
