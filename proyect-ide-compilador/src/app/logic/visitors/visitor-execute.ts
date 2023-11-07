@@ -58,6 +58,7 @@ export class VisitorExecute extends Visitor {
     });
     clas.constructors.forEach((fun) => {
       fun.execute(this);
+      fun.tamaniClas = clas.symbolTable.getPosition();
     });
   }
 
@@ -67,6 +68,7 @@ export class VisitorExecute extends Visitor {
       const val = param.typeDato.toString().toLowerCase();
       fun.nombre3Direc = `${fun.nombre3Direc}_${val}`;
     });
+    fun.nombre3Direc = `${fun.nombre3Direc}()`;
     fun.instructions.forEach((instr) => {
       instr.execute(this);
     });
@@ -78,6 +80,7 @@ export class VisitorExecute extends Visitor {
       const val = param.typeDato.toString().toLowerCase();
       fun.nombre3Direc = `${fun.nombre3Direc}_${val}`;
     });
+    fun.nombre3Direc = `${fun.nombre3Direc}()`;
     fun.instructions.forEach((instr) => {
       instr.execute(this);
     });
@@ -151,6 +154,7 @@ export class VisitorExecute extends Visitor {
         const constr = clas.getConstructor(datos, tokenTm);
         if (constr) {
           //se encontro el constructor validamente XD
+          decOb.construcotrRelativo = constr;
         } else {
           const msj = 'Constructor no entonctrado en la clase';
           ErrorSingleton.getInstance().push(
@@ -187,6 +191,7 @@ export class VisitorExecute extends Visitor {
       dato
     );
     newVar.pos = pos;
+    decOb.pos = pos;
     decOb.symbolTable.addVariable(newVar);
   }
 
@@ -313,6 +318,7 @@ export class VisitorExecute extends Visitor {
       );
     }
     newVar.pos = pos;
+    dec.pos = newVar.pos;
     dec.symbolTable.addVariable(newVar);
   }
 
@@ -332,6 +338,10 @@ export class VisitorExecute extends Visitor {
       variable = asig.symbolTable.getByIdGlobal(asig.token);
     } else {
       variable = asig.symbolTable.getById(asig.token);
+    }
+    if(variable){
+      //dejar la pos de la variable para generar su codigo 3D
+      asig.pos = variable.pos;
     }
     if (dato && variable) {
       if (variable.inizializado && variable.isFinal) {
@@ -360,6 +370,7 @@ export class VisitorExecute extends Visitor {
         );
       }
     }
+
   }
 
   visitIf(ifI: IfInstruction): void {

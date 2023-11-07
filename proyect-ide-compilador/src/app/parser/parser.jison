@@ -22,7 +22,7 @@ whitespace          {lineTerminator}|[ \t\f]
 int                 "int"
 float               "float"
 string              "String"
-char                "CHAR"  
+char                "char"  
 boolean             "boolean"
 import              "import"
 public              "public"

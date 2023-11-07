@@ -8,10 +8,12 @@ export class Asignacion extends Instruction {
   symbolTable!: SymbolTable;
   token: Token;
   op: Operation;
-  global:boolean;
-  objeto:string;
+  global: boolean;
+  objeto: string;
+  pos:number = 0;
+  result:string='';
 
-  constructor(token: Token, op: Operation, global?:boolean, objeto?:string) {
+  constructor(token: Token, op: Operation, global?: boolean, objeto?: string) {
     super();
     this.token = token;
     this.op = op;
@@ -23,7 +25,7 @@ export class Asignacion extends Instruction {
     vi.visitAsig(this);
   }
   genericQuartet(vi: Visitor): void {
-    //TODO: Method not implemented.
+    vi.visitAsig(this);
   }
 
   referenciarSymbolTable(vi: Visitor, symbolTablePadre: SymbolTable): void {

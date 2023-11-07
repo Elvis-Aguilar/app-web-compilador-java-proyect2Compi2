@@ -1,9 +1,11 @@
 import { Token } from 'src/app/parser/token';
+import { Quartet } from '../../quartets/quartet';
 import { TypeOperationQuartet } from '../../quartets/type-operation-quartet';
 import { Dato } from '../../table-simbol/dato';
 import { SymbolTable } from '../../table-simbol/symbol-table';
 import { TypeDato } from '../../table-simbol/type-dato';
 import { Visitor } from '../../visitors/visitor';
+import { VisitorGenericQuartet } from '../../visitors/visitor-generic-quartet';
 import { TypeOperation } from './type-operation';
 
 export class NodoOperation {
@@ -29,7 +31,7 @@ export class NodoOperation {
     this.tok = tok || null;
   }
 
-  execute(vi:Visitor): Dato | void{
+  execute(vi: Visitor): Dato | void {
     return vi.visitNodoOP(this);
   }
 
@@ -47,19 +49,63 @@ export class NodoOperation {
     vi.visitNodoOP(this);
   }
 
-  valueDato(){
+  valueDato(vi:VisitorGenericQuartet) {
     switch (this.dato?.typeDato) {
       case TypeDato.INT:
-        this.result = `${this.dato.numero}`;
+        const quaInt = new Quartet(
+          `${this.dato.numero}`,
+          '',
+          `int ${vi.qh.tmpVar()}`,
+          TypeOperationQuartet.ASIGNATION
+        );
+        vi.qh.push(quaInt);
+        this.result = `${vi.qh.tmpVar()}`;
+        vi.qh.aumentarTmp();
         break;
       case TypeDato.FLOAT:
-        this.result = `${this.dato.numero}`;
+        const quaFloat = new Quartet(
+          `${this.dato.numero}`,
+          '',
+          `float ${vi.qh.tmpVar()}`,
+          TypeOperationQuartet.ASIGNATION
+        );
+        vi.qh.push(quaFloat);
+        this.result = `${vi.qh.tmpVar()}`;
+        vi.qh.aumentarTmp();
         break;
       case TypeDato.BOOLEAN:
-        this.result = `${this.dato.booleano}`;
+        const val:number = this.dato.booleano?1:0;
+        const quaBool = new Quartet(
+          `${val}`,
+          '',
+          `int ${vi.qh.tmpVar()}`,
+          TypeOperationQuartet.ASIGNATION
+        );
+        vi.qh.push(quaBool);
+        this.result = `${vi.qh.tmpVar()}`;
+        vi.qh.aumentarTmp();
         break;
       case TypeDato.CHAR:
-        this.result = `${this.dato.cadena}`;
+        const quaChar = new Quartet(
+          `\"${this.dato.cadena}\"`,
+          '',
+          `char ${vi.qh.tmpVar()}`+"[]",
+          TypeOperationQuartet.ASIGNATION
+        );
+        vi.qh.push(quaChar);
+        this.result = `${vi.qh.tmpVar()}`;
+        vi.qh.aumentarTmp();
+        break;
+      case TypeDato.STRING:
+        const quaCade = new Quartet(
+          `\"${this.dato.cadena}\"`,
+          '',
+          `char ${vi.qh.tmpVar()}`+"[]",
+          TypeOperationQuartet.ASIGNATION
+        );
+        vi.qh.push(quaCade);
+        this.result = `${vi.qh.tmpVar()}`;
+        vi.qh.aumentarTmp();
         break;
       default:
         this.result = `${this.dato?.numero}`;
@@ -71,18 +117,18 @@ export class NodoOperation {
   public typeQuartetOperation(): TypeOperationQuartet {
     let type = TypeOperationQuartet.SUMA;
     switch (this.typeOp) {
-        case TypeOperation.SUMA:
-            type = TypeOperationQuartet.SUMA
-            break;
-        case TypeOperation.RESTA:
-            type = TypeOperationQuartet.RESTA
-            break;
-        case TypeOperation.MULTIPLICACION:
-            type = TypeOperationQuartet.MULTIPLICACION
-            break;
-        case TypeOperation.DIVISION:
-            type = TypeOperationQuartet.DIVISION
-            break;
+      case TypeOperation.SUMA:
+        type = TypeOperationQuartet.SUMA;
+        break;
+      case TypeOperation.RESTA:
+        type = TypeOperationQuartet.RESTA;
+        break;
+      case TypeOperation.MULTIPLICACION:
+        type = TypeOperationQuartet.MULTIPLICACION;
+        break;
+      case TypeOperation.DIVISION:
+        type = TypeOperationQuartet.DIVISION;
+        break;
     }
     return type;
   }

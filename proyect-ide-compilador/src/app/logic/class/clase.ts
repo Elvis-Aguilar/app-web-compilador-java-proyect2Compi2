@@ -47,6 +47,10 @@ export class Clase {
     vi.visitClass(this);
   }
 
+  genericQuartet(vi: Visitor): void {
+    vi.visitClass(this);
+}
+
   referenciarSymbolTable(vi: Visitor){
     this.symbolTable = new SymbolTable("Clase");
     vi.visitClass(this);

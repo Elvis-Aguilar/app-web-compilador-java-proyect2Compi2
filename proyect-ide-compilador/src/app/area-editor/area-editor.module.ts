@@ -27,7 +27,7 @@ import { ConsoleAssembleComponent } from './components/console-assemble/console-
     FolderComponent,
     TableErrorsComponent,
     ConsoleClikeComponent,
-    ConsoleAssembleComponent
+    ConsoleAssembleComponent,
 
   ],
   imports: [

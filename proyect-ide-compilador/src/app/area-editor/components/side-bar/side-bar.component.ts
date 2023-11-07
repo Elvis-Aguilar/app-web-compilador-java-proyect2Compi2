@@ -28,6 +28,7 @@ export class SideBarComponent {
   }
 
   goAssemble(){
+    this.sesion.actulizarContent();
     this.sesion.areaTrabajo = AreaTrabajo.ASSEMBLER;
   }
 

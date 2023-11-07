@@ -27,49 +27,202 @@ import { TypeOperationQuartet } from '../quartets/type-operation-quartet';
 import { Visitor } from './visitor';
 
 export class VisitorGenericQuartet extends Visitor {
-  visitMain(main: FunMain): void {
-    throw new Error('Method not implemented.');
-  }
-  visitAsigObj(asigOb: asignacionObjec): void {
-    throw new Error('Method not implemented.');
-  }
-  visitLlamdadfun(llama: LlamadaFun): void {
-    throw new Error('Method not implemented.');
-  }
-  visitLlamdadGen(llamaG: LlamadaFunGen): void {
-    throw new Error('Method not implemented.');
-  }
-  visitDeclareObject(decOb: DeclarationObject): void {
-    throw new Error('Method not implemented.');
-  }
-
   readonly POINTER: string = 'ptr';
+  readonly POINTERH: string = 'ptrh';
   qh: QuartHandler;
 
-  constructor(){
-      super();
-      this.qh = new QuartHandler();
+  constructor() {
+    super();
+    this.qh = new QuartHandler();
   }
-  
+
   visitClass(clas: Clase): void {
-    throw new Error('Method not implemented.');
+    clas.constructors.forEach((constr) => {
+      constr.genericQuartet(this);
+    })
+    clas.funciones.forEach((func) => {
+      func.genericQuartet(this);
+    })
+  }
+
+  visitMain(main: FunMain): void {
+    const quartInitMain = new Quartet('', '', `${main.nameCodigo3D}`,
+    TypeOperationQuartet.DECLARREFUN);
+    this.qh.push(quartInitMain);
+    //contenido dentro de fun Main
+    main.instructions.forEach((instr) => {
+      instr.genericQuartet(this);
+    });
+    const quartFinishMain = new Quartet('','','}',TypeOperationQuartet.CIERREFUN);
+    this.qh.push(quartFinishMain);
+    this.qh.setTmp(0);  //se reinicia el temporal para cada fucion
+  }
+
+  visitConstruct(fun: Constructor): void {
+    const quartInitMain = new Quartet('', '', `${fun.nombre3Direc}`,
+    TypeOperationQuartet.DECLARREFUN);
+    this.qh.push(quartInitMain)
+    //cuarteta para hacer `t0 = ptrh` puntero de h disponible
+    const cuarteH = new Quartet(
+      this.POINTERH,
+      '',
+      `int ${this.qh.tmpVar()}`,
+      TypeOperationQuartet.ASIGNATION
+    );
+    this.qh.push(cuarteH);
+    fun.result = this.qh.tmpVar();
+    this.qh.aumentarTmp();
+    //cuarteta para hacer `ptrh = ptrh + tamanio` aumentar el puntero disponible 
+    const cuarteHAumen = new Quartet(
+      this.POINTERH,
+      `${fun.tamaniClas}`,
+      this.POINTERH,
+      TypeOperationQuartet.SUMA
+    );
+    this.qh.push(cuarteHAumen);
+    this.qh.aumentarTmp();
+    //realizar instrucciones
+    fun.instructions.forEach((instr) =>{
+      instr.genericQuartet(this);
+    })
+    //preparando el valor ptrh que fue asignado al espacio disponible	
+    //tn = ptr + 0
+    const cuartDirec = new Quartet(
+      this.POINTER,
+      `0`,
+      `int ${this.qh.tmpVar()}`,
+      TypeOperationQuartet.SUMA
+    );
+    this.qh.push(cuartDirec);
+	
+    //stack[tn] = t0
+    const cuartRetorno = new Quartet(
+      `&t0`,
+      '',
+      `stack[${this.qh.tmpVar()}]`,
+      TypeOperationQuartet.ASIGNATION
+    );
+    this.qh.push(cuartRetorno);
+    const quartFinishMain = new Quartet('','','}',TypeOperationQuartet.CIERREFUN);
+    this.qh.push(quartFinishMain);
+    this.qh.setTmp(0);
   }
 
   visitDeclaration(dec: Declaration): void {
     if (dec.op === null) {
-        //TODO: asignar la posicion de la variable en el stack var.pos = qh.posstack()
-        this.qh.aumentarPosSatk();
-        return;
+      //no realiazar nada si no tiene asignacion
+      return;
     }
-    //preparando `tn`
-    const quart = new Quartet(this.POINTER,`${this.qh.pos()}`,`${this.qh.tmpVar()}`,TypeOperationQuartet.SUMA);
+    //preparando `tn = ptr + pos`
+     const quart = new Quartet(
+      this.POINTER,
+      `${dec.pos}`,
+      `int ${this.qh.tmpVar()}`,
+      TypeOperationQuartet.SUMA
+    );
     this.qh.push(quart);
     dec.result = this.qh.tmpVar();
-    this.qh.aumentarPosSatk();
     this.qh.aumentarTmp();
     dec.op.generecQuartet(this);
-    const quartAsig = new Quartet(`${dec.op.restult}`,'',`stack[${dec.result}]`, TypeOperationQuartet.ASIGNATION)
+    const quartAsig = new Quartet(
+      `&${dec.op.restult}`,
+      '',
+      `stack[${dec.result}]`,
+      TypeOperationQuartet.ASIGNATION
+    );
     this.qh.push(quartAsig);
+  }
+
+  visitAsig(asi: Asignacion): void {
+    asi.op.generecQuartet(this);
+    if(asi.global){//variable en el heap
+
+    }else{
+      //preparando `tn = ptr + pos`
+     const quart = new Quartet(
+      this.POINTER,
+      `${asi.pos}`,
+      `int ${this.qh.tmpVar()}`,
+      TypeOperationQuartet.SUMA
+    );
+    this.qh.push(quart);
+    asi.result = this.qh.tmpVar();
+    this.qh.aumentarTmp();
+    const quartAsig = new Quartet(
+      `&${asi.op.restult}`,
+      '',
+      `stack[${asi.result}]`,
+      TypeOperationQuartet.ASIGNATION
+    );
+    this.qh.push(quartAsig);
+    }
+  }
+
+  visitDeclareObject(decOb: DeclarationObject): void {
+    if(`${decOb.typeDatoAsig}` === 'null'){
+      return;
+    }
+    const size:number = decOb.symbolTable.getPosition();
+    decOb.ops.forEach((op) =>{
+      //TODO: asignar a la posicion debidamente en constructor
+      op.generecQuartet(this);
+    });
+    //aumentar el puntero, llamada al constructor, restar el puntero
+    const quartAument = new Quartet(
+      this.POINTER,
+      `${size}`,
+      this.POINTER,
+      TypeOperationQuartet.SUMA
+    );
+    this.qh.push(quartAument);
+    const quartLlamada = new Quartet(
+      '',
+      '',
+      `${decOb.construcotrRelativo.nombre3Direc};`,
+      TypeOperationQuartet.LLAMADAFUN
+    );
+    this.qh.push(quartLlamada);
+    const quartReduce = new Quartet(
+      this.POINTER,
+      `${size}`,
+      this.POINTER,
+      TypeOperationQuartet.RESTA
+    );
+    this.qh.push(quartReduce);
+    //obtener el valor del ptrh guardado en el constructor en la posicion 0
+    const quartpos = new Quartet(
+      this.POINTER,
+      `${size}`,
+      `int ${this.qh.tmpVar()}`,
+      TypeOperationQuartet.SUMA
+    );
+    this.qh.push(quartpos);
+    const tmp = this.qh.tmpVar();
+    this.qh.aumentarTmp();
+    const quartref = new Quartet(
+      `(int*)stack[${tmp}]`,
+      '',
+      `int* ${this.qh.tmpVar()}`,
+      TypeOperationQuartet.ASIGNATION
+    );
+    this.qh.push(quartref);
+    const ref = this.qh.tmpVar();
+    this.qh.aumentarTmp();
+    const quart = new Quartet(
+      this.POINTER,
+      `${decOb.pos}`,
+      `int ${this.qh.tmpVar()}`,
+      TypeOperationQuartet.SUMA
+    );
+    this.qh.push(quart);
+    const quar = new Quartet(
+      `&${ref}`,
+      '',
+      `stack[${this.qh.tmpVar()}]`,
+      TypeOperationQuartet.ASIGNATION
+    );
+    this.qh.push(quar);
+    this.qh.aumentarTmp();
 
   }
 
@@ -80,19 +233,33 @@ export class VisitorGenericQuartet extends Visitor {
   }
 
   visitNodoOP(nodo: NodoOperation): void {
-      if (nodo.dato !== null) {
-        nodo.valueDato();
-        return;
-      }
-      nodo.opLeft?.genericQuatern(this);
-      nodo.opRight?.genericQuatern(this);
-      const quaOp = new Quartet(`${nodo.opLeft?.result}`, `${nodo.opRight?.result}`, this.qh.tmpVar(),nodo.typeQuartetOperation());
-      this.qh.push(quaOp);
-      nodo.result = this.qh.tmpVar();
-      this.qh.aumentarTmp();
-
+    if (nodo.dato !== null) {
+      nodo.valueDato(this);
+      return;
+    }
+    nodo.opLeft?.genericQuatern(this);
+    nodo.opRight?.genericQuatern(this);
+    const quaOp = new Quartet(
+      `${nodo.opLeft?.result}`,
+      `${nodo.opRight?.result}`,
+      this.qh.tmpVar(),
+      nodo.typeQuartetOperation()
+    );
+    this.qh.push(quaOp);
+    nodo.result = this.qh.tmpVar();
+    this.qh.aumentarTmp();
   }
-  
+
+  visitAsigObj(asigOb: asignacionObjec): void {
+    throw new Error('Method not implemented.');
+  }
+  visitLlamdadfun(llama: LlamadaFun): void {
+    throw new Error('Method not implemented.');
+  }
+  visitLlamdadGen(llamaG: LlamadaFunGen): void {
+    throw new Error('Method not implemented.');
+  }
+
   visitIf(ifI: IfInstruction): void {
     throw new Error('Method not implemented.');
   }
@@ -118,18 +285,14 @@ export class VisitorGenericQuartet extends Visitor {
   visitFuncion(fun: Funcion): void {
     throw new Error('Method not implemented.');
   }
-  visitConstruct(fun: Constructor): void {
-    throw new Error('Method not implemented.');
-  }
+
   visitfor(fo: ForInstrction): void {
     throw new Error('Method not implemented.');
   }
   visitAsigArr(asi: AsignacionArr): void {
     throw new Error('Method not implemented.');
   }
-  visitAsig(asi: Asignacion): void {
-    throw new Error('Method not implemented.');
-  }
+
   visitDeclareArr(dec: DeclarationArr): void {
     throw new Error('Method not implemented.');
   }
@@ -139,5 +302,4 @@ export class VisitorGenericQuartet extends Visitor {
   visitSout(sout: Sout): void {
     throw new Error('Method not implemented.');
   }
-
 }

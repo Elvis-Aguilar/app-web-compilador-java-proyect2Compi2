@@ -7,6 +7,7 @@ export class FunMain extends Instruction {
   instructions: Instruction[];
   token: Token;
   symbolTable!: SymbolTable;
+  nameCodigo3D:string = 'main_main()';
 
   constructor(instructions: Instruction[], token: Token) {
     super();
@@ -18,7 +19,7 @@ export class FunMain extends Instruction {
     vi.visitMain(this);
   }
   genericQuartet(vi: Visitor): void {
-    throw new Error('Method not implemented.');
+    vi.visitMain(this);
   }
 
   referenciarSymbolTable(vi: Visitor, symbolTablePadre?: SymbolTable): void {

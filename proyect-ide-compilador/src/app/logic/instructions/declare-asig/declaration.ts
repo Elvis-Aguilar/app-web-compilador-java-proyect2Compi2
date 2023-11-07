@@ -16,6 +16,7 @@ export class Declaration extends Instruction {
   isStatik!: boolean;
   isFinal!: boolean;
   symbolTable!: SymbolTable;
+  pos:number=0;
 
   constructor(token: Token, op?: Operation) {
     super();

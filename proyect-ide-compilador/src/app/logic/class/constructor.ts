@@ -12,6 +12,8 @@ export class Constructor extends Instruction {
   token: Token;
   nombre: string = '';
   nombre3Direc: string = '';
+  result:string = '';
+  tamaniClas:number = 0;
 
   constructor(nombre: any,parametros: Variable[],instructions: Instruction[], token: Token) {
     super();
@@ -24,8 +26,9 @@ export class Constructor extends Instruction {
   execute(vi: Visitor): void {
     vi.visitConstruct(this);
   }
+
   genericQuartet(vi: Visitor): void {
-    throw new Error('Method not implemented.');
+    vi.visitConstruct(this);
   }
 
   referenciarSymbolTable(vi: Visitor, symbolTablePadre: SymbolTable): void {
