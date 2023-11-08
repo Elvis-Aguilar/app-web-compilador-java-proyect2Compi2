@@ -17,6 +17,7 @@ export class Declaration extends Instruction {
   isFinal!: boolean;
   symbolTable!: SymbolTable;
   pos:number=0;
+  typeAsignar!:TypeDato;
 
   constructor(token: Token, op?: Operation) {
     super();

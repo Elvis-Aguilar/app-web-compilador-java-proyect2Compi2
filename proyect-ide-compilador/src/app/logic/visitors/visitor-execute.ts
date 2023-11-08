@@ -122,12 +122,73 @@ export class VisitorExecute extends Visitor {
   }
 
   visitAsigObj(asigOb: asignacionObjec): void {
-    //TODO: not implemet metod
+    const datos: Dato[] = [];
+    asigOb.opers.forEach((arg) => {
+      const dat = arg.execute(this);
+      if (dat) {
+        datos.push(dat);
+      }
+    });
+    let variable: Variable | void;
+    if (asigOb.global) {
+      variable = asigOb.symbolTable.getByIdGlobal(asigOb.token);
+    } else {
+      variable = asigOb.symbolTable.getById(asigOb.token);
+    }
+    if (variable) {
+      //dejar la pos de la variable para generar su codigo 3D
+      asigOb.pos = variable.pos;
+      if (`${variable.typeDato}` !== asigOb.objeto) {
+        const msj = 'Tipo a asignar al objeto no es valido';
+        ErrorSingleton.getInstance().push(
+          new Error(
+            asigOb.token.line,
+            asigOb.token.column,
+            asigOb.token.id,
+            `${msj}`,
+            TypeError.SEMANTICO
+          )
+        );
+      }else{
+        const type: string = asigOb.objeto;
+        const clas = this.clases.find((cls) => cls.nombre === type);
+        if (clas) {
+          const tokenTm = new Token(type, asigOb.token.column, asigOb.token.line);
+          const constr = clas.getConstructor(datos, tokenTm);
+          if (constr) {
+            //se encontro el constructor validamente XD
+            asigOb.construcotrRelativo = constr;
+          } else {
+            const msj = 'Constructor no entonctrado en la clase';
+            ErrorSingleton.getInstance().push(
+              new Error(
+                asigOb.token.line,
+                asigOb.token.column,
+                asigOb.token.id,
+                `${msj}`,
+                TypeError.SEMANTICO
+              )
+            );
+          }
+        } else {
+          const msj = 'Tipo de la variable no encontrada en el las clases';
+          ErrorSingleton.getInstance().push(
+            new Error(
+              asigOb.token.line,
+              asigOb.token.column,
+              asigOb.token.id,
+              `${msj}`,
+              TypeError.SEMANTICO
+            )
+          );
+        }
+      }
+    }
   }
 
   visitDeclareObject(decOb: DeclarationObject): void {
     const pos = decOb.symbolTable.getPosition();
-    if(`${decOb.typeDatoAsig}` !== 'null'){
+    if (`${decOb.typeDatoAsig}` !== 'null') {
       if (decOb.typeDato !== decOb.typeDatoAsig) {
         const msj = 'Tipo a asignar el objeto no es valido';
         ErrorSingleton.getInstance().push(
@@ -180,7 +241,7 @@ export class VisitorExecute extends Visitor {
         );
       }
     }
-    const dato = new Dato(decOb.typeDato)
+    const dato = new Dato(decOb.typeDato);
     const newVar = new Variable(
       decOb.visibilidad,
       decOb.isStatik,
@@ -283,6 +344,7 @@ export class VisitorExecute extends Visitor {
 
   visitDeclaration(dec: Declaration): void {
     const dato = dec.op?.execute(this);
+    dec.typeAsignar = dato?.typeDato || TypeDato.INT;
     if (dato && dato.typeDato !== dec.typeDato) {
       const msj = 'El tipo a asignar no es equivalente tipo de la variable';
       ErrorSingleton.getInstance().push(
@@ -324,6 +386,7 @@ export class VisitorExecute extends Visitor {
 
   visitAsig(asig: Asignacion): void {
     const dato = asig.op.execute(this);
+    asig.typeAsignar = dato?.typeDato || TypeDato.INT;
     let variable: Variable | void;
     if (asig.objeto !== '') {
       const tok = new Token(asig.objeto, asig.token.line, asig.token.column);
@@ -339,7 +402,7 @@ export class VisitorExecute extends Visitor {
     } else {
       variable = asig.symbolTable.getById(asig.token);
     }
-    if(variable){
+    if (variable) {
       //dejar la pos de la variable para generar su codigo 3D
       asig.pos = variable.pos;
     }
@@ -370,7 +433,6 @@ export class VisitorExecute extends Visitor {
         );
       }
     }
-
   }
 
   visitIf(ifI: IfInstruction): void {
