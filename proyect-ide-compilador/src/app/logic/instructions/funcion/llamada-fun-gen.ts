@@ -17,7 +17,7 @@ export class LlamadaFunGen extends Instruction {
     vi.visitLlamdadGen(this);
   }
   genericQuartet(vi: Visitor): void {
-    throw new Error('Method not implemented.');
+    vi.visitLlamdadGen(this);
   }
   referenciarSymbolTable(vi: Visitor, symbolTablePadre: SymbolTable): void {
     this.symbolTable = symbolTablePadre;

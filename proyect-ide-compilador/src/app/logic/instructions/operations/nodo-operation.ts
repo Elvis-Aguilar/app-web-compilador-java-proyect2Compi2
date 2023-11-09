@@ -16,6 +16,8 @@ export class NodoOperation {
   typeOp: TypeOperation | undefined;
   result: string = '';
   symbolTable!: SymbolTable;
+  pos:number = 0;
+  typeDato!:TypeDato;
 
   constructor(
     dato?: Dato,
@@ -131,5 +133,84 @@ export class NodoOperation {
         break;
     }
     return type;
+  }
+
+  public getValorVariableLoacal(vi:VisitorGenericQuartet){
+    const quartPos = new Quartet(
+      vi.POINTER,`${this.pos}`,`int ${vi.qh.tmpVar()}`,TypeOperationQuartet.SUMA
+    );
+    vi.qh.push(quartPos);
+    const typ = this.typeCrear();
+    const ref = vi.qh.tmpVar();
+    vi.qh.aumentarTmp();
+    if (typ === 'char') {
+      const quartGetCh = new Quartet(
+        `stack[${ref}]`,'',`${typ}* ${vi.qh.tmpVar()}`,TypeOperationQuartet.ASIGNATION
+      );
+      vi.qh.push(quartGetCh);
+      this.result = vi.qh.tmpVar();
+      vi.qh.aumentarTmp();
+    }else{
+      const quartGet = new Quartet(
+        `*((${typ}*)stack[${ref}])`,'',`${typ} ${vi.qh.tmpVar()}`,TypeOperationQuartet.ASIGNATION
+      );
+      vi.qh.push(quartGet);
+      this.result = vi.qh.tmpVar();
+      vi.qh.aumentarTmp();
+    }
+    
+  }
+
+  public getValorVariableGlobal(vi:VisitorGenericQuartet){
+    const quartPos = new Quartet(
+      't0',`${this.pos}`,`int ${vi.qh.tmpVar()}`,TypeOperationQuartet.SUMA
+    );
+    vi.qh.push(quartPos);
+    const typ = this.typeCrear();
+    const ref = vi.qh.tmpVar();
+    vi.qh.aumentarTmp();
+    if (typ === 'char') {
+      const quartGetCh = new Quartet(
+        `heap[${ref}]`,'',`${typ}* ${vi.qh.tmpVar()}`,TypeOperationQuartet.ASIGNATION
+      );
+      vi.qh.push(quartGetCh);
+      this.result = vi.qh.tmpVar();
+      vi.qh.aumentarTmp();
+    }else{
+      const quartGet = new Quartet(
+        `*((${typ}*)heap[${ref}])`,'',`${typ} ${vi.qh.tmpVar()}`,TypeOperationQuartet.ASIGNATION
+      );
+      vi.qh.push(quartGet);
+      this.result = vi.qh.tmpVar();
+      vi.qh.aumentarTmp();
+    }
+
+  }
+
+  private typeCrear():string{
+    let resu = 'int'
+    switch(this.typeDato){
+      case TypeDato.INT:
+        resu = 'int';
+      break;
+      case TypeDato.BOOLEAN:
+        resu = 'int';
+      break;
+      case TypeDato.CHAR:
+        resu = 'char';
+      break;
+      case TypeDato.FLOAT:
+        resu = 'float';
+      break;
+      case TypeDato.STRING:
+        resu = 'char';
+      break;
+      case TypeDato.VOID:
+        resu = 'int';
+      break;
+    }
+
+    return resu;
+
   }
 }

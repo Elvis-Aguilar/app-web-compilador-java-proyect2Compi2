@@ -33,7 +33,7 @@ export class Funcion extends Instruction {
     vi.visitFuncion(this);
   }
   genericQuartet(vi: Visitor): void {
-    throw new Error('Method not implemented.');
+    vi.visitFuncion(this);
   }
 
   referenciarSymbolTable(vi: Visitor, symbolTablePadre:SymbolTable){
@@ -63,11 +63,11 @@ export class Funcion extends Instruction {
 
   private agregarParamSymbolTable(){
     let pos = 1;
+    this.symbolTable.pos = pos;
     this.parametros.forEach((param) =>{
       param.pos = pos;
       pos++;
       this.symbolTable.variables.push(param);
     })
-    this.symbolTable.pos = pos;
   }
 }

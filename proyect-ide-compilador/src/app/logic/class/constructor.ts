@@ -34,7 +34,7 @@ export class Constructor extends Instruction {
   referenciarSymbolTable(vi: Visitor, symbolTablePadre: SymbolTable): void {
     this.symbolTable = new SymbolTable('funcion');
     this.symbolTable.symbolTablePadre = symbolTablePadre;
-    this.agregarParamSymbolTable()
+    this.agregarParamSymbolTable();
     this.symbolTable.pos = 1;
     vi.visitConstruct(this)
   }

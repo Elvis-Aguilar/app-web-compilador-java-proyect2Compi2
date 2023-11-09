@@ -90,10 +90,6 @@ export class VisitorExecute extends Visitor {
     return op.rootOp.execute(this);
   }
 
-  /**
-   * logica para ejecucion de operaciones
-   * @param nodo
-   */
   visitNodoOP(nodo: NodoOperation): Dato | void {
     if (!nodo.typeOp && nodo.dato !== null) {
       if (!nodo.dato.isVariable) {
@@ -102,11 +98,15 @@ export class VisitorExecute extends Visitor {
       if (nodo.dato.global) {
         const vari = nodo.symbolTable.getByIdGlobal(nodo.dato.token);
         if (vari) {
+          nodo.pos = vari.pos;
+          nodo.typeDato = vari.typeDato
           return new Dato(vari.typeDato);
         }
       } else {
         const vari = nodo.symbolTable.getById(nodo.dato.token);
         if (vari) {
+          nodo.pos = vari.pos;
+          nodo.typeDato = vari.typeDato
           return new Dato(vari.typeDato);
         }
       }
@@ -281,11 +281,13 @@ export class VisitorExecute extends Visitor {
         }
       }
       if (variable) {
+        llama.posObjeto = variable.pos;
         const type: string = `${variable.typeDato}`;
         const clas = this.clases.find((cls) => cls.nombre === type);
         if (clas && llama.tok) {
           const fun = clas.getFuncion(datos, llama.tok);
           if (fun) {
+            llama.funRelativa = fun;
             dato.typeDato = fun.typeRetorno;
           } else {
             const msj = 'Funcion no Existe';
@@ -319,6 +321,7 @@ export class VisitorExecute extends Visitor {
       if (llama.tok) {
         const fun = this.claseActual.getFuncion(datos, llama.tok);
         if (fun) {
+          llama.funRelativa = fun;
           dato.typeDato = fun.typeRetorno;
         } else {
           const msj = 'Funcion no Existe';

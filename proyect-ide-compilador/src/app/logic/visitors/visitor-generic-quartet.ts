@@ -270,26 +270,11 @@ export class VisitorGenericQuartet extends Visitor {
       posParam++;
     });
     //aumentar el puntero, llamada al constructor, restar el puntero
-    const quartAument = new Quartet(
-      this.POINTER,
-      `${size}`,
-      this.POINTER,
-      TypeOperationQuartet.SUMA
-    );
+    const quartAument = new Quartet(this.POINTER, `${size}`, this.POINTER, TypeOperationQuartet.SUMA);
     this.qh.push(quartAument);
-    const quartLlamada = new Quartet(
-      '',
-      '',
-      `${decOb.construcotrRelativo.nombre3Direc};`,
-      TypeOperationQuartet.LLAMADAFUN
-    );
+    const quartLlamada = new Quartet('','', `${decOb.construcotrRelativo.nombre3Direc};`, TypeOperationQuartet.LLAMADAFUN);
     this.qh.push(quartLlamada);
-    const quartReduce = new Quartet(
-      this.POINTER,
-      `${size}`,
-      this.POINTER,
-      TypeOperationQuartet.RESTA
-    );
+    const quartReduce = new Quartet(this.POINTER, `${size}`, this.POINTER, TypeOperationQuartet.RESTA);
     this.qh.push(quartReduce);
     //obtener el valor del ptrh guardado en el constructor en la posicion 0
     const quartpos = new Quartet(
@@ -438,7 +423,6 @@ export class VisitorGenericQuartet extends Visitor {
     }
   }
 
-  //TODO: check si es variable para realizar difentes acciones
   visitOp(op: Operation): void {
     op.rootOp.genericQuatern(this);
     op.restult = op.rootOp.result;
@@ -446,8 +430,17 @@ export class VisitorGenericQuartet extends Visitor {
 
   visitNodoOP(nodo: NodoOperation): void {
     if (nodo.dato !== null) {
-      nodo.valueDato(this);
-      return;
+      if (!nodo.dato.isVariable) {
+        nodo.valueDato(this);
+        return;
+      }
+      if (nodo.dato.global) {
+        nodo.getValorVariableGlobal(this);
+        return;
+      }else{
+        nodo.getValorVariableLoacal(this);
+        return;
+      }
     }
     nodo.opLeft?.genericQuatern(this);
     nodo.opRight?.genericQuatern(this);
@@ -462,10 +455,161 @@ export class VisitorGenericQuartet extends Visitor {
     this.qh.aumentarTmp();
   }
 
-  visitLlamdadfun(llama: LlamadaFun): void {
-    throw new Error('Method not implemented.');
+  visitFuncion(fun: Funcion): void {
+    const quartInitFun = new Quartet(
+      '',
+      '',
+      `${fun.nombre3Direc}`,
+      TypeOperationQuartet.DECLARREFUN
+    );
+    this.qh.push(quartInitFun);
+    const cuarteH = new Quartet(
+      this.POINTER,
+      '0',
+      `int ${this.qh.tmpVar()}`,
+      TypeOperationQuartet.SUMA
+    );
+    this.qh.push(cuarteH);
+    this.qh.aumentarTmp();
+    const cuarteThis = new Quartet(
+      `*((int*)stack[t0])`,
+      '',
+      `int ${this.qh.tmpVar()}`,
+      TypeOperationQuartet.ASIGNATION
+    );
+    this.qh.push(cuarteThis);
+    this.qh.aumentarTmp();
+    const cuarteThisAjus = new Quartet(
+      `t1`,
+      '',
+      `t0`,
+      TypeOperationQuartet.ASIGNATION
+    );
+    this.qh.push(cuarteThisAjus);
+    fun.instructions.forEach((instr) =>{
+      instr.genericQuartet(this);
+    })
+    const quartFinishFun = new Quartet(
+      '',
+      '',
+      '}',
+      TypeOperationQuartet.CIERREFUN
+    );
+    this.qh.push(quartFinishFun);
+    this.qh.setTmp(0);
   }
+
+  visitLlamdadfun(llama: LlamadaFun): void {
+    //enviando la This a la funcion en la pos 0 en el stack local
+    let tRef;
+    if(llama.objeto !== ''){
+      if (llama.global) {
+        //obtener del heap
+        const quartHep = new Quartet('t0',`${llama.posObjeto}`,`int ${this.qh.tmpVar()}`, TypeOperationQuartet.SUMA); 
+        this.qh.push(quartHep);
+        const tmp = this.qh.tmpVar();
+        this.qh.aumentarTmp();
+        const quarValHeap = new Quartet(`*((int*)heap[${tmp}])`,``,`int ${this.qh.tmpVar()}`, TypeOperationQuartet.ASIGNATION); 
+        this.qh.push(quarValHeap);
+        tRef = this.qh.tmpVar();
+        this.qh.aumentarTmp();
+      }else{
+        //obtener del stack
+        const quartHep = new Quartet(this.POINTER,`${llama.posObjeto}`,`int ${this.qh.tmpVar()}`, TypeOperationQuartet.SUMA); 
+        this.qh.push(quartHep);
+        const tmp = this.qh.tmpVar();
+        this.qh.aumentarTmp();
+        const quarValHeap = new Quartet(`*((int*)stack[${tmp}])`,``,`int ${this.qh.tmpVar()}`, TypeOperationQuartet.ASIGNATION); 
+        this.qh.push(quarValHeap);
+        tRef = this.qh.tmpVar();
+        this.qh.aumentarTmp();
+      }
+      const quartHep = new Quartet(this.POINTER,`${llama.symbolTable.getPosition()}`,`int ${this.qh.tmpVar()}`, TypeOperationQuartet.SUMA); 
+      this.qh.push(quartHep);
+      const posStak = this.qh.tmpVar();
+      this.qh.aumentarTmp();
+      const quarValHeap = new Quartet(`&${tRef}`,``,`stack[${posStak}]`, TypeOperationQuartet.ASIGNATION); 
+      this.qh.push(quarValHeap);
+    }else{
+      const quartHep = new Quartet(this.POINTER,`${llama.symbolTable.getPosition()}`,`int ${this.qh.tmpVar()}`, TypeOperationQuartet.SUMA); 
+      this.qh.push(quartHep);
+      const posStak = this.qh.tmpVar();
+      this.qh.aumentarTmp();
+      const quarValHeap = new Quartet(`&t0`,``,`stack[${posStak}]`, TypeOperationQuartet.ASIGNATION); 
+      this.qh.push(quarValHeap);
+    }
+
+    //enviando argumentos
+    const size: number = llama.symbolTable.getPosition();
+    let posParam:number = 1;
+    llama.argumens.forEach((op) => {
+      op.generecQuartet(this);
+      const index = posParam -1;
+      const typeAsignar = llama.funRelativa.parametros[index].typeDato;
+      const quarttm = new Quartet(
+        `${size}`,
+        `${posParam}`,
+        `int ${this.qh.tmpVar()}`,
+        TypeOperationQuartet.SUMA
+      );
+      this.qh.push(quarttm);
+      if (typeAsignar === TypeDato.CHAR || typeAsignar === TypeDato.STRING) {
+        const quartStaCade = new Quartet(
+          `${op.restult}`,
+          '',
+          `stack[${this.qh.tmpVar()}]`,
+          TypeOperationQuartet.ASIGNATION
+        );
+        this.qh.push(quartStaCade);
+      }else{
+        const quartSta = new Quartet(
+          `&${op.restult}`,
+          '',
+          `stack[${this.qh.tmpVar()}]`,
+          TypeOperationQuartet.ASIGNATION
+        );
+        this.qh.push(quartSta);
+      }
+      this.qh.aumentarTmp();
+      posParam++;
+    });
+
+    //llamando a la funcion
+    const quartAument = new Quartet(this.POINTER, `${size}`, this.POINTER, TypeOperationQuartet.SUMA);
+    this.qh.push(quartAument);
+    const quartLlamada = new Quartet('','', `${llama.funRelativa.nombre3Direc};`, TypeOperationQuartet.LLAMADAFUN);
+    this.qh.push(quartLlamada);
+    const quartReduce = new Quartet(this.POINTER, `${size}`, this.POINTER, TypeOperationQuartet.RESTA);
+    this.qh.push(quartReduce);
+
+    //obteniendo el return
+    const quartPosRetun = new Quartet(this.POINTER, `${size}`, `int ${this.qh.tmpVar()}`, TypeOperationQuartet.SUMA);
+    this.qh.push(quartPosRetun);
+    const posSatk = this.qh.tmpVar();
+    this.qh.aumentarTmp();
+    const typ = llama.typeCrearFun();
+    if (typ === 'char') {
+      const quartGetCh = new Quartet(
+        `stack[${posSatk}]`,'',`${typ}* ${this.qh.tmpVar()}`,TypeOperationQuartet.ASIGNATION
+      );
+      this.qh.push(quartGetCh);
+      llama.result = this.qh.tmpVar();
+      this.qh.aumentarTmp();
+    }else{
+      const quartGet = new Quartet(
+        `*((${typ}*)stack[${posSatk}])`,'',`${typ} ${this.qh.tmpVar()}`,TypeOperationQuartet.ASIGNATION
+      );
+      this.qh.push(quartGet);
+      llama.result = this.qh.tmpVar();
+      this.qh.aumentarTmp();
+    }
+  }
+
   visitLlamdadGen(llamaG: LlamadaFunGen): void {
+    llamaG.funLlamada.genericQuatern(this);
+  }
+
+  visitSout(sout: Sout): void {
     throw new Error('Method not implemented.');
   }
 
@@ -480,24 +624,15 @@ export class VisitorGenericQuartet extends Visitor {
   visitWhile(whileI: WhileInstruction): void {
     throw new Error('Method not implemented.');
   }
+
   visitDoWhile(doWhileI: DoWhileInstruction): void {
-    throw new Error('Method not implemented.');
-  }
-
-  visitSwitch(swit: SwitchInstruction): void {
-    throw new Error('Method not implemented.');
-  }
-  visitCaseSwitch(caseSwitchI: CaseSwitchInstruction): void {
-    throw new Error('Method not implemented.');
-  }
-
-  visitFuncion(fun: Funcion): void {
     throw new Error('Method not implemented.');
   }
 
   visitfor(fo: ForInstrction): void {
     throw new Error('Method not implemented.');
   }
+  
   visitAsigArr(asi: AsignacionArr): void {
     throw new Error('Method not implemented.');
   }
@@ -505,10 +640,17 @@ export class VisitorGenericQuartet extends Visitor {
   visitDeclareArr(dec: DeclarationArr): void {
     throw new Error('Method not implemented.');
   }
+
   visitFunMath(funMath: FunMath): void {
-    throw new Error('Method not implemented.');
+    //TODO: Method not implemented.
   }
-  visitSout(sout: Sout): void {
-    throw new Error('Method not implemented.');
+
+  visitSwitch(swit: SwitchInstruction): void {
+    //TODO: Method not implemented.
   }
+
+  visitCaseSwitch(caseSwitchI: CaseSwitchInstruction): void {
+    //TODO: Method not implemented.
+  }
+
 }
