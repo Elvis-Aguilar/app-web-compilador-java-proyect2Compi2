@@ -610,7 +610,52 @@ export class VisitorGenericQuartet extends Visitor {
   }
 
   visitSout(sout: Sout): void {
-    throw new Error('Method not implemented.');
+    //declarando un char = "" vacio, para poder concatenar la salida
+    const quartInicial = new Quartet('\"\"', '', `char ${this.qh.tmpVar()}[80]`, TypeOperationQuartet.ASIGNATION); 
+    this.qh.push(quartInicial);
+    sout.result = this.qh.tmpVar();
+    this.qh.aumentarTmp();
+    //realizando las cuartetas de la operacion
+    sout.op.generecQuartet(this);
+    //concatenando la salida con el resultado de la operacion, dependiendo el caso
+    switch(sout.typeImprimir){
+      case TypeDato.INT:
+        const quartCadeInt = new Quartet(`strlen(${sout.result}),`, `\"%d\", ${sout.op.restult}`, `${sout.result}`, TypeOperationQuartet.CONCATCADEENTERO); 
+        this.qh.push(quartCadeInt);
+      break;
+      case TypeDato.BOOLEAN:
+        const quartCadeBool = new Quartet(`strlen(${sout.result}),`, `\"%d\", ${sout.op.restult}`, `${sout.result}`, TypeOperationQuartet.CONCATCADEENTERO); 
+        this.qh.push(quartCadeBool);
+      break;
+      case TypeDato.CHAR:
+        const quartCadeChar= new Quartet(`${sout.op.restult}`,'', `${sout.result}`, TypeOperationQuartet.CONCATCADECADE); 
+        this.qh.push(quartCadeChar);
+      break;
+      case TypeDato.FLOAT:
+        const quartCadeFloat = new Quartet(`strlen(${sout.result}),`, `\"%f\", ${sout.op.restult}`, `${sout.result}`, TypeOperationQuartet.CONCATCADEENTERO); 
+        this.qh.push(quartCadeFloat);
+      break;
+      case TypeDato.STRING:
+        const quartCadeString= new Quartet(`${sout.op.restult}`,'', `${sout.result}`, TypeOperationQuartet.CONCATCADECADE); 
+        this.qh.push(quartCadeString);
+      break;
+      case TypeDato.VOID:
+        const quartCadeVoid = new Quartet(`strlen(${sout.result}),`, `\"%d\", ${sout.op.restult}`, `${sout.result}`, TypeOperationQuartet.CONCATCADEENTERO); 
+        this.qh.push(quartCadeVoid);
+      break;
+      default:
+        const quartCadeObject = new Quartet(`strlen(${sout.result}),`, `\"%d\", ${sout.op.restult}`, `${sout.result}`, TypeOperationQuartet.CONCATCADEENTERO); 
+        this.qh.push(quartCadeObject);
+        break;
+    }
+    //imprimir la salida con prinf con saldo de linea o sin salto
+    if (sout.salto) {
+      const quartImpr = new Quartet(`"%s\\n"`, '', `${sout.result}`, TypeOperationQuartet.IMPRIMIR); 
+      this.qh.push(quartImpr);
+    }else{
+      const quartImpr = new Quartet('\"%s\"', '', `${sout.result}`, TypeOperationQuartet.IMPRIMIR); 
+      this.qh.push(quartImpr);
+    }
   }
 
   visitIf(ifI: IfInstruction): void {

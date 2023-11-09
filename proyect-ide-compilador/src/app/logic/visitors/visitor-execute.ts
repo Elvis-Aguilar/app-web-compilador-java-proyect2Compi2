@@ -559,6 +559,9 @@ export class VisitorExecute extends Visitor {
   }
 
   visitSout(sout: Sout): void {
-    //no hay nada que validar
+    const dato = sout.op.execute(this);
+    if (dato) {
+      sout.typeImprimir = dato.typeDato;
+    }
   }
 }

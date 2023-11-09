@@ -33,9 +33,11 @@ export class VisRefSymbolTable extends Visitor {
       instr.referenciarSymbolTable(this, main.symbolTable);
     })
   }
+
   visitLlamdadfun(llama: LlamadaFun): void {
     //no hay nada que implementar
   }
+  
   visitLlamdadGen(llamaG: LlamadaFunGen): void {
     //no hay nada que implementar
   }
