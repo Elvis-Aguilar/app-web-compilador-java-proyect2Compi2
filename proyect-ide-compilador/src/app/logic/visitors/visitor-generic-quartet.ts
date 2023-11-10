@@ -47,12 +47,9 @@ export class VisitorGenericQuartet extends Visitor {
   }
 
   visitMain(main: FunMain): void {
-    const quartInitMain = new Quartet(
-      '',
-      '',
-      `${main.nameCodigo3D}`,
-      TypeOperationQuartet.DECLARREFUN
-    );
+    const quartPrototipo = new Quartet('','',`${main.nameCodigo3D}`,TypeOperationQuartet.DECLARPROTOTIPO);
+    this.qh.unshift(quartPrototipo);
+    const quartInitMain = new Quartet('','',`${main.nameCodigo3D}`,TypeOperationQuartet.DECLARREFUN);
     this.qh.push(quartInitMain);
     //contenido dentro de fun Main
     main.instructions.forEach((instr) => {
@@ -69,6 +66,8 @@ export class VisitorGenericQuartet extends Visitor {
   }
 
   visitConstruct(fun: Constructor): void {
+    const quartPrototipo = new Quartet('','',`${fun.nombre3Direc}`,TypeOperationQuartet.DECLARPROTOTIPO);
+    this.qh.unshift(quartPrototipo);
     const quartInitMain = new Quartet(
       '',
       '',
@@ -456,6 +455,8 @@ export class VisitorGenericQuartet extends Visitor {
   }
 
   visitFuncion(fun: Funcion): void {
+    const quartPrototipo = new Quartet('','',`${fun.nombre3Direc}`,TypeOperationQuartet.DECLARPROTOTIPO);
+    this.qh.unshift(quartPrototipo);
     const quartInitFun = new Quartet(
       '',
       '',
@@ -679,11 +680,11 @@ export class VisitorGenericQuartet extends Visitor {
   }
   
   visitAsigArr(asi: AsignacionArr): void {
-    throw new Error('Method not implemented.');
+    //TODO: Method not implemented.
   }
 
   visitDeclareArr(dec: DeclarationArr): void {
-    throw new Error('Method not implemented.');
+    //TODO: Method not implemented.
   }
 
   visitFunMath(funMath: FunMath): void {

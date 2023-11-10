@@ -42,7 +42,8 @@ export class DeclarationArr extends Instruction {
   }
 
   execute(vi: Visitor): void {
-    vi.visitDeclareArr(this);
+    //TODO:Method not implemented.
+    //vi.visitDeclareArr(this);
   }
 
   referenciarSymbolTable(vi: Visitor, symbolTablePadre: SymbolTable): void {

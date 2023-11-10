@@ -18,6 +18,10 @@ export class QuartHandler {
     this.quartets.push(q);
   }
 
+  public unshift(quarts: Quartet){
+    this.quartets.unshift(quarts);
+  }
+
   public setTmp(value:number){
     this.tmp = value;
   }

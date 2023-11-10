@@ -23,7 +23,8 @@ export class SwitchInstruction extends Instruction {
   }
 
   execute(vi: Visitor): void {
-    vi.visitSwitch(this);
+    //TODO:Method not implemented.
+    //vi.visitSwitch(this);
   }
   genericQuartet(vi: Visitor): void {
     //TODO:Method not implemented.

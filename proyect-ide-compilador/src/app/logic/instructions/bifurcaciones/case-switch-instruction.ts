@@ -23,7 +23,8 @@ export class CaseSwitchInstruction extends Instruction {
   }
 
   execute(vi: Visitor): void {
-    vi.visitCaseSwitch(this);
+    //TODO:Method not implemented.
+    //vi.visitCaseSwitch(this);
   }
   genericQuartet(vi: Visitor): void {
     //TODO:Method not implemented.
