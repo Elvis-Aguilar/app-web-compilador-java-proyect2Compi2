@@ -2,6 +2,9 @@ import { Component } from '@angular/core';
 import { SesionService } from 'src/app/services/sesion.service';
 import Swal from 'sweetalert2';
 import { Folder } from '../../objects/folder';
+import { SolicitudesService } from 'src/app/services/solicitudes.service';
+import { AreaTrabajo } from '../../objects/area-trabjo';
+
 
 @Component({
   selector: 'app-navbar',
@@ -12,7 +15,7 @@ export class NavbarComponent {
 
   Proyect:Folder
 
-  constructor(private sesion:SesionService){
+  constructor(private sesion:SesionService, private solici:SolicitudesService){
     this.Proyect = sesion.proyect
   }
 
@@ -35,13 +38,37 @@ export class NavbarComponent {
       }
     }).then((result) => {
       if (result.isConfirmed) {
-        this.sesion.proyect.nombre = result.value
-        this.sesion.proyect.packageCompleto = result.value
-        this.sesion.proyect.folders.splice(0,this.sesion.proyect.folders.length)
-        this.sesion.proyect.archivos.splice(0,this.sesion.proyect.archivos.length)
-        //TODO: limpiar las pestanias
+        this.sesion.proyect.nombre = result.value;
+        this.sesion.proyect.packageCompleto = result.value;
+        this.sesion.proyect.folders.splice(0,this.sesion.proyect.folders.length);
+        this.sesion.proyect.archivos.splice(0,this.sesion.proyect.archivos.length);
+        this.sesion.archivos.splice(0, this.sesion.archivos.length);
       }
     })
+  }
+
+  guardarProyecto(){
+    if (this.sesion.proyect.nombre !== 'Sin Proyecto') {
+      this.solici.saveProyects(this.sesion.proyect).subscribe(
+        (proyec:Folder[])=>{
+          Swal.fire(
+            'Guardado con exito',
+            'Se guardo su poryecto con exito',
+            'success'
+          )
+        }
+      );
+    }else{
+      Swal.fire(
+        'Sin Proyecto?',
+        'No existe proyecto creado para poder guardarlo',
+        'error'
+      )
+    }
+  }
+
+  goProyects(){
+    this.sesion.areaTrabajo = AreaTrabajo.PROYECTS;
   }
 
   

@@ -1,0 +1,23 @@
+<div>
+    <h1 class="text-center">Proyectos Guardados</h1>
+    <table class="table table-dark">
+        <thead class="table-success text-center">
+          <tr>
+            <th>Nombre-Proyecto</th>
+            <th>opcion</th>
+          </tr>
+        </thead>
+        <tbody class="text-center">
+          <tr *ngFor="let folder of proyects">
+            <td>{{folder.nombre}}</td>
+            <td>
+                <button (click)="seleccionar(folder)" type="button" class="btn btn-link">Abrir</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+</div>
+
+<div class="d-flex justify-content-center">
+    <button (click)="refrescarProyects()" class="btn btn-light ms-auto">Refrescar</button>
+  </div>
