@@ -1,7 +1,7 @@
 <div class="buttons">
   <div  *ngFor="let archivo of sesion.archivos; let i = index">
     <button class="conten"  (click) ="setContent(i)" >{{archivo.nombre}}</button>
-    <button class="close">X</button>
+    <button class="close"  (click)="closeArchivo(i)" >X</button>
   </div>
 </div>
 <ngx-codemirror

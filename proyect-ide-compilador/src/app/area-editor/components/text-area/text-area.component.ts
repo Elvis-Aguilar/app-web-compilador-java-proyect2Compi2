@@ -60,6 +60,10 @@ export class TextAreaComponent {
     }
   }
 
+  closeArchivo(index:number){
+    this.sesion.archivos.splice(index,1);
+  }
+
   private msTxtVacio() {
     Swal.fire('Texto vacio?', 'intentas compilar una clase vacia?', 'question');
   }

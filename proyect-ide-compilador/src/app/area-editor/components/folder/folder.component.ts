@@ -77,4 +77,14 @@ export class FolderComponent {
 
   }
 
+  eliminarArchivo(index:number){
+    const archAeliminar = this.folder.archivos[index];
+    const indice = this.sesion.archivos.indexOf(archAeliminar);
+    if (indice !== -1) {
+      this.sesion.archivos.splice(indice,1);
+    }
+    this.folder.archivos.splice(index,1);
+  }
+
+
 }

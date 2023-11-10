@@ -87,6 +87,15 @@ export class DirectorioComponent {
 
   }
 
+  eliminarArchivo(index:number){
+    const archAeliminar = this.sesion.proyect.archivos[index];
+    const indice = this.sesion.archivos.indexOf(archAeliminar);
+    if (indice !== -1) {
+      this.sesion.archivos.splice(indice,1);
+    }
+    this.sesion.proyect.archivos.splice(index,1);
+  }
+
 
 
 

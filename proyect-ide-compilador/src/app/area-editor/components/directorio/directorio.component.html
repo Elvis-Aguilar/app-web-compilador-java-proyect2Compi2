@@ -12,7 +12,6 @@
         <ul class="dropdown-menu">
           <li><a class="dropdown-item" (click)="crearArchivo()" >Nuevo Archivo</a></li>
           <li><a class="dropdown-item" (click)="crearNuevoPaquete()" >Nuevo Paquete</a></li>
-          <li><a class="dropdown-item" >Eliminar</a></li>
         </ul>
       </span>
       <ul class="lists">
@@ -24,7 +23,7 @@
             </svg>
             <ul class="dropdown-menu">
               <li><a class="dropdown-item" (click)="editarArchivo(i)" > Editar</a></li>
-              <li><a class="dropdown-item" >Eliminar</a></li>
+              <li><a class="dropdown-item" (click)="eliminarArchivo(i)" >Eliminar</a></li>
             </ul>
           </span>
         </li>
