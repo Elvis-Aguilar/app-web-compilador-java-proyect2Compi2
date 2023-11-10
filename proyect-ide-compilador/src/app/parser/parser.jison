@@ -226,7 +226,6 @@ id                  [a-zA-Z_][a-zA-Z_0-9]*
 %left EQUALS DIFERENTE MAYORQ MAYOROI MENORQ MENOROI
 %left MAS MENOS 
 %left POR DIVISION MODULO
-%right MENOS
 
 //produccion incial
 %start initial
@@ -633,7 +632,6 @@ exp
   | exp OR exp                              {$$ = new yy.NodoOperation(null, $1, $3, yy.TypeOperation.OR, new yy.Token($2,this._$.first_column, this._$.first_line));}
   | exp AND exp                             {$$ = new yy.NodoOperation(null, $1, $3, yy.TypeOperation.AND, new yy.Token($2,this._$.first_column, this._$.first_line));}
   | NOT exp                                 {$$ = new yy.NodoOperation(null, null, $2, yy.TypeOperation.NOT, new yy.Token($2,this._$.first_column, this._$.first_line));}
-  | MENOS exp                               {$$ = new yy.NodoOperation(null, null, $2, yy.TypeOperation.MENOS, new yy.Token($2,this._$.first_column, this._$.first_line));}
   | ter_exp                                 {$$ = new yy.NodoOperation($1);}
   | PARENTESA exp PARENTESC                 {$$ = new yy.NodoOperation($1);}
   | fun_math                                {$$ = $1;}

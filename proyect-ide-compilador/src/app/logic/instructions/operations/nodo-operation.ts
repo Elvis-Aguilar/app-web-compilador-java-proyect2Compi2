@@ -115,7 +115,6 @@ export class NodoOperation {
     }
   }
 
-  //TODO: implemet resto de casos
   public typeQuartetOperation(): TypeOperationQuartet {
     let type = TypeOperationQuartet.SUMA;
     switch (this.typeOp) {
@@ -187,7 +186,7 @@ export class NodoOperation {
 
   }
 
-  private typeCrear():string{
+  public typeCrear():string{
     let resu = 'int'
     switch(this.typeDato){
       case TypeDato.INT:

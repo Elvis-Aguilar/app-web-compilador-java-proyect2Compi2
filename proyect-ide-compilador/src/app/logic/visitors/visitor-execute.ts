@@ -93,6 +93,7 @@ export class VisitorExecute extends Visitor {
   visitNodoOP(nodo: NodoOperation): Dato | void {
     if (!nodo.typeOp && nodo.dato !== null) {
       if (!nodo.dato.isVariable) {
+        nodo.typeDato = nodo.dato.typeDato
         return nodo.dato;
       }
       if (nodo.dato.global) {
@@ -115,8 +116,10 @@ export class VisitorExecute extends Visitor {
     const datoLeft = nodo.opLeft?.execute(this) || new Dato(TypeDato.INT);
     const datoRight = nodo.opRight?.execute(this) || new Dato(TypeDato.INT);
     const operacion = new OperationCasteo();
-    if (nodo.typeOp) {
-      return operacion.getDato(datoLeft, datoRight, nodo.typeOp);
+    if (nodo.typeOp !== undefined) {
+      const dato = operacion.getDato(datoLeft, datoRight, nodo.typeOp);
+      nodo.typeDato = dato.typeDato;
+      return dato;
     }
     return tmp;
   }
@@ -289,6 +292,7 @@ export class VisitorExecute extends Visitor {
           if (fun) {
             llama.funRelativa = fun;
             dato.typeDato = fun.typeRetorno;
+            llama.typeDato = fun.typeRetorno;
           } else {
             const msj = 'Funcion no Existe';
             ErrorSingleton.getInstance().push(
@@ -323,6 +327,7 @@ export class VisitorExecute extends Visitor {
         if (fun) {
           llama.funRelativa = fun;
           dato.typeDato = fun.typeRetorno;
+          llama.typeDato = fun.typeRetorno;
         } else {
           const msj = 'Funcion no Existe';
           ErrorSingleton.getInstance().push(
@@ -349,7 +354,7 @@ export class VisitorExecute extends Visitor {
     const dato = dec.op?.execute(this);
     dec.typeAsignar = dato?.typeDato || TypeDato.INT;
     if (dato && dato.typeDato !== dec.typeDato) {
-      const msj = 'El tipo a asignar no es equivalente tipo de la variable';
+      const msj = 'El tipo a asignar no es equivalente tipo de la variable' +dato.typeDato ;
       ErrorSingleton.getInstance().push(
         new Error(
           dec.token.line,

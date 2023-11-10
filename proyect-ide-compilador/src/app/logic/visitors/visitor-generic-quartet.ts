@@ -443,15 +443,85 @@ export class VisitorGenericQuartet extends Visitor {
     }
     nodo.opLeft?.genericQuatern(this);
     nodo.opRight?.genericQuatern(this);
-    const quaOp = new Quartet(
-      `${nodo.opLeft?.result}`,
-      `${nodo.opRight?.result}`,
-      this.qh.tmpVar(),
-      nodo.typeQuartetOperation()
-    );
-    this.qh.push(quaOp);
-    nodo.result = this.qh.tmpVar();
-    this.qh.aumentarTmp();
+    const typ = nodo.opLeft?.typeCrear();
+    if(typ){
+      switch(typ){
+        case 'char':
+          //una concatenacion
+          const quartInicial = new Quartet('\"\"', '', `char ${this.qh.tmpVar()}[45]`, TypeOperationQuartet.ASIGNATION); 
+          this.qh.push(quartInicial);
+          nodo.result = this.qh.tmpVar();
+          this.qh.aumentarTmp();
+          const quartCadeCharIni= new Quartet(`${nodo.opLeft?.result}`,'', `${nodo.result}`, TypeOperationQuartet.CONCATCADECADE); 
+          this.qh.push(quartCadeCharIni); 
+          const typeRight = nodo.opRight?.typeDato;
+          switch(typeRight){
+            case TypeDato.INT:
+              const quartCadeInt = new Quartet(`strlen(${nodo.result}),`, `\"%d\", ${nodo.opRight?.result}`, `${nodo.result}`, TypeOperationQuartet.CONCATCADEENTERO); 
+              this.qh.push(quartCadeInt);
+            break;
+            case TypeDato.BOOLEAN:
+              const quartCadeBool = new Quartet(`strlen(${nodo.result}),`, `\"%d\", ${nodo.opRight?.result}`, `${nodo.result}`, TypeOperationQuartet.CONCATCADEENTERO); 
+              this.qh.push(quartCadeBool);
+            break;
+            case TypeDato.CHAR:
+              const quartCadeChar= new Quartet(`${nodo.opRight?.result}`,'', `${nodo.result}`, TypeOperationQuartet.CONCATCADECADE); 
+              this.qh.push(quartCadeChar);
+            break;
+            case TypeDato.FLOAT:
+              const quartCadeFloat = new Quartet(`strlen(${nodo.result}),`, `\"%f\", ${nodo.opRight?.result}`, `${nodo.result}`, TypeOperationQuartet.CONCATCADEENTERO); 
+              this.qh.push(quartCadeFloat);
+            break;
+            case TypeDato.STRING:
+              const quartCadeString= new Quartet(`${nodo.opRight?.result}`,'', `${nodo.result}`, TypeOperationQuartet.CONCATCADECADE); 
+              this.qh.push(quartCadeString);
+            break;
+            case TypeDato.VOID:
+              const quartCadeVoid = new Quartet(`strlen(${nodo.result}),`, `\"%d\", ${nodo.opRight?.result}`, `${nodo.result}`, TypeOperationQuartet.CONCATCADEENTERO); 
+              this.qh.push(quartCadeVoid);
+            break;
+            default:
+              const quartCadeObject = new Quartet(`strlen(${nodo.result}),`, `\"%d\", ${nodo.opRight?.result}`, `${nodo.result}`, TypeOperationQuartet.CONCATCADEENTERO); 
+              this.qh.push(quartCadeObject);
+              break;
+          }
+        break;
+        case 'int':
+          const quaOp = new Quartet(
+            `${nodo.opLeft?.result}`,
+            `${nodo.opRight?.result}`,
+            `int ${this.qh.tmpVar()}`,
+            nodo.typeQuartetOperation()
+          );
+          this.qh.push(quaOp);
+          nodo.result = this.qh.tmpVar();
+          this.qh.aumentarTmp();
+        break;
+        case 'float':
+          const quaOpFl = new Quartet(
+            `${nodo.opLeft?.result}`,
+            `${nodo.opRight?.result}`,
+            `float ${this.qh.tmpVar()}`,
+            nodo.typeQuartetOperation()
+          );
+          this.qh.push(quaOpFl);
+          nodo.result = this.qh.tmpVar();
+          this.qh.aumentarTmp();
+        break;
+      }
+      
+    }else{
+      const quaOp = new Quartet(
+        `${nodo.opLeft?.result}`,
+        `${nodo.opRight?.result}`,
+        `int ${this.qh.tmpVar()}`,
+        nodo.typeQuartetOperation()
+      );
+      this.qh.push(quaOp);
+      nodo.result = this.qh.tmpVar();
+      this.qh.aumentarTmp();
+    }
+
   }
 
   visitFuncion(fun: Funcion): void {
