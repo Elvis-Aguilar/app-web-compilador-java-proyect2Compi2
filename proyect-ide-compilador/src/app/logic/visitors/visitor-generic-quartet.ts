@@ -943,7 +943,46 @@ export class VisitorGenericQuartet extends Visitor {
   }
 
   visitDoWhile(doWhileI: DoWhileInstruction): void {
-    
+    //etiqueta para las instrucciones
+    const labelInstru = this.qh.tmpEt();
+    this.qh.aumentarTmpLabel();
+    //logica del whiel
+    const quartInst = new Quartet('','',`${labelInstru}`, TypeOperationQuartet.DECLEET);
+    this.qh.push(quartInst);
+    doWhileI.instructions.forEach((instr)=>{
+      instr.genericQuartet(this);
+    });
+    //cuartetas para la condicion
+    if(doWhileI.condition.rootOp.dato !== null){
+      // crearle un if goto
+      const quartEt = new Quartet('','',`${this.qh.tmpEt()}`, TypeOperationQuartet.DECLEET);
+      this.qh.push(quartEt);
+      doWhileI.condition.generecQuartet(this);
+      const quartRela = new Quartet(`${doWhileI.condition.restult}`,'1','', TypeOperationQuartet.EQUALS);
+      this.qh.push(quartRela);
+      doWhileI.condition.quartets.push(quartRela);
+      //quarteta con goto falso
+      const quartgoFalse = new Quartet('','','', TypeOperationQuartet.GOTOFLASE);
+      this.qh.push(quartgoFalse);
+      doWhileI.condition.quartets.push(quartgoFalse);
+      doWhileI.condition.restult = this.qh.tmpEt();
+      this.qh.aumentarTmpLabel();
+    }else{
+      doWhileI.condition.generecQuartet(this);
+    }
+    const labelEsc = this.qh.tmpEt();
+    this.qh.aumentarTmpLabel();
+    //logica para colocar sus etiquetas falsas y verdaders en los goto
+    doWhileI.condition.quartets.forEach((qt)=>{
+      if(qt.typeOp !== TypeOperationQuartet.GOTOFLASE && qt.result === ''){
+        qt.result = `${labelInstru}`
+      }
+      if(qt.typeOp === TypeOperationQuartet.GOTOFLASE && qt.result === ''){
+        qt.result = `${labelEsc}`
+      }
+    });
+    const quartEsc = new Quartet('','',`${labelEsc}`, TypeOperationQuartet.DECLEET);
+    this.qh.push(quartEsc);
   }
 
   visitfor(fo: ForInstrction): void {
