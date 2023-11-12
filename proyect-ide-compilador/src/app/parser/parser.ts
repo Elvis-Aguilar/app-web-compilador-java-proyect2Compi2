@@ -23,6 +23,7 @@ import { FunMath } from '../logic/instructions/fun-nativas/fun-math';
 import { Sout } from '../logic/instructions/fun-nativas/sout';
 import { TypeFunMath } from '../logic/instructions/fun-nativas/type-fun-math';
 import { Funcion } from '../logic/instructions/funcion/funcion';
+import { getYset } from '../logic/instructions/funcion/get-set';
 import { LlamadaFun } from '../logic/instructions/funcion/llamada-fun';
 import { LlamadaFunGen } from '../logic/instructions/funcion/llamada-fun-gen';
 import { Instruction } from '../logic/instructions/instruction';
@@ -86,6 +87,7 @@ export class Parser {
     parser.yy.AsignObject = asignacionObjec;
     parser.yy.LlamadaFun = LlamadaFun;
     parser.yy.LlamadaFunGen = LlamadaFunGen;
+    parser.yy.getYset=getYset;
   }
 
   /**

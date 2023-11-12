@@ -305,7 +305,7 @@ sent_glo
 /*declaracion variable global*/
 declar_var_glo
     : agrup items PUNTOCOMA                   {$$ = yy.AuxFun.completDeclacionGlobla($2,$1);}
-    | getSet agrup items PUNTOCOMA            {$$ = yy.AuxFun.completDeclacionGlobla($3,$2);     /*resto de logica*/}
+    | getSet agrup items PUNTOCOMA            {$$ = yy.AuxFun.completDeclacionGlobla($3,$2); yy.AuxFun.generarGetSet($1,$2,$3,claseAux);}
     ;
   
 declar_obj_glo
@@ -314,10 +314,10 @@ declar_obj_glo
     ;
 
 getSet
-  : GETTER SETTER
-  | SETTER GETTER
-  | GETTER
-  | SETTER
+  : GETTER SETTER                                   {$$ = yy.getYset.GETYSET;}    
+  | SETTER GETTER                                   {$$ = yy.getYset.SETYGET;}    
+  | GETTER                                          {$$ = yy.getYset.GET;}    
+  | SETTER                                          {$$ = yy.getYset.SET;}
   ;
 
 statc
@@ -441,8 +441,8 @@ sentencia
     | declar_obj                      {$$ = $1;}  
     | llamad_fun PUNTOCOMA            {$$ = new yy.LlamadaFunGen($1);}
     | llamad_fun_obj PUNTOCOMA        {$$ = new yy.LlamadaFunGen($1);}
-    | BREAK PUNTOCOMA                 {$$ = $1;}
-    | CONTINUE PUNTOCOMA              {$$ = $1;}
+    | BREAK PUNTOCOMA                 {/*sin acciones*/}
+    | CONTINUE PUNTOCOMA              {/*sin acciones*/}
     | def_return                      {$$ = $1;}                     
     ;
 

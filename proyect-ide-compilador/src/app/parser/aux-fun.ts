@@ -12,6 +12,10 @@ import { Dato } from '../logic/table-simbol/dato';
 import { TypeOperation } from '../logic/instructions/operations/type-operation';
 import { Visibilidad } from '../logic/table-simbol/visibilidad';
 import { ForInstrction } from '../logic/instructions/bifurcaciones/for-instruction';
+import { getYset } from '../logic/instructions/funcion/get-set';
+import { Clase } from '../logic/class/clase';
+import { Variable } from '../logic/table-simbol/variable';
+import { Funcion } from '../logic/instructions/funcion/funcion';
 
 export class AuxFun {
   completDeclacionGlobla(decs: Declaration[], config: any): Declaration[] {
@@ -85,5 +89,41 @@ export class AuxFun {
     instrcs.push(config[2]);
     const senFor = new ForInstrction(config[0],config[1],instrcs ,token);
     return senFor;
+  }
+
+  generarGetSet(enumGet: getYset, config: any, decl:Declaration[], clase: Clase) {
+    const dec = decl[0];
+    const token = dec.token;
+    const nombreF = token.id[0].toUpperCase() + token.id.slice(1);
+    const parametro: Variable[] = [new Variable(Visibilidad.PUBLIC, false, false, config[3], token.id, token)];
+    const dato = new Dato(config[3], undefined, undefined, undefined, token, true, true);
+    const nodo = new NodoOperation(dato);
+    const tmp = new Operation(nodo)
+    const datoSet = new Dato(config[3], undefined, undefined, undefined, token, true);
+    const nodoSet = new NodoOperation(datoSet);
+    const tmpSet = new Operation(nodoSet)
+    const tokenGet = new Token("return", 0, 0)
+    const instruccionGet: Instruction[] = [new Asignacion(tokenGet, tmp)]
+    const instruccionSet: Instruction[] = [new Asignacion(token, tmpSet, true)]
+    const set = new Funcion(config, new Token(nombreF,token.column,token.line), "set" + nombreF, parametro, instruccionSet);
+    const get = new Funcion(config, new Token(nombreF,token.column,token.line), "get" + nombreF, [], instruccionGet);
+    switch (enumGet) {
+      case getYset.GETYSET:
+        clase.pushFun(get);
+        clase.pushFun(set);
+        break;
+      case getYset.SETYGET:
+        clase.pushFun(set);
+        clase.pushFun(get);
+        break;
+      case getYset.GET:
+        clase.pushFun(get);
+        break;
+      case getYset.SET:
+        clase.pushFun(set);
+        break;
+      default:
+        break;
+    }
   }
 }

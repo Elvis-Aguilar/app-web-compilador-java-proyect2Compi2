@@ -144,13 +144,25 @@ case 26:
 this.$ = yy.AuxFun.completDeclacionGlobla($$[$0-1],$$[$0-2]);
 break;
 case 27:
-this.$ = yy.AuxFun.completDeclacionGlobla($$[$0-1],$$[$0-2]);     /*resto de logica*/
+this.$ = yy.AuxFun.completDeclacionGlobla($$[$0-1],$$[$0-2]); yy.AuxFun.generarGetSet($$[$0-3],$$[$0-2],$$[$0-1],claseAux);
 break;
 case 28: case 99:
 this.$ = new yy.DeclarObject($$[$0-8],new yy.Token($$[$0-7],this._$.first_column, this._$.first_line), $$[$0-2],$$[$0-4]);
 break;
 case 29: case 100:
 this.$ = new yy.DeclarObject($$[$0-4],new yy.Token($$[$0-3],this._$.first_column, this._$.first_line), [],$$[$0-1]);
+break;
+case 30:
+this.$ = yy.getYset.GETYSET;
+break;
+case 31:
+this.$ = yy.getYset.SETYGET;
+break;
+case 32:
+this.$ = yy.getYset.GET;
+break;
+case 33:
+this.$ = yy.getYset.SET;
 break;
 case 35:
 this.$ = false; 
@@ -179,7 +191,7 @@ break;
 case 43:
 this.$ = $$[$0-6].concat($$[$0-2]);
 break;
-case 44: case 88: case 93: case 94: case 174:
+case 44: case 88: case 174:
 this.$ = $$[$0-1];
 break;
 case 45:
@@ -244,6 +256,9 @@ this.$ = [];
 break;
 case 91: case 92:
 this.$ = new yy.LlamadaFunGen($$[$0-1]);
+break;
+case 93: case 94:
+/*sin acciones*/
 break;
 case 96:
 this.$ = new yy.Asignacion(new yy.Token($$[$0-2],this._$.first_column, this._$.first_line),  new yy.Operation($$[$0-1]));
@@ -520,8 +535,10 @@ parse: function parse(input) {
                     }
                 }
                 if (lexer.showPosition) {
+                    this.yy.Errores.getInstance().push(new this.yy.ErrorSintx(yylineno + 1, 0,  lexer.match,"Token no pertenece a la gramatica, se esperaba: "+expected.join(', ') ,this.yy.TypeError.SINTACTICO));
                     errStr = 'Parse error on line ' + (yylineno + 1) + ':\n' + lexer.showPosition() + '\nExpecting ' + expected.join(', ') + ', got \'' + (this.terminals_[symbol] || symbol) + '\'';
                 } else {
+                    this.yy.Errores.getInstance().push(new this.yy.ErrorSintx(yylineno + 1, 0,  lexer.match,"Token no pertenece a la gramatica, se esperaba: } fin de clase" ,this.yy.TypeError.SINTACTICO));
                     errStr = 'Parse error on line ' + (yylineno + 1) + ': Unexpected ' + (symbol == EOF ? 'end of input' : '\'' + (this.terminals_[symbol] || symbol) + '\'');
                 }
                 this.parseError(errStr, {
