@@ -2,6 +2,7 @@ import { Quartet } from './quartet';
 
 export class QuartHandler {
   private tmp: number = 0;
+  private tmpLabel:number = 0;
   quartets: Quartet[] = [];
 
   constructor() {}
@@ -10,8 +11,16 @@ export class QuartHandler {
     return `t${this.tmp}`;
   }
 
+  public tmpEt(): string {
+    return `Et${this.tmpLabel}`;
+  }
+
   public aumentarTmp() {
     this.tmp++;
+  }
+
+  public aumentarTmpLabel() {
+    this.tmpLabel++;
   }
 
   public push(q: Quartet) {
@@ -24,5 +33,9 @@ export class QuartHandler {
 
   public setTmp(value:number){
     this.tmp = value;
+  }
+
+  public setLabel(value:number){
+    this.tmpLabel = value;
   }
 }

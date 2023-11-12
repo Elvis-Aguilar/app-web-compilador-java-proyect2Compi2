@@ -17,7 +17,8 @@ export class IfInstruction extends Instruction {
   symbolTable!: SymbolTable;
   ElseIfInstruction!: IfInstruction;
   ElseInstruction!: ElseInstruction;
-  token:Token
+  token:Token;
+  labelInstruc:string = '';
 
   constructor(
     instructions: Instruction[],
@@ -31,7 +32,7 @@ export class IfInstruction extends Instruction {
   }
 
   genericQuartet(vi: Visitor): void {
-    //TODO: implemet metod
+    vi.visitIf(this);
   }
 
   execute(vi: Visitor): void {
@@ -40,7 +41,6 @@ export class IfInstruction extends Instruction {
 
   referenciarSymbolTable(vi: Visitor, symbolTablePadre: SymbolTable): void {
     this.symbolTable = new SymbolTable('if');
-    this.symbolTable.pos = symbolTablePadre.pos+1;
     this.symbolTable.symbolTablePadre = symbolTablePadre;
     vi.visitIf(this);
   }

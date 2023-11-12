@@ -1,4 +1,3 @@
-
 package com.cunoc.compi.models;
 
 /**
@@ -19,5 +18,13 @@ public enum TypeOperationQuartet {
     CONCATCADEENTERO,
     CONCATCADECADE,
     IMPRIMIR,
-    DECLARPROTOTIPO
+    DECLARPROTOTIPO,
+    DECLEET,
+    GOTOFLASE,
+    EQUALS,
+    DIFERENTE,
+    MAYORQ,
+    MAYOROI,
+    MENORQ,
+    MENOROI,
 }

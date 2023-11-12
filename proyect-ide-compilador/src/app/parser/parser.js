@@ -128,7 +128,7 @@ break;
 case 19:
 this.$=[];
 break;
-case 20: case 21: case 25: case 49: case 77: case 78: case 79: case 80: case 81: case 82: case 83: case 84: case 85: case 86: case 87: case 89: case 90: case 95: case 126: case 132: case 137: case 175: case 176: case 177:
+case 20: case 21: case 25: case 49: case 77: case 78: case 79: case 80: case 81: case 82: case 83: case 84: case 85: case 86: case 87: case 89: case 90: case 95: case 126: case 132: case 137: case 173: case 175: case 176: case 177:
 this.$ = $$[$0];
 break;
 case 22:
@@ -179,7 +179,7 @@ break;
 case 43:
 this.$ = $$[$0-6].concat($$[$0-2]);
 break;
-case 44: case 88: case 93: case 94:
+case 44: case 88: case 93: case 94: case 174:
 this.$ = $$[$0-1];
 break;
 case 45:
@@ -419,35 +419,29 @@ break;
 case 172:
 this.$ = new yy.NodoOperation(null, null, $$[$0], yy.TypeOperation.NOT, new yy.Token($$[$0],this._$.first_column, this._$.first_line));
 break;
-case 173:
-this.$ = new yy.NodoOperation($$[$0]);
-break;
-case 174:
-this.$ = new yy.NodoOperation($$[$0-2]);
-break;
 case 178:
-this.$ = new yy.Dato(yy.TypeDato.INT, parseInt($$[$0]), "", false, new yy.Token($$[$0],this._$.first_column, this._$.first_line));
+this.$ = new yy.NodoOperation(new yy.Dato(yy.TypeDato.INT, parseInt($$[$0]), "", false, new yy.Token($$[$0],this._$.first_column, this._$.first_line)));
 break;
 case 179:
-this.$ = new yy.Dato(yy.TypeDato.FLOAT, parseFloat($$[$0]), "", false, new yy.Token($$[$0],this._$.first_column, this._$.first_line));
+this.$ = new yy.NodoOperation(new yy.Dato(yy.TypeDato.FLOAT, parseFloat($$[$0]), "", false, new yy.Token($$[$0],this._$.first_column, this._$.first_line)));
 break;
 case 180:
-this.$ = new yy.Dato(yy.TypeDato.STRING, 1,$$[$0].substr(1,yyleng-2), false, new yy.Token($$[$0],this._$.first_column, this._$.first_line));
+this.$ = new yy.NodoOperation(new yy.Dato(yy.TypeDato.STRING, 1,$$[$0].substr(1,yyleng-2), false, new yy.Token($$[$0],this._$.first_column, this._$.first_line)));
 break;
 case 181:
-this.$ = new yy.Dato(yy.TypeDato.CHAR, 1,$$[$0].substr(1,yyleng-2), false, new yy.Token($$[$0],this._$.first_column, this._$.first_line));
+this.$ = new yy.NodoOperation(new yy.Dato(yy.TypeDato.CHAR, 1,$$[$0].substr(1,yyleng-2), false, new yy.Token($$[$0],this._$.first_column, this._$.first_line)));
 break;
 case 182:
-this.$ = new yy.Dato(yy.TypeDato.BOOLEAN, 1,"", true, new yy.Token($$[$0],this._$.first_column, this._$.first_line));
+this.$ = new yy.NodoOperation(new yy.Dato(yy.TypeDato.BOOLEAN, 1,"", true, new yy.Token($$[$0],this._$.first_column, this._$.first_line)));
 break;
 case 183:
-this.$ = new yy.Dato(yy.TypeDato.BOOLEAN, 1,"", false, new yy.Token($$[$0],this._$.first_column, this._$.first_line));
+this.$ = new yy.NodoOperation(new yy.Dato(yy.TypeDato.BOOLEAN, 1,"", false, new yy.Token($$[$0],this._$.first_column, this._$.first_line)));
 break;
 case 184:
-this.$ = new yy.Dato(yy.TypeDato.INT, 1,"", false, new yy.Token($$[$0],this._$.first_column, this._$.first_line), true);
+this.$ = new yy.NodoOperation(new yy.Dato(yy.TypeDato.INT, 1,"", false, new yy.Token($$[$0],this._$.first_column, this._$.first_line), true));
 break;
 case 185:
-this.$ = new yy.Dato(yy.TypeDato.INT, 1, '',false, new yy.Token($$[$0], this._$.first_column, this._$.first_line), true,  true );
+this.$ = new yy.NodoOperation(new yy.Dato(yy.TypeDato.INT, 1, '',false, new yy.Token($$[$0], this._$.first_column, this._$.first_line), true,  true ));
 break;
 case 186:
 this.$ = new yy.FunMath(new yy.Token($$[$0-4],this._$.first_column, this._$.first_line), yy.TypeFunMath.MATHABS,$$[$0-2]);

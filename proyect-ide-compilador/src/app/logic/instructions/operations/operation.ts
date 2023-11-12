@@ -1,3 +1,4 @@
+import { Quartet } from '../../quartets/quartet';
 import { Dato } from '../../table-simbol/dato';
 import { SymbolTable } from '../../table-simbol/symbol-table';
 import { Visitor } from '../../visitors/visitor';
@@ -7,6 +8,7 @@ export class Operation {
   rootOp: NodoOperation;
   restult: string = '';
   symbolTable!: SymbolTable;
+  quartets: Quartet[] = [];
 
   constructor(rootOp: NodoOperation) {
     this.rootOp = rootOp;

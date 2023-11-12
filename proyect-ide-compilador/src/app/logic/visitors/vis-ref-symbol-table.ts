@@ -82,8 +82,8 @@ export class VisRefSymbolTable extends Visitor {
     ifI.instructions.forEach((instr) => {
       instr.referenciarSymbolTable(this, ifI.symbolTable);
     });
-    ifI.ElseIfInstruction?.referenciarSymbolTable(this, ifI.symbolTable);
-    ifI.ElseInstruction?.referenciarSymbolTable(this, ifI.symbolTable);
+    ifI.ElseIfInstruction?.referenciarSymbolTable(this, ifI.symbolTable.symbolTablePadre);
+    ifI.ElseInstruction?.referenciarSymbolTable(this, ifI.symbolTable.symbolTablePadre);
     ifI.condition.referenciarSymbolTable(this, ifI.symbolTable);
   }
 

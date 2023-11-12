@@ -31,7 +31,7 @@ export class WhileInstruction extends Instruction {
     vi.visitWhile(this);
   }
   genericQuartet(vi: Visitor): void {
-    //TODO: Method not implemented.
+    vi.visitWhile(this)
   }
 
   valorCondicion(vi:Visitor):boolean{
@@ -47,7 +47,6 @@ export class WhileInstruction extends Instruction {
 
   referenciarSymbolTable(vi: Visitor, symbolTablePadre: SymbolTable): void {
     this.symbolTable = new SymbolTable('while');
-    this.symbolTable.pos = symbolTablePadre.pos+1;
     this.symbolTable.symbolTablePadre = symbolTablePadre;
     vi.visitWhile(this);
   }

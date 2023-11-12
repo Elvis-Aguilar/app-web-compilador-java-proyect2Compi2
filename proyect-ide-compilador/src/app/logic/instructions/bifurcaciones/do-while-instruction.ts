@@ -26,7 +26,7 @@ export class DoWhileInstruction extends Instruction {
     vi.visitDoWhile(this);
   }
   genericQuartet(vi: Visitor): void {
-    //TODO: Method not implemented.
+    vi.visitDoWhile(this);
   }
 
   valorCondicion(vi: Visitor): boolean {
@@ -51,7 +51,6 @@ export class DoWhileInstruction extends Instruction {
 
   referenciarSymbolTable(vi: Visitor, symbolTablePadre: SymbolTable): void {
     this.symbolTable = new SymbolTable('do-while');
-    this.symbolTable.pos = symbolTablePadre.pos+1;
     this.symbolTable.symbolTablePadre = symbolTablePadre;
     vi.visitDoWhile(this);
   }

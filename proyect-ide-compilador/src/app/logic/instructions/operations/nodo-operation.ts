@@ -18,6 +18,7 @@ export class NodoOperation {
   symbolTable!: SymbolTable;
   pos:number = 0;
   typeDato!:TypeDato;
+  quartets: Quartet[] = [];
 
   constructor(
     dato?: Dato,
@@ -130,6 +131,24 @@ export class NodoOperation {
       case TypeOperation.DIVISION:
         type = TypeOperationQuartet.DIVISION;
         break;
+      case TypeOperation.MAYORQ:
+        type = TypeOperationQuartet.MAYORQ;
+        break;
+      case TypeOperation.MENORQ:
+        type = TypeOperationQuartet.MENORQ;
+        break;
+      case TypeOperation.MAYOROI:
+        type = TypeOperationQuartet.MAYOROI;
+        break;
+      case TypeOperation.MENOROI:
+        type = TypeOperationQuartet.MENOROI;
+        break;
+      case TypeOperation.EQUALS:
+        type = TypeOperationQuartet.EQUALS;
+        break;
+      case TypeOperation.DIFERENTE:
+        type = TypeOperationQuartet.DIFERENTE;
+        break;
     }
     return type;
   }
@@ -212,4 +231,61 @@ export class NodoOperation {
     return resu;
 
   }
+
+  public opSimple():boolean{
+    let simple = false;
+    switch (this.typeOp) {
+      case TypeOperation.SUMA:
+        simple = true;
+        break;
+      case TypeOperation.RESTA:
+        simple = true;
+        break;
+      case TypeOperation.MULTIPLICACION:
+        simple = true;
+        break;
+      case TypeOperation.DIVISION:
+        simple = true;
+        break;
+      default:
+        simple = false;
+        break;
+    }
+
+    return simple;
+  }
+
+  public isRelacionales():boolean{
+    let simple = false;
+    switch (this.typeOp) {
+      case TypeOperation.MAYOROI:
+        simple = true;
+        break;
+      case TypeOperation.MENOROI:
+        simple = true;
+        break;
+      case TypeOperation.MENORQ:
+        simple = true;
+        break;
+      case TypeOperation.MAYORQ:
+        simple = true;
+        break;
+      case TypeOperation.EQUALS:
+        simple = true;
+        break;
+      case TypeOperation.DIFERENTE:
+        simple = true;
+        break;
+      default:
+        simple = false;
+        break;
+    }
+
+    return simple;
+  }
+
+  public push(q:Quartet){
+    this.quartets.push(q);
+  }
+
 }

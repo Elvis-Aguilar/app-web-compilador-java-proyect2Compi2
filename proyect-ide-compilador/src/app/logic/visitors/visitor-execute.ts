@@ -354,7 +354,7 @@ export class VisitorExecute extends Visitor {
     const dato = dec.op?.execute(this);
     dec.typeAsignar = dato?.typeDato || TypeDato.INT;
     if (dato && dato.typeDato !== dec.typeDato) {
-      const msj = 'El tipo a asignar no es equivalente tipo de la variable' +dato.typeDato ;
+      const msj = 'El tipo a asignar no es equivalente tipo de la variable' ;
       ErrorSingleton.getInstance().push(
         new Error(
           dec.token.line,
@@ -444,6 +444,7 @@ export class VisitorExecute extends Visitor {
   }
 
   visitIf(ifI: IfInstruction): void {
+    ifI.symbolTable.pos = ifI.symbolTable.symbolTablePadre.getPosition();
     ifI.volorCondicion(this);
     ifI.instructions.forEach((instru) => {
       instru.execute(this);
@@ -457,12 +458,14 @@ export class VisitorExecute extends Visitor {
   }
 
   visitElse(elseI: ElseInstruction): void {
+    elseI.symbolTable.pos = elseI.symbolTable.symbolTablePadre.getPosition();
     elseI.instructions.forEach((instru) => {
       instru.execute(this);
     });
   }
 
   visitWhile(whileI: WhileInstruction): void {
+    whileI.symbolTable.pos = whileI.symbolTable.symbolTablePadre.getPosition();
     whileI.valorCondicion(this);
     whileI.instructions.forEach((instru) => {
       instru.execute(this);
@@ -470,6 +473,7 @@ export class VisitorExecute extends Visitor {
   }
 
   visitDoWhile(doWhileI: DoWhileInstruction): void {
+    doWhileI.symbolTable.pos = doWhileI.symbolTable.symbolTablePadre.getPosition();
     doWhileI.instructions.forEach((instr) => {
       instr.execute(this);
     });
@@ -481,12 +485,14 @@ export class VisitorExecute extends Visitor {
   }
 
   visitCaseSwitch(caseSwitchI: CaseSwitchInstruction): void {
+    caseSwitchI.symbolTable.pos = caseSwitchI.symbolTable.symbolTablePadre.getPosition();
     caseSwitchI.instructions.forEach((instr) => {
       instr.execute(this);
     });
   }
 
   visitfor(fo: ForInstrction): void {
+    fo.symbolTable.pos = fo.symbolTable.symbolTablePadre.getPosition();
     fo.instrcInicial.execute(this);
     fo.valorCondicion(this);
     fo.instructions.forEach((instr) => {

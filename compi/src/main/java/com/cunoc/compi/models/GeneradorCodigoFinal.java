@@ -69,6 +69,30 @@ public class GeneradorCodigoFinal {
             case IMPRIMIR:
                 this.result += "printf("+quartete.getOp1()+", "+quartete.getResult()+");\n";
                 break;
+            case DECLEET:
+                this.result += quartete.getResult()+":\n";
+                break;
+            case GOTOFLASE:
+                this.result += "goto "+quartete.getResult()+";\n";
+                break;
+            case EQUALS:
+                this.result += "if ("+quartete.getOp1()+" == "+quartete.getOp2()+") goto "+quartete.getResult()+";\n";
+                break;
+            case DIFERENTE:
+                this.result += "if ("+quartete.getOp1()+" != "+quartete.getOp2()+") goto "+quartete.getResult()+";\n";
+                break;
+            case MAYORQ:
+                this.result += "if ("+quartete.getOp1()+" > "+quartete.getOp2()+") goto "+quartete.getResult()+";\n";
+                break;
+            case MAYOROI:
+                this.result += "if ("+quartete.getOp1()+" >= "+quartete.getOp2()+") goto "+quartete.getResult()+";\n";
+                break;
+            case MENORQ:
+                this.result += "if ("+quartete.getOp1()+" < "+quartete.getOp2()+") goto "+quartete.getResult()+";\n";
+                break;
+            case MENOROI:
+                this.result += "if ("+quartete.getOp1()+" <= "+quartete.getOp2()+") goto "+quartete.getResult()+";\n";
+                break;
         }
     }
 

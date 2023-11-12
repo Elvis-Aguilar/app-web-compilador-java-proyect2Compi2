@@ -19,7 +19,7 @@ export class SymbolTable {
   }
 
   addVariable(variable: Variable) {
-    const variableExistente = this.buscarEnCadaSubTabla(variable.token);
+    const variableExistente = this.buscarEnTodasLasTAblas(variable.token);
     if (variableExistente) {
       const msj = 'La variable ya existe';
       ErrorSingleton.getInstance().push(
@@ -81,6 +81,17 @@ export class SymbolTable {
     let variable = this.variables.find((v) => v.id === tok.id);
     if (variable) {
       return variable;
+    }
+  }
+
+  private buscarEnTodasLasTAblas(tok: Token): Variable | void {
+    let variable = this.variables.find((v) => v.id === tok.id);
+    if (variable) {
+      return variable;
+    }else{
+      if (this.symbolTablePadre) {
+        return this.symbolTablePadre.buscarEnTodasLasTAblas(tok);
+      }
     }
   }
 

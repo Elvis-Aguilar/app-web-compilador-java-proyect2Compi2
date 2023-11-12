@@ -632,22 +632,22 @@ exp
   | exp OR exp                              {$$ = new yy.NodoOperation(null, $1, $3, yy.TypeOperation.OR, new yy.Token($2,this._$.first_column, this._$.first_line));}
   | exp AND exp                             {$$ = new yy.NodoOperation(null, $1, $3, yy.TypeOperation.AND, new yy.Token($2,this._$.first_column, this._$.first_line));}
   | NOT exp                                 {$$ = new yy.NodoOperation(null, null, $2, yy.TypeOperation.NOT, new yy.Token($2,this._$.first_column, this._$.first_line));}
-  | ter_exp                                 {$$ = new yy.NodoOperation($1);}
-  | PARENTESA exp PARENTESC                 {$$ = new yy.NodoOperation($1);}
+  | ter_exp                                 {$$ = $1;}
+  | PARENTESA exp PARENTESC                 {$$ = $2;}
   | fun_math                                {$$ = $1;}
   | llamad_fun                              {$$ = $1;}
   | llamad_fun_obj                          {$$ = $1;}
   ;
 
 ter_exp
-      : ENTERO                                      {$$ = new yy.Dato(yy.TypeDato.INT, parseInt($1), "", false, new yy.Token($1,this._$.first_column, this._$.first_line));}
-      | DECIMAL                                     {$$ = new yy.Dato(yy.TypeDato.FLOAT, parseFloat($1), "", false, new yy.Token($1,this._$.first_column, this._$.first_line));}
-      | CADENA                                      {$$ = new yy.Dato(yy.TypeDato.STRING, 1,$1.substr(1,yyleng-2), false, new yy.Token($1,this._$.first_column, this._$.first_line));}  
-      | CARACTER                                    {$$ = new yy.Dato(yy.TypeDato.CHAR, 1,$1.substr(1,yyleng-2), false, new yy.Token($1,this._$.first_column, this._$.first_line));}  
-      | TRUE                                        {$$ = new yy.Dato(yy.TypeDato.BOOLEAN, 1,"", true, new yy.Token($1,this._$.first_column, this._$.first_line));}
-      | FALSE                                       {$$ = new yy.Dato(yy.TypeDato.BOOLEAN, 1,"", false, new yy.Token($1,this._$.first_column, this._$.first_line));}
-      | ID                                          {$$ = new yy.Dato(yy.TypeDato.INT, 1,"", false, new yy.Token($1,this._$.first_column, this._$.first_line), true);}
-      | THIS PUNTO ID                               {$$ = new yy.Dato(yy.TypeDato.INT, 1, '',false, new yy.Token($3, this._$.first_column, this._$.first_line), true,  true );}
+      : ENTERO                                      {$$ = new yy.NodoOperation(new yy.Dato(yy.TypeDato.INT, parseInt($1), "", false, new yy.Token($1,this._$.first_column, this._$.first_line)));}
+      | DECIMAL                                     {$$ = new yy.NodoOperation(new yy.Dato(yy.TypeDato.FLOAT, parseFloat($1), "", false, new yy.Token($1,this._$.first_column, this._$.first_line)));}
+      | CADENA                                      {$$ = new yy.NodoOperation(new yy.Dato(yy.TypeDato.STRING, 1,$1.substr(1,yyleng-2), false, new yy.Token($1,this._$.first_column, this._$.first_line)));}  
+      | CARACTER                                    {$$ = new yy.NodoOperation(new yy.Dato(yy.TypeDato.CHAR, 1,$1.substr(1,yyleng-2), false, new yy.Token($1,this._$.first_column, this._$.first_line)));}  
+      | TRUE                                        {$$ = new yy.NodoOperation(new yy.Dato(yy.TypeDato.BOOLEAN, 1,"", true, new yy.Token($1,this._$.first_column, this._$.first_line)));}
+      | FALSE                                       {$$ = new yy.NodoOperation(new yy.Dato(yy.TypeDato.BOOLEAN, 1,"", false, new yy.Token($1,this._$.first_column, this._$.first_line)));}
+      | ID                                          {$$ = new yy.NodoOperation(new yy.Dato(yy.TypeDato.INT, 1,"", false, new yy.Token($1,this._$.first_column, this._$.first_line), true));}
+      | THIS PUNTO ID                               {$$ = new yy.NodoOperation(new yy.Dato(yy.TypeDato.INT, 1, '',false, new yy.Token($3, this._$.first_column, this._$.first_line), true,  true ));}
       ;
 
 /*gramatica para las clases math*/

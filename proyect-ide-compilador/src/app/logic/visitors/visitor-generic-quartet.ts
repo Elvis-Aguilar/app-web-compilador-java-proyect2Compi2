@@ -21,6 +21,7 @@ import { LlamadaFun } from '../instructions/funcion/llamada-fun';
 import { LlamadaFunGen } from '../instructions/funcion/llamada-fun-gen';
 import { NodoOperation } from '../instructions/operations/nodo-operation';
 import { Operation } from '../instructions/operations/operation';
+import { TypeOperation } from '../instructions/operations/type-operation';
 import { Quartet } from '../quartets/quartet';
 import { QuartHandler } from '../quartets/quartHandler';
 import { TypeOperationQuartet } from '../quartets/type-operation-quartet';
@@ -425,6 +426,7 @@ export class VisitorGenericQuartet extends Visitor {
   visitOp(op: Operation): void {
     op.rootOp.genericQuatern(this);
     op.restult = op.rootOp.result;
+    op.quartets = op.rootOp.quartets;
   }
 
   visitNodoOP(nodo: NodoOperation): void {
@@ -441,85 +443,158 @@ export class VisitorGenericQuartet extends Visitor {
         return;
       }
     }
-    nodo.opLeft?.genericQuatern(this);
-    nodo.opRight?.genericQuatern(this);
-    const typ = nodo.opLeft?.typeCrear();
-    if(typ){
-      switch(typ){
-        case 'char':
-          //una concatenacion
-          const quartInicial = new Quartet('\"\"', '', `char ${this.qh.tmpVar()}[45]`, TypeOperationQuartet.ASIGNATION); 
-          this.qh.push(quartInicial);
-          nodo.result = this.qh.tmpVar();
-          this.qh.aumentarTmp();
-          const quartCadeCharIni= new Quartet(`${nodo.opLeft?.result}`,'', `${nodo.result}`, TypeOperationQuartet.CONCATCADECADE); 
-          this.qh.push(quartCadeCharIni); 
-          const typeRight = nodo.opRight?.typeDato;
-          switch(typeRight){
-            case TypeDato.INT:
-              const quartCadeInt = new Quartet(`strlen(${nodo.result}),`, `\"%d\", ${nodo.opRight?.result}`, `${nodo.result}`, TypeOperationQuartet.CONCATCADEENTERO); 
-              this.qh.push(quartCadeInt);
-            break;
-            case TypeDato.BOOLEAN:
-              const quartCadeBool = new Quartet(`strlen(${nodo.result}),`, `\"%d\", ${nodo.opRight?.result}`, `${nodo.result}`, TypeOperationQuartet.CONCATCADEENTERO); 
-              this.qh.push(quartCadeBool);
-            break;
-            case TypeDato.CHAR:
-              const quartCadeChar= new Quartet(`${nodo.opRight?.result}`,'', `${nodo.result}`, TypeOperationQuartet.CONCATCADECADE); 
-              this.qh.push(quartCadeChar);
-            break;
-            case TypeDato.FLOAT:
-              const quartCadeFloat = new Quartet(`strlen(${nodo.result}),`, `\"%f\", ${nodo.opRight?.result}`, `${nodo.result}`, TypeOperationQuartet.CONCATCADEENTERO); 
-              this.qh.push(quartCadeFloat);
-            break;
-            case TypeDato.STRING:
-              const quartCadeString= new Quartet(`${nodo.opRight?.result}`,'', `${nodo.result}`, TypeOperationQuartet.CONCATCADECADE); 
-              this.qh.push(quartCadeString);
-            break;
-            case TypeDato.VOID:
-              const quartCadeVoid = new Quartet(`strlen(${nodo.result}),`, `\"%d\", ${nodo.opRight?.result}`, `${nodo.result}`, TypeOperationQuartet.CONCATCADEENTERO); 
-              this.qh.push(quartCadeVoid);
-            break;
-            default:
-              const quartCadeObject = new Quartet(`strlen(${nodo.result}),`, `\"%d\", ${nodo.opRight?.result}`, `${nodo.result}`, TypeOperationQuartet.CONCATCADEENTERO); 
-              this.qh.push(quartCadeObject);
+    if (nodo.opSimple()) {
+      nodo.opLeft?.genericQuatern(this);
+      nodo.opRight?.genericQuatern(this);
+      const typ = nodo.opLeft?.typeCrear();
+      if(typ){
+        switch(typ){
+          case 'char':
+            //una concatenacion
+            const quartInicial = new Quartet('\"\"', '', `char ${this.qh.tmpVar()}[45]`, TypeOperationQuartet.ASIGNATION); 
+            this.qh.push(quartInicial);
+            nodo.result = this.qh.tmpVar();
+            this.qh.aumentarTmp();
+            const quartCadeCharIni= new Quartet(`${nodo.opLeft?.result}`,'', `${nodo.result}`, TypeOperationQuartet.CONCATCADECADE); 
+            this.qh.push(quartCadeCharIni); 
+            const typeRight = nodo.opRight?.typeDato;
+            switch(typeRight){
+              case TypeDato.INT:
+                const quartCadeInt = new Quartet(`strlen(${nodo.result}),`, `\"%d\", ${nodo.opRight?.result}`, `${nodo.result}`, TypeOperationQuartet.CONCATCADEENTERO); 
+                this.qh.push(quartCadeInt);
               break;
-          }
-        break;
-        case 'int':
-          const quaOp = new Quartet(
-            `${nodo.opLeft?.result}`,
-            `${nodo.opRight?.result}`,
-            `int ${this.qh.tmpVar()}`,
-            nodo.typeQuartetOperation()
-          );
-          this.qh.push(quaOp);
-          nodo.result = this.qh.tmpVar();
-          this.qh.aumentarTmp();
-        break;
-        case 'float':
-          const quaOpFl = new Quartet(
-            `${nodo.opLeft?.result}`,
-            `${nodo.opRight?.result}`,
-            `float ${this.qh.tmpVar()}`,
-            nodo.typeQuartetOperation()
-          );
-          this.qh.push(quaOpFl);
-          nodo.result = this.qh.tmpVar();
-          this.qh.aumentarTmp();
-        break;
+              case TypeDato.BOOLEAN:
+                const quartCadeBool = new Quartet(`strlen(${nodo.result}),`, `\"%d\", ${nodo.opRight?.result}`, `${nodo.result}`, TypeOperationQuartet.CONCATCADEENTERO); 
+                this.qh.push(quartCadeBool);
+              break;
+              case TypeDato.CHAR:
+                const quartCadeChar= new Quartet(`${nodo.opRight?.result}`,'', `${nodo.result}`, TypeOperationQuartet.CONCATCADECADE); 
+                this.qh.push(quartCadeChar);
+              break;
+              case TypeDato.FLOAT:
+                const quartCadeFloat = new Quartet(`strlen(${nodo.result}),`, `\"%f\", ${nodo.opRight?.result}`, `${nodo.result}`, TypeOperationQuartet.CONCATCADEENTERO); 
+                this.qh.push(quartCadeFloat);
+              break;
+              case TypeDato.STRING:
+                const quartCadeString= new Quartet(`${nodo.opRight?.result}`,'', `${nodo.result}`, TypeOperationQuartet.CONCATCADECADE); 
+                this.qh.push(quartCadeString);
+              break;
+              case TypeDato.VOID:
+                const quartCadeVoid = new Quartet(`strlen(${nodo.result}),`, `\"%d\", ${nodo.opRight?.result}`, `${nodo.result}`, TypeOperationQuartet.CONCATCADEENTERO); 
+                this.qh.push(quartCadeVoid);
+              break;
+              default:
+                const quartCadeObject = new Quartet(`strlen(${nodo.result}),`, `\"%d\", ${nodo.opRight?.result}`, `${nodo.result}`, TypeOperationQuartet.CONCATCADEENTERO); 
+                this.qh.push(quartCadeObject);
+                break;
+            }
+          break;
+          case 'int':
+            const quaOp = new Quartet(
+              `${nodo.opLeft?.result}`,
+              `${nodo.opRight?.result}`,
+              `int ${this.qh.tmpVar()}`,
+              nodo.typeQuartetOperation()
+            );
+            this.qh.push(quaOp);
+            nodo.result = this.qh.tmpVar();
+            this.qh.aumentarTmp();
+          break;
+          case 'float':
+            const quaOpFl = new Quartet(
+              `${nodo.opLeft?.result}`,
+              `${nodo.opRight?.result}`,
+              `float ${this.qh.tmpVar()}`,
+              nodo.typeQuartetOperation()
+            );
+            this.qh.push(quaOpFl);
+            nodo.result = this.qh.tmpVar();
+            this.qh.aumentarTmp();
+          break;
+        }
+      }else{
+        const quaOp = new Quartet(
+          `${nodo.opLeft?.result}`,
+          `${nodo.opRight?.result}`,
+          `int ${this.qh.tmpVar()}`,
+          nodo.typeQuartetOperation()
+        );
+        this.qh.push(quaOp);
+        nodo.result = this.qh.tmpVar();
+        this.qh.aumentarTmp();
       }
-      
     }else{
-      const quaOp = new Quartet(
-        `${nodo.opLeft?.result}`,
-        `${nodo.opRight?.result}`,
-        `int ${this.qh.tmpVar()}`,
-        nodo.typeQuartetOperation()
-      );
-      this.qh.push(quaOp);
-      nodo.result = this.qh.tmpVar();
-      this.qh.aumentarTmp();
+      //cuartetas para < , > == etc operaciones relacionales
+      if (nodo.isRelacionales()) {
+        //se declata la etiqueta
+        const quartEt = new Quartet('','',`${this.qh.tmpEt()}`, TypeOperationQuartet.DECLEET);
+        this.qh.push(quartEt);
+        nodo.result = this.qh.tmpEt();
+        this.qh.aumentarTmpLabel();
+        //realizar las operaciones
+        nodo.opLeft?.genericQuatern(this);
+        nodo.opRight?.genericQuatern(this);
+        //compracion relacionales (quarteta goto verdadero)
+        const quartRela = new Quartet(`${nodo.opLeft?.result}`,`${nodo.opRight?.result}`,'', nodo.typeQuartetOperation());
+        this.qh.push(quartRela);
+        nodo.push(quartRela);
+        //quarteta con goto falso
+        const quartgoFalse = new Quartet('','','', TypeOperationQuartet.GOTOFLASE);
+        this.qh.push(quartgoFalse);
+        nodo.push(quartgoFalse);
+      }else{
+        //asignar etiquetas verdaderas y falsas con operaciones logicas
+        if(!nodo.opLeft?.isRelacionales()){
+          const quartEt = new Quartet('','',`${this.qh.tmpEt()}`, TypeOperationQuartet.DECLEET);
+          this.qh.push(quartEt);
+          nodo.opLeft?.genericQuatern(this);
+          if (nodo.opLeft) {
+            const quartRela = new Quartet(`${nodo.opLeft?.result}`,'1','', TypeOperationQuartet.EQUALS);
+            this.qh.push(quartRela);
+            nodo.opLeft.push(quartRela);
+            //quarteta con goto falso
+            const quartgoFalse = new Quartet('','','', TypeOperationQuartet.GOTOFLASE);
+            this.qh.push(quartgoFalse);
+            nodo.opLeft.push(quartgoFalse);
+            nodo.opLeft.result = this.qh.tmpEt();
+            this.qh.aumentarTmpLabel();
+          }
+        }else{
+          nodo.opLeft.genericQuatern(this);
+        }
+        if(!nodo.opRight?.isRelacionales()){
+          const quartEt = new Quartet('','',`${this.qh.tmpEt()}`, TypeOperationQuartet.DECLEET);
+          this.qh.push(quartEt);
+          nodo.opRight?.genericQuatern(this);
+          if (nodo.opRight) {
+            const quartRela = new Quartet(`${nodo.opRight?.result}`,'1','', TypeOperationQuartet.EQUALS);
+            this.qh.push(quartRela);
+            nodo.opRight.push(quartRela);
+            //quarteta con goto falso
+            const quartgoFalse = new Quartet('','','', TypeOperationQuartet.GOTOFLASE);
+            this.qh.push(quartgoFalse);
+            nodo.opRight.push(quartgoFalse);
+            nodo.opRight.result = this.qh.tmpEt();
+            this.qh.aumentarTmpLabel();
+          }
+        }else{
+          nodo.opRight.genericQuatern(this);
+        }
+        if (nodo.opLeft && nodo.opRight) {
+          nodo.opLeft.quartets.forEach((qt)=>{
+            nodo.push(qt);
+          })
+          nodo.opRight.quartets.forEach((qt)=>{
+            nodo.push(qt);
+          })
+        }
+        if(nodo.typeOp === TypeOperation.AND){
+          nodo.quartets[0].result=`${nodo.opRight?.result}`
+        }else{//es orr
+          nodo.quartets[1].result=`${nodo.opRight?.result}`
+        }
+        nodo.result = nodo.opLeft?.result||''
+      }
     }
 
   }
@@ -730,19 +805,145 @@ export class VisitorGenericQuartet extends Visitor {
   }
 
   visitIf(ifI: IfInstruction): void {
-    throw new Error('Method not implemented.');
+    if(ifI.labelInstruc !== ''){
+      const quartInst = new Quartet('','',`${ifI.labelInstruc}`, TypeOperationQuartet.DECLEET);
+      this.qh.push(quartInst);
+    }
+    if(ifI.condition.rootOp.dato !== null){
+      // crearle un if goto
+      const quartEt = new Quartet('','',`${this.qh.tmpEt()}`, TypeOperationQuartet.DECLEET);
+      this.qh.push(quartEt);
+      ifI.condition.generecQuartet(this);
+      const quartRela = new Quartet(`${ifI.condition.restult}`,'1','', TypeOperationQuartet.EQUALS);
+      this.qh.push(quartRela);
+      ifI.condition.quartets.push(quartRela);
+      //quarteta con goto falso
+      const quartgoFalse = new Quartet('','','', TypeOperationQuartet.GOTOFLASE);
+      this.qh.push(quartgoFalse);
+      ifI.condition.quartets.push(quartgoFalse);
+      ifI.condition.restult = this.qh.tmpEt();
+      this.qh.aumentarTmpLabel();
+    }else{
+      ifI.condition.generecQuartet(this);
+    }
+    //creanod las etiquetas para la logica del if
+    ifI.labelInstruc= this.qh.tmpEt();
+    this.qh.aumentarTmpLabel();
+    const labelSalida = this.qh.tmpEt();
+    this.qh.aumentarTmpLabel();    
+    let lableFalse = '';
+    //agregando etiquetas para casos verdaderos y casos falsos
+    ifI.condition.quartets.forEach((qt)=>{
+      if(qt.typeOp !== TypeOperationQuartet.GOTOFLASE && qt.result === ''){
+        qt.result = `${ifI.labelInstruc}`
+      }
+    });
+    if (ifI.ElseInstruction) {
+      lableFalse =this.qh.tmpEt();
+      this.qh.aumentarTmpLabel();
+      ifI.condition.quartets.forEach((qt)=>{
+        if(qt.typeOp === TypeOperationQuartet.GOTOFLASE && qt.result === ''){
+          qt.result = `${lableFalse}`
+        }
+      });
+    }
+    if (ifI.ElseIfInstruction) {
+      lableFalse =this.qh.tmpEt();
+      this.qh.aumentarTmpLabel();
+      ifI.condition.quartets.forEach((qt)=>{
+        if(qt.typeOp === TypeOperationQuartet.GOTOFLASE && qt.result === ''){
+          qt.result = `${lableFalse}`
+        }
+      });
+    }
+    if(!ifI.ElseInstruction && !ifI.ElseIfInstruction){
+      ifI.condition.quartets.forEach((qt)=>{
+        if(qt.typeOp === TypeOperationQuartet.GOTOFLASE && qt.result === ''){
+          qt.result = `${labelSalida}`
+        }
+      });
+    }
+    //logica del if
+    const quartInst = new Quartet('','',`${ifI.labelInstruc}`, TypeOperationQuartet.DECLEET);
+    this.qh.push(quartInst);
+    ifI.instructions.forEach((instr)=>{
+      instr.genericQuartet(this);
+    });
+    const quartEscape = new Quartet('','',`${labelSalida}`, TypeOperationQuartet.GOTOFLASE);
+    this.qh.push(quartEscape);
+    if(ifI.ElseInstruction){
+      const quartInstElse = new Quartet('','',`${lableFalse}`, TypeOperationQuartet.DECLEET);
+      this.qh.push(quartInstElse);
+      ifI.ElseInstruction.genericQuartet(this);
+      const quartEscape = new Quartet('','',`${labelSalida}`, TypeOperationQuartet.GOTOFLASE);
+      this.qh.push(quartEscape);
+    }
+    if(ifI.ElseIfInstruction){
+      ifI.ElseIfInstruction.labelInstruc = lableFalse;
+      ifI.ElseIfInstruction.genericQuartet(this);
+      const quartEscape = new Quartet('','',`${labelSalida}`, TypeOperationQuartet.GOTOFLASE);
+      this.qh.push(quartEscape);
+    }
+    const quartSalida = new Quartet('','',`${labelSalida}`, TypeOperationQuartet.DECLEET);
+    this.qh.push(quartSalida);
+
   }
 
   visitElse(elseI: ElseInstruction): void {
-    throw new Error('Method not implemented.');
+    elseI.instructions.forEach((instr)=>{
+      instr.genericQuartet(this);
+    })
   }
 
   visitWhile(whileI: WhileInstruction): void {
-    throw new Error('Method not implemented.');
+    if(whileI.condition.rootOp.dato !== null){
+      // crearle un if goto
+      const quartEt = new Quartet('','',`${this.qh.tmpEt()}`, TypeOperationQuartet.DECLEET);
+      this.qh.push(quartEt);
+      whileI.condition.generecQuartet(this);
+      const quartRela = new Quartet(`${whileI.condition.restult}`,'1','', TypeOperationQuartet.EQUALS);
+      this.qh.push(quartRela);
+      whileI.condition.quartets.push(quartRela);
+      //quarteta con goto falso
+      const quartgoFalse = new Quartet('','','', TypeOperationQuartet.GOTOFLASE);
+      this.qh.push(quartgoFalse);
+      whileI.condition.quartets.push(quartgoFalse);
+      whileI.condition.restult = this.qh.tmpEt();
+      this.qh.aumentarTmpLabel();
+    }else{
+      whileI.condition.generecQuartet(this);
+    }
+    //creando labels necesarios para la logica del while
+    const labelCondition = whileI.condition.restult;
+    const labelInstru = this.qh.tmpEt();
+    this.qh.aumentarTmpLabel();
+    const labelEsc = this.qh.tmpEt();
+    this.qh.aumentarTmpLabel();
+    //logica para colocar sus etiquetas falsas y verdaders en los goto
+    whileI.condition.quartets.forEach((qt)=>{
+      if(qt.typeOp !== TypeOperationQuartet.GOTOFLASE && qt.result === ''){
+        qt.result = `${labelInstru}`
+      }
+      if(qt.typeOp === TypeOperationQuartet.GOTOFLASE && qt.result === ''){
+        qt.result = `${labelEsc}`
+      }
+    });
+    //logica del whiel
+    const quartInst = new Quartet('','',`${labelInstru}`, TypeOperationQuartet.DECLEET);
+    this.qh.push(quartInst);
+    whileI.instructions.forEach((instr)=>{
+      instr.genericQuartet(this);
+    });
+    //retorno
+    const quartRetorno = new Quartet('','',`${labelCondition}`, TypeOperationQuartet.GOTOFLASE);
+    this.qh.push(quartRetorno);
+    //salida
+    const quartEsc = new Quartet('','',`${labelEsc}`, TypeOperationQuartet.DECLEET);
+    this.qh.push(quartEsc);
   }
 
   visitDoWhile(doWhileI: DoWhileInstruction): void {
-    throw new Error('Method not implemented.');
+    
   }
 
   visitfor(fo: ForInstrction): void {

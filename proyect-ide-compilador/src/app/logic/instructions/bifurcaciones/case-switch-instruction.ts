@@ -32,7 +32,6 @@ export class CaseSwitchInstruction extends Instruction {
 
   referenciarSymbolTable(vi: Visitor, symbolTablePadre: SymbolTable): void {
     this.symbolTable = new SymbolTable('case-switch');
-    this.symbolTable.pos = symbolTablePadre.pos+1;
     this.symbolTable.symbolTablePadre = symbolTablePadre;
     vi.visitCaseSwitch(this)
   }
