@@ -535,10 +535,8 @@ parse: function parse(input) {
                     }
                 }
                 if (lexer.showPosition) {
-                    this.yy.Errores.getInstance().push(new this.yy.ErrorSintx(yylineno + 1, 0,  lexer.match,"Token no pertenece a la gramatica, se esperaba: "+expected.join(', ') ,this.yy.TypeError.SINTACTICO));
                     errStr = 'Parse error on line ' + (yylineno + 1) + ':\n' + lexer.showPosition() + '\nExpecting ' + expected.join(', ') + ', got \'' + (this.terminals_[symbol] || symbol) + '\'';
                 } else {
-                    this.yy.Errores.getInstance().push(new this.yy.ErrorSintx(yylineno + 1, 0,  lexer.match,"Token no pertenece a la gramatica, se esperaba: } fin de clase" ,this.yy.TypeError.SINTACTICO));
                     errStr = 'Parse error on line ' + (yylineno + 1) + ': Unexpected ' + (symbol == EOF ? 'end of input' : '\'' + (this.terminals_[symbol] || symbol) + '\'');
                 }
                 this.parseError(errStr, {
@@ -948,178 +946,182 @@ var YYSTATE=YY_START;
 switch($avoiding_name_collisions) {
 case 0:/* skip */
 break;
-case 1:return "DECIMAL"
+case 1:/* comentario de una linea */
 break;
-case 2:return "ENTERO"
+case 2:/* comentario multilinea*/    
 break;
-case 3:return "INCRE"
+case 3:return "DECIMAL"
 break;
-case 4:return "DECRE"
+case 4:return "ENTERO"
 break;
-case 5:return "MASIGUAL"
+case 5:return "INCRE"
 break;
-case 6:return "MAS"
+case 6:return "DECRE"
 break;
-case 7:return "MENOS"
+case 7:return "MASIGUAL"
 break;
-case 8:return "POR"
+case 8:return "MAS"
 break;
-case 9:return "DIVISION"
+case 9:return "MENOS"
 break;
-case 10:return "MODULO"
+case 10:return "POR"
 break;
-case 11:return "MAYOROI"                          
+case 11:return "DIVISION"
 break;
-case 12:return "MENOROI"
+case 12:return "MODULO"
 break;
-case 13:return "MAYORQ"                          
+case 13:return "MAYOROI"                          
 break;
-case 14:return "MENORQ"                          
+case 14:return "MENOROI"
 break;
-case 15:return "EQUALS"                          
+case 15:return "MAYORQ"                          
 break;
-case 16:return "DIFERENTE"                         
+case 16:return "MENORQ"                          
 break;
-case 17:return "AND"
+case 17:return "EQUALS"                          
 break;
-case 18:return "OR"
+case 18:return "DIFERENTE"                         
 break;
-case 19:return "NOT"     
+case 19:return "AND"
 break;
-case 20:return "COMA"                   
+case 20:return "OR"
 break;
-case 21:return "PARENTESA"                            
+case 21:return "NOT"     
 break;
-case 22:return "PARENTESC"                                
+case 22:return "COMA"                   
 break;
-case 23:return "PUNTOCOMA" 
+case 23:return "PARENTESA"                            
 break;
-case 24:return "DOSPUNTO"                           
+case 24:return "PARENTESC"                                
 break;
-case 25:return "IGUAL" 
+case 25:return "PUNTOCOMA" 
 break;
-case 26:return "INT" 
+case 26:return "DOSPUNTO"                           
 break;
-case 27:return "FLOAT"
+case 27:return "IGUAL" 
 break;
-case 28:return "CHAR"
+case 28:return "INT" 
 break;
-case 29:return "BOOLEAN"
+case 29:return "FLOAT"
 break;
-case 30:return "STRING"
+case 30:return "CHAR"
 break;
-case 31:return "IMPORT"
+case 31:return "BOOLEAN"
 break;
-case 32:return "PUBLIC"
+case 32:return "STRING"
 break;
-case 33:return "PRIVATE"
+case 33:return "IMPORT"
 break;
-case 34:return "PROTECTED"
+case 34:return "PUBLIC"
 break;
-case 35:return "CLASS"
+case 35:return "PRIVATE"
 break;
-case 36:return "FINAL"
+case 36:return "PROTECTED"
 break;
-case 37:return "STATIC"
+case 37:return "CLASS"
 break;
-case 38:return "VOID"
+case 38:return "FINAL"
 break;
-case 39:return "MAIN"
+case 39:return "STATIC"
 break;
-case 40:return "PACKAGE"
+case 40:return "VOID"
 break;
-case 41:return "PUNTO"
+case 41:return "MAIN"
 break;
-case 42:return "LLAVEA"
+case 42:return "PACKAGE"
 break;
-case 43:return "LLAVEC"
+case 43:return "PUNTO"
 break;
-case 44:return "CORCHETA"
+case 44:return "LLAVEA"
 break;
-case 45:return "CORCHETAC"
+case 45:return "LLAVEC"
 break;
-case 46:return "GETTER"
+case 46:return "CORCHETA"
 break;
-case 47:return "SETTER"
+case 47:return "CORCHETAC"
 break;
-case 48:return "PRINTLN"
+case 48:return "GETTER"
 break;
-case 49:return "PRINT"
+case 49:return "SETTER"
 break;
-case 50:return "IF"
+case 50:return "PRINTLN"
 break;
-case 51:return "ELSE"
+case 51:return "PRINT"
 break;
-case 52:return "SWITCH"
+case 52:return "IF"
 break;
-case 53:return "CASE"
+case 53:return "ELSE"
 break;
-case 54:return "BREAK"          
+case 54:return "SWITCH"
 break;
-case 55:return "DEFAULT"
+case 55:return "CASE"
 break;
-case 56:return "WHILE"
+case 56:return "BREAK"          
 break;
-case 57:return "DO"
+case 57:return "DEFAULT"
 break;
-case 58:return "FOR"
+case 58:return "WHILE"
 break;
-case 59:return "CADENA"
+case 59:return "DO"
 break;
-case 60:return "CARACTER"
+case 60:return "FOR"
 break;
-case 61:return "TRUE"
+case 61:return "CADENA"
 break;
-case 62:return "FALSE"
+case 62:return "CARACTER"
 break;
-case 63:return "MATHABS"
+case 63:return "TRUE"
 break;
-case 64:return "MATHCEIL"
+case 64:return "FALSE"
 break;
-case 65:return "MATHFLOOR"
+case 65:return "MATHABS"
 break;
-case 66:return "MATHROUND"
+case 66:return "MATHCEIL"
 break;
-case 67:return "MATHMAX"
+case 67:return "MATHFLOOR"
 break;
-case 68:return "MATHMIN"
+case 68:return "MATHROUND"
 break;
-case 69:return "MATHPOW"
+case 69:return "MATHMAX"
 break;
-case 70:return "MATHSQRT"
+case 70:return "MATHMIN"
 break;
-case 71:return "MATHRANDOM"
+case 71:return "MATHPOW"
 break;
-case 72:return "MATHTORADIANS"
+case 72:return "MATHSQRT"
 break;
-case 73:return "MATHACOS"
+case 73:return "MATHRANDOM"
 break;
-case 74:return "MATHSIN"
+case 74:return "MATHTORADIANS"
 break;
-case 75:return "MATHATAN"
+case 75:return "MATHACOS"
 break;
-case 76:return "MATHEXP"
+case 76:return "MATHSIN"
 break;
-case 77:return "NEW"
+case 77:return "MATHATAN"
 break;
-case 78:return "CONTINUE"
+case 78:return "MATHEXP"
 break;
-case 79:return "RETURN"
+case 79:return "NEW"
 break;
-case 80:return "THIS"
+case 80:return "CONTINUE"
 break;
-case 81:return "NULL"
+case 81:return "RETURN"
 break;
-case 82:return "ID"
+case 82:return "THIS"
 break;
-case 83:return "EOF"
+case 83:return "NULL"
 break;
-case 84: yy.Errores.getInstance().push(new yy.ErrorSintx(yy_.yylloc.last_line, yy_.yylloc.last_column, yy_.yytext,"Lexema No reconocido por el analizador Lexico",yy.TypeError.LEXICO));
+case 84:return "ID"
+break;
+case 85:return "EOF"
+break;
+case 86: yy.Errores.getInstance().push(new yy.ErrorSintx(yy_.yylloc.last_line, yy_.yylloc.last_column, yy_.yytext,"Lexema No reconocido por el analizador Lexico",yy.TypeError.LEXICO));
 break;
 }
 },
-rules: [/^(?:((\r|\n|\r\n)|[ \t\f]))/,/^(?:([0-9]+\.[0-9]+(F|f|)))/,/^(?:([0-9]+))/,/^(?:(\+\+))/,/^(?:(--))/,/^(?:(\+=))/,/^(?:(\+))/,/^(?:(-))/,/^(?:(\*))/,/^(?:(\/))/,/^(?:(%))/,/^(?:(>=))/,/^(?:(<=))/,/^(?:(>))/,/^(?:(<))/,/^(?:(==))/,/^(?:(!=))/,/^(?:(&&))/,/^(?:(\|\|))/,/^(?:(!))/,/^(?:(,))/,/^(?:(\())/,/^(?:(\)))/,/^(?:(;))/,/^(?:(:))/,/^(?:(=))/,/^(?:(int\b))/,/^(?:(float\b))/,/^(?:(char\b))/,/^(?:(boolean\b))/,/^(?:(String\b))/,/^(?:(import\b))/,/^(?:(public\b))/,/^(?:(private\b))/,/^(?:(protected\b))/,/^(?:(class\b))/,/^(?:(final\b))/,/^(?:(static\b))/,/^(?:(void\b))/,/^(?:(main\b))/,/^(?:(package\b))/,/^(?:(\.))/,/^(?:(\{))/,/^(?:(\}))/,/^(?:(\[))/,/^(?:(\]))/,/^(?:(@Getter\b))/,/^(?:(@Setter\b))/,/^(?:(System\.out\.println\b))/,/^(?:(System\.out\.print\b))/,/^(?:(if\b))/,/^(?:(else\b))/,/^(?:(switch\b))/,/^(?:(case\b))/,/^(?:(break\b))/,/^(?:(default\b))/,/^(?:(while\b))/,/^(?:(do\b))/,/^(?:(for\b))/,/^(?:("[^\"]*"))/,/^(?:('[^]'))/,/^(?:(true\b))/,/^(?:(false\b))/,/^(?:(Math\.abs\b))/,/^(?:(Math\.ceil\b))/,/^(?:(Math\.floor\b))/,/^(?:(Math\.round\b))/,/^(?:(Math\.max ))/,/^(?:(Math\.min\b))/,/^(?:(Math\.pow\b))/,/^(?:(Math\.sqrt\b))/,/^(?:(Math\.random\b))/,/^(?:(Math\.toRadians\b))/,/^(?:(Math\.acos ))/,/^(?:(Math\.sin\b))/,/^(?:(Math\.atan\b))/,/^(?:(Math\.exp\b))/,/^(?:(new\b))/,/^(?:(continue\b))/,/^(?:(return\b))/,/^(?:(this\b))/,/^(?:(null\b))/,/^(?:([a-zA-Z_][a-zA-Z_0-9]*))/,/^(?:$)/,/^(?:.)/],
-conditions: {"INITIAL":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84],"inclusive":true}}
+rules: [/^(?:((\r|\n|\r\n)|[ \t\f]))/,/^(?:(\/\/.*\n))/,/^(?:(\/\*[\s\S]*?\*\/))/,/^(?:([0-9]+\.[0-9]+(F|f|)))/,/^(?:([0-9]+))/,/^(?:(\+\+))/,/^(?:(--))/,/^(?:(\+=))/,/^(?:(\+))/,/^(?:(-))/,/^(?:(\*))/,/^(?:(\/))/,/^(?:(%))/,/^(?:(>=))/,/^(?:(<=))/,/^(?:(>))/,/^(?:(<))/,/^(?:(==))/,/^(?:(!=))/,/^(?:(&&))/,/^(?:(\|\|))/,/^(?:(!))/,/^(?:(,))/,/^(?:(\())/,/^(?:(\)))/,/^(?:(;))/,/^(?:(:))/,/^(?:(=))/,/^(?:(int\b))/,/^(?:(float\b))/,/^(?:(char\b))/,/^(?:(boolean\b))/,/^(?:(String\b))/,/^(?:(import\b))/,/^(?:(public\b))/,/^(?:(private\b))/,/^(?:(protected\b))/,/^(?:(class\b))/,/^(?:(final\b))/,/^(?:(static\b))/,/^(?:(void\b))/,/^(?:(main\b))/,/^(?:(package\b))/,/^(?:(\.))/,/^(?:(\{))/,/^(?:(\}))/,/^(?:(\[))/,/^(?:(\]))/,/^(?:(@Getter\b))/,/^(?:(@Setter\b))/,/^(?:(System\.out\.println\b))/,/^(?:(System\.out\.print\b))/,/^(?:(if\b))/,/^(?:(else\b))/,/^(?:(switch\b))/,/^(?:(case\b))/,/^(?:(break\b))/,/^(?:(default\b))/,/^(?:(while\b))/,/^(?:(do\b))/,/^(?:(for\b))/,/^(?:("[^\"]*"))/,/^(?:('[^]'))/,/^(?:(true\b))/,/^(?:(false\b))/,/^(?:(Math\.abs\b))/,/^(?:(Math\.ceil\b))/,/^(?:(Math\.floor\b))/,/^(?:(Math\.round\b))/,/^(?:(Math\.max ))/,/^(?:(Math\.min\b))/,/^(?:(Math\.pow\b))/,/^(?:(Math\.sqrt\b))/,/^(?:(Math\.random\b))/,/^(?:(Math\.toRadians\b))/,/^(?:(Math\.acos ))/,/^(?:(Math\.sin\b))/,/^(?:(Math\.atan\b))/,/^(?:(Math\.exp\b))/,/^(?:(new\b))/,/^(?:(continue\b))/,/^(?:(return\b))/,/^(?:(this\b))/,/^(?:(null\b))/,/^(?:([a-zA-Z_][a-zA-Z_0-9]*))/,/^(?:$)/,/^(?:.)/],
+conditions: {"INITIAL":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86],"inclusive":true}}
 });
 return lexer;
 })();

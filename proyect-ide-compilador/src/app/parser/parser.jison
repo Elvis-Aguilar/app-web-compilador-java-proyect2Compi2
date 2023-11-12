@@ -18,6 +18,10 @@ caracter            "'"[^]"'"
 lineTerminator      \r|\n|\r\n
 whitespace          {lineTerminator}|[ \t\f]
 
+comenLine           "/""/".*\n                           
+comenMultiLine      \/\*[\s\S]*?\*\/
+
+
 //palabras reservadas
 int                 "int"
 float               "float"
@@ -127,6 +131,8 @@ id                  [a-zA-Z_][a-zA-Z_0-9]*
 /*%% gramatica lexica */
 %%
 {whitespace}                /* skip */
+{comenLine}                 /* comentario de una linea */
+{comenMultiLine}            /* comentario multilinea*/    
 {decimal}                   return "DECIMAL"
 {entero}                    return "ENTERO"
 {incre}                     return "INCRE"
