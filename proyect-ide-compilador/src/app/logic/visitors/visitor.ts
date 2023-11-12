@@ -15,6 +15,7 @@ import { Declaration } from "../instructions/declare-asig/declaration";
 import { DeclarationArr } from "../instructions/declare-asig/declaration-arr";
 import { DeclarationObject } from "../instructions/declare-asig/declaration-object";
 import { FunMath } from "../instructions/fun-nativas/fun-math";
+import { Read } from "../instructions/fun-nativas/read";
 import { Sout } from "../instructions/fun-nativas/sout";
 import { Funcion } from "../instructions/funcion/funcion";
 import { LlamadaFun } from "../instructions/funcion/llamada-fun";
@@ -48,5 +49,6 @@ export abstract class Visitor {
     abstract visitLlamdadfun(llama:LlamadaFun):void;
     abstract visitLlamdadGen(llamaG:LlamadaFunGen):void;
     abstract visitMain(main:FunMain):void;
+    abstract visitRead(read:Read): Dato|void;
 
 }

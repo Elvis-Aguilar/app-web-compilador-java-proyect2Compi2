@@ -15,6 +15,7 @@ import { Declaration } from '../instructions/declare-asig/declaration';
 import { DeclarationArr } from '../instructions/declare-asig/declaration-arr';
 import { DeclarationObject } from '../instructions/declare-asig/declaration-object';
 import { FunMath } from '../instructions/fun-nativas/fun-math';
+import { Read } from '../instructions/fun-nativas/read';
 import { Sout } from '../instructions/fun-nativas/sout';
 import { Funcion } from '../instructions/funcion/funcion';
 import { LlamadaFun } from '../instructions/funcion/llamada-fun';
@@ -26,8 +27,7 @@ import { SymbolTable } from '../table-simbol/symbol-table';
 import { Visitor } from './visitor';
 
 export class VisRefSymbolTable extends Visitor {
-
-
+  
   visitMain(main: FunMain): void {
     main.instructions.forEach((instr)=>{
       instr.referenciarSymbolTable(this, main.symbolTable);
@@ -35,6 +35,10 @@ export class VisRefSymbolTable extends Visitor {
   }
 
   visitLlamdadfun(llama: LlamadaFun): void {
+    //no hay nada que implementar
+  }
+
+  visitRead(read: Read): void | Dato {
     //no hay nada que implementar
   }
   

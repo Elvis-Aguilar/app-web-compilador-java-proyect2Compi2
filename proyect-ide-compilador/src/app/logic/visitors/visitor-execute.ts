@@ -32,6 +32,8 @@ import { Dato } from '../table-simbol/dato';
 import { TypeDato } from '../table-simbol/type-dato';
 import { Variable } from '../table-simbol/variable';
 import { Visitor } from './visitor';
+import { Read } from "../instructions/fun-nativas/read";
+
 
 export class VisitorExecute extends Visitor {
   private analizador = new AnalisisSemantico();
@@ -122,6 +124,10 @@ export class VisitorExecute extends Visitor {
       return dato;
     }
     return tmp;
+  }
+
+  visitRead(read: Read):  Dato | void {
+    return new Dato(read.typeDato);
   }
 
   visitAsigObj(asigOb: asignacionObjec): void {

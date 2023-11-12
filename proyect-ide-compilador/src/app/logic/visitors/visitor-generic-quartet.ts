@@ -27,6 +27,8 @@ import { QuartHandler } from '../quartets/quartHandler';
 import { TypeOperationQuartet } from '../quartets/type-operation-quartet';
 import { TypeDato } from '../table-simbol/type-dato';
 import { Visitor } from './visitor';
+import { Read } from "../instructions/fun-nativas/read";
+
 
 export class VisitorGenericQuartet extends Visitor {
   readonly POINTER: string = 'ptr';
@@ -595,6 +597,61 @@ export class VisitorGenericQuartet extends Visitor {
         }
         nodo.result = nodo.opLeft?.result||''
       }
+    }
+
+  }
+
+  visitRead(read: Read): void {
+    //creando variable temporal para asignar lo leido, y leer segun el caso
+    switch (read.typeDato) {
+      case TypeDato.BOOLEAN:
+        const quartDecleBol = new Quartet('','',`int ${this.qh.tmpVar()}`,TypeOperationQuartet.DECLARTION);
+        this.qh.push(quartDecleBol);
+        const quartRead = new Quartet(`"%d"`,'',`&${this.qh.tmpVar()}`,TypeOperationQuartet.READ);
+        this.qh.push(quartRead)
+        read.result = this.qh.tmpVar();
+        this.qh.aumentarTmp();
+        break;
+      case TypeDato.CHAR:
+        const quartDecleChar = new Quartet('','',`char ${this.qh.tmpVar()}[25]`,TypeOperationQuartet.DECLARTION);
+        this.qh.push(quartDecleChar);
+        const quartReadChar = new Quartet(`"%s"`,'',`${this.qh.tmpVar()}`,TypeOperationQuartet.READ);
+        this.qh.push(quartReadChar)
+        read.result = this.qh.tmpVar();
+        this.qh.aumentarTmp();
+        break;
+      case TypeDato.FLOAT:
+        const quartDecleFloat = new Quartet('','',`float ${this.qh.tmpVar()}`,TypeOperationQuartet.DECLARTION);
+        this.qh.push(quartDecleFloat);
+        const quartReadFloat = new Quartet(`"%f"`,'',`&${this.qh.tmpVar()}`,TypeOperationQuartet.READ);
+        this.qh.push(quartReadFloat)
+        read.result = this.qh.tmpVar();
+        this.qh.aumentarTmp();
+        break;
+      case TypeDato.INT:
+        const quartDecleInt = new Quartet('','',`int ${this.qh.tmpVar()}`,TypeOperationQuartet.DECLARTION);
+        this.qh.push(quartDecleInt);
+        const quartReadInt = new Quartet(`"%d"`,'',`&${this.qh.tmpVar()}`,TypeOperationQuartet.READ);
+        this.qh.push(quartReadInt)
+        read.result = this.qh.tmpVar();
+        this.qh.aumentarTmp();
+        break;
+      case TypeDato.STRING:
+        const quartDecleStrin = new Quartet('','',`char ${this.qh.tmpVar()}[25]`,TypeOperationQuartet.DECLARTION);
+        this.qh.push(quartDecleStrin);
+        const quartReadString = new Quartet(`"%s"`,'',`${this.qh.tmpVar()}`,TypeOperationQuartet.READ);
+        this.qh.push(quartReadString)
+        read.result = this.qh.tmpVar();
+        this.qh.aumentarTmp();
+        break;
+      default:
+        const quartDecledef = new Quartet('','',`int ${this.qh.tmpVar()}`,TypeOperationQuartet.DECLARTION);
+        this.qh.push(quartDecledef);
+        const quartReaDef = new Quartet(`"%d"`,'',`&${this.qh.tmpVar()}`,TypeOperationQuartet.READ);
+        this.qh.push(quartReaDef)
+        read.result = this.qh.tmpVar();
+        this.qh.aumentarTmp();
+        break;
     }
 
   }

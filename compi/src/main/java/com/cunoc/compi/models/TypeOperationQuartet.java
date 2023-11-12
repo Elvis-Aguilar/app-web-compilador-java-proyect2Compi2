@@ -27,4 +27,5 @@ public enum TypeOperationQuartet {
     MAYOROI,
     MENORQ,
     MENOROI,
+    READ
 }

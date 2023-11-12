@@ -21,4 +21,5 @@ export enum TypeOperationQuartet {
   MAYOROI,
   MENORQ,
   MENOROI,
+  READ
 }

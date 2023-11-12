@@ -80,11 +80,11 @@ for                 "for"
 
 
 //lectura por consola
-readfloat       "readfloat"
-readint         "readint"
-readchar        "readchar"
-readboolean     "readboolean"
-readstring      "readstring"
+readfloat       "readFloat"
+readint         "readInt"
+readchar        "readChar"
+readboolean     "readBoolean"
+readstring      "readString"
 
 /* operators */
 

@@ -93,6 +93,12 @@ public class GeneradorCodigoFinal {
             case MENOROI:
                 this.result += "if ("+quartete.getOp1()+" <= "+quartete.getOp2()+") goto "+quartete.getResult()+";\n";
                 break;
+            case DECLARTION:
+                this.result += quartete.getResult()+";\n";
+                break;
+            case READ:
+                this.result += "scanf("+quartete.getOp1()+", "+quartete.getResult()+");\n";
+                break;
         }
     }
 
