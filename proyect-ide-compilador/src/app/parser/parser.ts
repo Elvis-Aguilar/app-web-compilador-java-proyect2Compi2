@@ -20,6 +20,7 @@ import { Declaration } from '../logic/instructions/declare-asig/declaration';
 import { DeclarationArr } from '../logic/instructions/declare-asig/declaration-arr';
 import { DeclarationObject } from '../logic/instructions/declare-asig/declaration-object';
 import { FunMath } from '../logic/instructions/fun-nativas/fun-math';
+import { Read } from '../logic/instructions/fun-nativas/read';
 import { Sout } from '../logic/instructions/fun-nativas/sout';
 import { TypeFunMath } from '../logic/instructions/fun-nativas/type-fun-math';
 import { Funcion } from '../logic/instructions/funcion/funcion';
@@ -88,6 +89,7 @@ export class Parser {
     parser.yy.LlamadaFun = LlamadaFun;
     parser.yy.LlamadaFunGen = LlamadaFunGen;
     parser.yy.getYset=getYset;
+    parser.yy.Read = Read;
   }
 
   /**

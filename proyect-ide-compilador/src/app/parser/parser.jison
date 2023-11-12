@@ -79,6 +79,13 @@ do                  "do"
 for                 "for"
 
 
+//lectura por consola
+readfloat       "readfloat"
+readint         "readint"
+readchar        "readchar"
+readboolean     "readboolean"
+readstring      "readstring"
+
 /* operators */
 
 //incremento decremento
@@ -214,6 +221,11 @@ id                  [a-zA-Z_][a-zA-Z_0-9]*
 {return}                    return "RETURN"
 {this}                      return "THIS"
 {null}                      return "NULL"
+{readfloat}                 return "READFLOAT"
+{readint}                   return "READINT"
+{readchar}                  return "READCHAR"
+{readboolean}               return "READBOOLEAN"
+{readstring}                return "READSTRING"
 
 
 /* id */
@@ -449,7 +461,16 @@ sentencia
     | llamad_fun_obj PUNTOCOMA        {$$ = new yy.LlamadaFunGen($1);}
     | BREAK PUNTOCOMA                 {/*sin acciones*/}
     | CONTINUE PUNTOCOMA              {/*sin acciones*/}
-    | def_return                      {$$ = $1;}                     
+    | def_return                      {$$ = $1;}    
+    | read                            {$$ = $1}                 
+    ;
+
+read
+    : READFLOAT PARENTESA ID PARENTESC PUNTOCOMA                    {$$ = new yy.Asignacion(new yy.Token($3,this._$.first_column, this._$.first_line), new yy.Operation(new yy.Read(yy.TypeDato.FLOAT)));}
+    | READINT PARENTESA ID PARENTESC PUNTOCOMA                      {$$ = new yy.Asignacion(new yy.Token($3,this._$.first_column, this._$.first_line), new yy.Operation(new yy.Read(yy.TypeDato.INT)));}
+    | READCHAR PARENTESA ID PARENTESC PUNTOCOMA                     {$$ = new yy.Asignacion(new yy.Token($3,this._$.first_column, this._$.first_line), new yy.Operation(new yy.Read(yy.TypeDato.CHAR)));}
+    | READBOOLEAN PARENTESA ID PARENTESC PUNTOCOMA                  {$$ = new yy.Asignacion(new yy.Token($3,this._$.first_column, this._$.first_line), new yy.Operation(new yy.Read(yy.TypeDato.BOOLEAN)));}
+    | READSTRING PARENTESA ID PARENTESC PUNTOCOMA                   {$$ = new yy.Asignacion(new yy.Token($3,this._$.first_column, this._$.first_line), new yy.Operation(new yy.Read(yy.TypeDato.STRING)));}
     ;
 
 def_return 
