@@ -29,7 +29,7 @@ export class ForInstrction extends Instruction {
     vi.visitfor(this);
   }
   genericQuartet(vi: Visitor): void {
-    //TODO: Method not implemented.
+    vi.visitfor(this);
   }
 
   referenciarSymbolTable(vi: Visitor, symbolTablePadre: SymbolTable): void {

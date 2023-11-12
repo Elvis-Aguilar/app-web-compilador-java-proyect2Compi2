@@ -986,7 +986,53 @@ export class VisitorGenericQuartet extends Visitor {
   }
 
   visitfor(fo: ForInstrction): void {
-    throw new Error('Method not implemented.');
+    //cuartetas de la instruccion inicial
+    fo.instrcInicial.genericQuartet(this);
+    //realizando condicion, agregando if, goto si no tuviese
+    if(fo.condition.rootOp.dato !== null){
+      // crearle un if goto
+      const quartEt = new Quartet('','',`${this.qh.tmpEt()}`, TypeOperationQuartet.DECLEET);
+      this.qh.push(quartEt);
+      fo.condition.generecQuartet(this);
+      const quartRela = new Quartet(`${fo.condition.restult}`,'1','', TypeOperationQuartet.EQUALS);
+      this.qh.push(quartRela);
+      fo.condition.quartets.push(quartRela);
+      //quarteta con goto falso
+      const quartgoFalse = new Quartet('','','', TypeOperationQuartet.GOTOFLASE);
+      this.qh.push(quartgoFalse);
+      fo.condition.quartets.push(quartgoFalse);
+      fo.condition.restult = this.qh.tmpEt();
+      this.qh.aumentarTmpLabel();
+    }else{
+      fo.condition.generecQuartet(this);
+    }
+    //creando labels necesarios para la logica del while
+    const labelCondition = fo.condition.restult;
+    const labelInstru = this.qh.tmpEt();
+    this.qh.aumentarTmpLabel();
+    const labelEsc = this.qh.tmpEt();
+    this.qh.aumentarTmpLabel();
+    //logica para colocar sus etiquetas falsas y verdaders en los goto
+    fo.condition.quartets.forEach((qt)=>{
+      if(qt.typeOp !== TypeOperationQuartet.GOTOFLASE && qt.result === ''){
+        qt.result = `${labelInstru}`
+      }
+      if(qt.typeOp === TypeOperationQuartet.GOTOFLASE && qt.result === ''){
+        qt.result = `${labelEsc}`
+      }
+    });
+    //logica del for
+    const quartInst = new Quartet('','',`${labelInstru}`, TypeOperationQuartet.DECLEET);
+    this.qh.push(quartInst);
+    fo.instructions.forEach((instr)=>{
+      instr.genericQuartet(this);
+    });
+    //retorno
+    const quartRetorno = new Quartet('','',`${labelCondition}`, TypeOperationQuartet.GOTOFLASE);
+    this.qh.push(quartRetorno);
+    //salida
+    const quartEsc = new Quartet('','',`${labelEsc}`, TypeOperationQuartet.DECLEET);
+    this.qh.push(quartEsc);
   }
   
   visitAsigArr(asi: AsignacionArr): void {
