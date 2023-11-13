@@ -89,7 +89,6 @@ export class OperationCasteo {
 
   private operacionResta(): Dato {
     let datoResult = new Dato(TypeDato.INT);
-
     if (this.datoLeft.typeDato == TypeDato.FLOAT) {
       switch (this.datoRight.typeDato) {
         case TypeDato.STRING:

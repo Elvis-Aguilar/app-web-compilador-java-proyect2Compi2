@@ -22,6 +22,7 @@ export class DeclarationArr extends Instruction {
   dimension: number;
   opers:Operation[] = [];       //representa: [15+2][1+2] || {21,2,3}
   indices:boolean = false;
+  pos:number = 0;
   //nombre de variable esta en token.id
 
   constructor(config:any, dimension: number, token: Token, TypeDatoValidacion?: TypeDato, opers?:Operation[],indices?:boolean ) {
@@ -38,12 +39,11 @@ export class DeclarationArr extends Instruction {
   }
 
   genericQuartet(vi: Visitor): void {
-    //TODO:Method not implemented.
+    vi.visitDeclareArr(this);
   }
 
   execute(vi: Visitor): void {
-    //TODO:Method not implemented.
-    //vi.visitDeclareArr(this);
+    vi.visitDeclareArr(this);
   }
 
   referenciarSymbolTable(vi: Visitor, symbolTablePadre: SymbolTable): void {

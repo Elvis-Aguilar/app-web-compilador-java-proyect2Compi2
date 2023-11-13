@@ -1,4 +1,5 @@
 import { Token } from 'src/app/parser/token';
+import { Arreglo } from '../../arreglos/arreglo';
 import { SymbolTable } from '../../table-simbol/symbol-table';
 import { TypeDato } from '../../table-simbol/type-dato';
 import { Visitor } from '../../visitors/visitor';
@@ -9,30 +10,38 @@ export class AsignacionArr extends Instruction {
 
   asignacionIndice: boolean = false;
   token: Token;
-  typeAsig: TypeDato;
   opers: Operation[] = [];
   op: Operation;
+  global:boolean;
   symbolTable!: SymbolTable;
+  ArregloRealtivo!:Arreglo;
 
-  constructor(token: Token, typeAsig: TypeDato,opers: Operation[], op: Operation, asignacionIndice: boolean) {
+  constructor(token: Token, opers: Operation[], op: Operation, global:boolean) {
     super();
     this.token = token;
-    this.typeAsig = typeAsig;
     this.opers = opers;
     this.op = op;
-    this.asignacionIndice = asignacionIndice;
+    this.global = global;
   }
 
   genericQuartet(vi: Visitor): void {
-    //TODO:Method not implemented.
+    vi.visitAsigArr(this);
   }
 
   execute(vi: Visitor): void {
-    //TODO:Method not implemented.
+    vi.visitAsigArr(this);
   }
 
   referenciarSymbolTable(vi: Visitor, symbolTablePadre: SymbolTable): void {
     this.symbolTable = symbolTablePadre;
     vi.visitAsigArr(this);
+  }
+
+  public typeAsiganar():string{
+    if(this.ArregloRealtivo.typeDato === TypeDato.CHAR || this.ArregloRealtivo.typeDato === TypeDato.STRING){
+      return 'char';
+    }
+    return 'int';
+
   }
 }

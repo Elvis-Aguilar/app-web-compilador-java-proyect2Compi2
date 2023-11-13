@@ -18,8 +18,6 @@ export class Operation {
     return vi.visitOp(this);
   }
 
-  
-
   generecQuartet(vi: Visitor) {
     vi.visitOp(this);
   }

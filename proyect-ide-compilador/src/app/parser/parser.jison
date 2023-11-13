@@ -49,6 +49,7 @@ continue            "continue"
 return              "return"
 this                "this"
 null                "null"
+extends             "extends"
 
 //operadores de clase Math
 mathabs             "Math.abs"
@@ -226,7 +227,7 @@ id                  [a-zA-Z_][a-zA-Z_0-9]*
 {readchar}                  return "READCHAR"
 {readboolean}               return "READBOOLEAN"
 {readstring}                return "READSTRING"
-
+{extends}                   return "EXTENDS"
 
 /* id */
 {id}                        return "ID"
@@ -290,11 +291,16 @@ term_imprt
 /*gramatica para clases: public class id {...} || class id {...}*/
 clase 
   : visi_class clas_name LLAVEA sente_glos LLAVEC               {$$ = claseAux; $$.isFinal = $1; $$.instructions = $4;}         
-  | getSet visi_class clas_name LLAVEA sente_glos LLAVEC
+  | getSet visi_class clas_name LLAVEA sente_glos LLAVEC        {$$ = claseAux; $$.isFinal = $2; $$.instructions = $5;}
   ; 
 
+exti 
+    : EXTENDS ID
+    |
+    ;
+
 clas_name
-  : CLASS ID              {claseAux = new yy.Clase($2);  yy.Errores.getInstance().ubicacion = $2;}            
+  : CLASS ID exti            {claseAux = new yy.Clase($2);  yy.Errores.getInstance().ubicacion = $2;}            
   ;
 
 
@@ -347,6 +353,7 @@ statc
 declar_arr_glo
     : agrup ID cochets PUNTOCOMA                                    {$$ = new yy.DeclarationArr($1, $3,new yy.Token($2,this._$.first_column, this._$.first_line));}
     | agrup ID cochets IGUAL NEW type cochets_val PUNTOCOMA         {$$ = new yy.DeclarationArr($1, $3,new yy.Token($2,this._$.first_column, this._$.first_line), $6, $7, true);}
+    | agrup ID cochets IGUAL NEW ID cochets_val PUNTOCOMA           {$$ = new yy.DeclarationArr($1, $3,new yy.Token($2,this._$.first_column, this._$.first_line), $6, $7, true);}
     | agrup ID cochets IGUAL arr_init PUNTOCOMA                     {$$ = new yy.DeclarationArr($1, $3,new yy.Token($2,this._$.first_column, this._$.first_line), undefined, $5, false);}
     ;
 
@@ -496,8 +503,10 @@ items
 /*gramatica para declarar un arreglo*/
 declar_arr
     : type ID cochets PUNTOCOMA                                 {$$ = new yy.DeclarationArr([undefined,false, false,$1], $3,new yy.Token($2,this._$.first_column, this._$.first_line));}
+    | ID ID cochets PUNTOCOMA                                   {$$ = new yy.DeclarationArr([undefined,false, false,$1], $3,new yy.Token($2,this._$.first_column, this._$.first_line));}
     | type ID cochets IGUAL NEW type cochets_val PUNTOCOMA      {$$ = new yy.DeclarationArr([undefined,false, false,$1], $3,new yy.Token($2,this._$.first_column, this._$.first_line), $6, $7, true);}
     | type ID cochets IGUAL arr_init PUNTOCOMA                  {$$ = new yy.DeclarationArr([undefined,false, false,$1], $3,new yy.Token($2,this._$.first_column, this._$.first_line), undefined, $5, false);}
+    | ID ID cochets IGUAL NEW ID cochets_val PUNTOCOMA          {$$ = new yy.DeclarationArr([undefined,false, false,$1], $3,new yy.Token($2,this._$.first_column, this._$.first_line), $6, $7, true);}
     ;
 
 /*gramatica para asignacion de variables*/
@@ -517,12 +526,15 @@ asig_object
         ;
 
 asi_arr_comp
-  : ID IGUAL NEW type cochets_vla PUNTOCOMA             {$$ = new yy.AsignacionArr(new yy.Token($1,this._$.first_column, this._$.first_line), $4, $5, null,false);}      
+  : ID IGUAL NEW type cochets_val PUNTOCOMA                  {$$ = new yy.AsigCompleArr(new yy.Token($1,this._$.first_column, this._$.first_line), $4, $5,false);}      
+  | THIS PUNTO ID IGUAL NEW type cochets_val PUNTOCOMA       {$$ = new yy.AsigCompleArr(new yy.Token($3,this._$.first_column, this._$.first_line), $6, $7,true);}   
+  | ID IGUAL NEW ID cochets_val PUNTOCOMA                    {$$ = new yy.AsigCompleArr(new yy.Token($1,this._$.first_column, this._$.first_line), $4, $5,false);}        
+  | THIS PUNTO ID IGUAL NEW ID cochets_val PUNTOCOMA         {$$ = new yy.AsigCompleArr(new yy.Token($3,this._$.first_column, this._$.first_line), $6, $7,true);}       
   ;
 
 asi_arr_ind
-    : ID cochets_val IGUAL exp PUNTOCOMA                    {$$ = new yy.AsignacionArr(new yy.Token($1,this._$.first_column, this._$.first_line), undefined, $2,  new yy.Operation($4),true);}
-    | THIS PUNTO ID cochets_val IGUAL exp PUNTOCOMA 
+    : ID cochets_val IGUAL exp PUNTOCOMA                    {$$ = new yy.AsignacionArr(new yy.Token($1,this._$.first_column, this._$.first_line), $2,  new yy.Operation($4),false);}
+    | THIS PUNTO ID cochets_val IGUAL exp PUNTOCOMA         {$$ = new yy.AsignacionArr(new yy.Token($3,this._$.first_column, this._$.first_line), $4,  new yy.Operation($6),true);}
     ;
 
 incr_decr
@@ -675,6 +687,8 @@ ter_exp
       | FALSE                                       {$$ = new yy.NodoOperation(new yy.Dato(yy.TypeDato.BOOLEAN, 1,"", false, new yy.Token($1,this._$.first_column, this._$.first_line)));}
       | ID                                          {$$ = new yy.NodoOperation(new yy.Dato(yy.TypeDato.INT, 1,"", false, new yy.Token($1,this._$.first_column, this._$.first_line), true));}
       | THIS PUNTO ID                               {$$ = new yy.NodoOperation(new yy.Dato(yy.TypeDato.INT, 1, '',false, new yy.Token($3, this._$.first_column, this._$.first_line), true,  true ));}
+      | ID cochets_val                              {$$ = new yy.NodoArreglo(new yy.Token($1, this._$.first_column, this._$.first_line),$2,false);}
+      | THIS PUNTO ID cochets_val                   {$$ = new yy.NodoArreglo(new yy.Token($3, this._$.first_column, this._$.first_line),$4,true);}
       ;
 
 /*gramatica para las clases math*/

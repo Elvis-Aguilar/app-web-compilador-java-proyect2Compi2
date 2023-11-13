@@ -1,3 +1,5 @@
+import { AsigCompletaArr } from '../arreglos/asig-completa-arr';
+import { NodoArreglo } from '../arreglos/nodo-arr';
 import { Clase } from '../class/clase';
 import { Constructor } from '../class/constructor';
 import { FunMain } from '../class/fun-main';
@@ -27,7 +29,7 @@ import { SymbolTable } from '../table-simbol/symbol-table';
 import { Visitor } from './visitor';
 
 export class VisRefSymbolTable extends Visitor {
-  
+
   visitMain(main: FunMain): void {
     main.instructions.forEach((instr)=>{
       instr.referenciarSymbolTable(this, main.symbolTable);
@@ -165,6 +167,18 @@ export class VisRefSymbolTable extends Visitor {
   visitAsigObj(asigOb: asignacionObjec): void {
     asigOb.opers.forEach((asg) =>{
       asg.referenciarSymbolTable(this, asigOb.symbolTable)
+    })
+  }
+
+  visitAsigComplArr(AsigCom: AsigCompletaArr): void {
+    AsigCom.opers.forEach((op)=>{
+      op.referenciarSymbolTable(this,AsigCom.symbolTable);
+    })
+  }
+
+  visitNodoArr(arr: NodoArreglo): void | Dato {
+    arr.ops.forEach((op)=>{
+      op.referenciarSymbolTable(this,arr.symbolTable);
     })
   }
 

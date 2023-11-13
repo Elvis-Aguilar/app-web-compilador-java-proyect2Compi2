@@ -1,3 +1,5 @@
+import { AsigCompletaArr } from "../arreglos/asig-completa-arr";
+import { NodoArreglo } from "../arreglos/nodo-arr";
 import { Clase } from "../class/clase";
 import { Constructor } from "../class/constructor";
 import { FunMain } from "../class/fun-main";
@@ -50,5 +52,7 @@ export abstract class Visitor {
     abstract visitLlamdadGen(llamaG:LlamadaFunGen):void;
     abstract visitMain(main:FunMain):void;
     abstract visitRead(read:Read): Dato|void;
+    abstract visitAsigComplArr(AsigCom:AsigCompletaArr):void;
+    abstract visitNodoArr(arr:NodoArreglo): Dato|void;
 
 }

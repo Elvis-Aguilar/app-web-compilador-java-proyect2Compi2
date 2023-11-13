@@ -77,12 +77,61 @@ export class SymbolTable {
     }
   }
 
+  getByIdArr(tok: Token):Arreglo|void{
+    const variable = this.buscarEnCadaSubTablaArr(tok);
+    if (variable) {
+      return variable;
+    } else {
+      if (this.symbolTablePadre) {
+        return this.symbolTablePadre.getByIdArr(tok);
+      } else {
+        const msj = 'Arreglo no existe';
+        ErrorSingleton.getInstance().push(
+          new Error(tok.line, tok.column, tok.id, `${msj}`, TypeError.SEMANTICO)
+        );
+        return undefined;
+      }
+    }
+  }
+
+  getByIdGlobalArr(tok: Token): Arreglo | void {
+    if (this.symbolTablePadre) {
+      return this.symbolTablePadre.getByIdGlobalArr(tok);
+    }
+    const variable = this.buscarEnCadaSubTablaArr(tok);
+    if (this.nameReference === 'Clase') {
+      if (variable) {
+        return variable;
+      } else {
+        const msj = 'Arreglo no existe como variable global';
+        ErrorSingleton.getInstance().push(
+          new Error(tok.line, tok.column, tok.id, `${msj}`, TypeError.SEMANTICO)
+        );
+        return undefined;
+      }
+    }else{
+      const msj = 'Variable no existe o no es Global';
+      ErrorSingleton.getInstance().push(
+        new Error(tok.line, tok.column, tok.id, `${msj}`, TypeError.SEMANTICO)
+      );
+      return undefined;
+    }
+  }
+
   private buscarEnCadaSubTabla(tok: Token): Variable | void {
     let variable = this.variables.find((v) => v.id === tok.id);
     if (variable) {
       return variable;
     }
   }
+
+  private buscarEnCadaSubTablaArr(tok: Token): Arreglo | void {
+    let variable = this.arreglos.find((v) => v.token.id === tok.id);
+    if (variable) {
+      return variable;
+    }
+  }
+
 
   private buscarEnTodasLasTAblas(tok: Token): Variable | void {
     let variable = this.variables.find((v) => v.id === tok.id);

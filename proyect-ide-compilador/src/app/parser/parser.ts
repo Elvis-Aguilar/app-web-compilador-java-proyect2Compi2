@@ -1,6 +1,8 @@
 import Swal from 'sweetalert2';
 import { Archivo } from '../area-editor/objects/archivo';
 import { Folder } from '../area-editor/objects/folder';
+import { AsigCompletaArr } from '../logic/arreglos/asig-completa-arr';
+import { NodoArreglo } from '../logic/arreglos/nodo-arr';
 import { Clase } from '../logic/class/clase';
 import { Constructor } from '../logic/class/constructor';
 import { FunMain } from '../logic/class/fun-main';
@@ -90,6 +92,8 @@ export class Parser {
     parser.yy.LlamadaFunGen = LlamadaFunGen;
     parser.yy.getYset=getYset;
     parser.yy.Read = Read;
+    parser.yy.AsigCompleArr = AsigCompletaArr;
+    parser.yy.NodoArreglo = NodoArreglo;
   }
 
   /**

@@ -19,7 +19,7 @@ export class Dato {
     isVariable?: boolean,
     global?:boolean,
   ) {
-    this.numero = numero || 1;
+    this.numero = numero || 0;
     this.cadena = cadena || '';
     this.booleano = booleano !== undefined ? booleano : false;
     this.typeDato = typeDato;

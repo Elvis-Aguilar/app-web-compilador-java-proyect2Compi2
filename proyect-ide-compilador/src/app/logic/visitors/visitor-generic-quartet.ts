@@ -28,6 +28,9 @@ import { TypeOperationQuartet } from '../quartets/type-operation-quartet';
 import { TypeDato } from '../table-simbol/type-dato';
 import { Visitor } from './visitor';
 import { Read } from "../instructions/fun-nativas/read";
+import { AsigCompletaArr } from '../arreglos/asig-completa-arr';
+import { NodoArreglo } from '../arreglos/nodo-arr';
+import { Dato } from '../table-simbol/dato';
 
 
 export class VisitorGenericQuartet extends Visitor {
@@ -1091,13 +1094,268 @@ export class VisitorGenericQuartet extends Visitor {
     const quartEsc = new Quartet('','',`${labelEsc}`, TypeOperationQuartet.DECLEET);
     this.qh.push(quartEsc);
   }
-  
-  visitAsigArr(asi: AsignacionArr): void {
-    //TODO: Method not implemented.
-  }
 
   visitDeclareArr(dec: DeclarationArr): void {
-    //TODO: Method not implemented.
+    if(dec.indices){
+      //ejecutar las operaciones de los indices
+      dec.opers.forEach((op)=>{
+        op.generecQuartet(this);
+      });
+      //asignar la pos de ptrh disponible a la variable arreglo
+      const quartpos = new Quartet(
+        this.POINTER,
+        `${dec.pos}`,
+        `int ${this.qh.tmpVar()}`,
+        TypeOperationQuartet.SUMA
+      );
+      this.qh.push(quartpos);
+      const tmp = this.qh.tmpVar();
+      this.qh.aumentarTmp();
+      const quar = new Quartet(
+        `&${this.POINTERH}`,
+        '',
+        `stack[${tmp}]`,
+        TypeOperationQuartet.ASIGNATION
+      );
+      this.qh.push(quar);
+      //segun el caso de dimension 1 o 2 mover el ptrh
+      
+      if (dec.dimension === 1) {
+        const tamani = dec.opers[0].restult
+        const cuarteHAumen = new Quartet(
+          this.POINTERH,
+          `${tamani}`,
+          this.POINTERH,
+          TypeOperationQuartet.SUMA
+        );
+        this.qh.push(cuarteHAumen);
+      }else{
+        //tn = result1 * result 2
+        const quartp = new Quartet(
+          `${dec.opers[0].restult}`,
+          `${dec.opers[1].restult}`,
+          `int ${this.qh.tmpVar()}`,
+          TypeOperationQuartet.MULTIPLICACION
+        );
+        this.qh.push(quartp);
+        const cuarteHAumen = new Quartet(
+          this.POINTERH,
+          `${this.qh.tmpVar()}`,
+          this.POINTERH,
+          TypeOperationQuartet.SUMA
+        );
+        this.qh.push(cuarteHAumen);
+        this.qh.aumentarTmp();
+
+      }
+    }
+
+  }
+
+  visitAsigComplArr(asi: AsigCompletaArr): void {
+    if(asi.global){
+      //acciones globales
+      const quartHep = new Quartet('t0',`${asi.ArregloRealtivo.pos}`,`int ${this.qh.tmpVar()}`, TypeOperationQuartet.SUMA); 
+      this.qh.push(quartHep);
+      const quartH = new Quartet(`&${this.POINTERH}`,``,`heap[${this.qh.tmpVar()}]`, TypeOperationQuartet.ASIGNATION); 
+      this.qh.push(quartH);
+      this.qh.aumentarTmp();
+    }else{
+      //acciones locales
+      const quartpos = new Quartet(
+        this.POINTER,
+        `${asi.ArregloRealtivo.pos}`,
+        `int ${this.qh.tmpVar()}`,
+        TypeOperationQuartet.SUMA
+      );
+      this.qh.push(quartpos);
+      const tmp = this.qh.tmpVar();
+      this.qh.aumentarTmp();
+      const quar = new Quartet(
+        `&${this.POINTERH}`,
+        '',
+        `stack[${tmp}]`,
+        TypeOperationQuartet.ASIGNATION
+      );
+      this.qh.push(quar);
+    }
+    asi.opers.forEach((op)=>{
+      op.generecQuartet(this);
+    });
+    if (asi.ArregloRealtivo.dimension === 1) {
+      const tamani = asi.opers[0].restult
+      const cuarteHAumen = new Quartet(
+        this.POINTERH,
+        `${tamani}`,
+        this.POINTERH,
+        TypeOperationQuartet.SUMA
+      );
+      this.qh.push(cuarteHAumen);
+    }else{
+      //tn = result1 * result 2
+      const quartp = new Quartet(
+        `${asi.opers[0].restult}`,
+        `${asi.opers[1].restult}`,
+        `int ${this.qh.tmpVar()}`,
+        TypeOperationQuartet.MULTIPLICACION
+      );
+      this.qh.push(quartp);
+      const cuarteHAumen = new Quartet(
+        this.POINTERH,
+        `${this.qh.tmpVar()}`,
+        this.POINTERH,
+        TypeOperationQuartet.SUMA
+      );
+      this.qh.push(cuarteHAumen);
+      this.qh.aumentarTmp();
+
+    }
+
+
+  }
+  
+  visitAsigArr(asi: AsignacionArr): void {
+    asi.op.generecQuartet(this);
+    asi.opers.forEach((operacion) => {
+      operacion.generecQuartet(this);
+    });
+    let direHeap = ''; 
+    if(asi.global){
+      const quartPos = new Quartet('t0',`${asi.ArregloRealtivo.pos}`,`int ${this.qh.tmpVar()}`,TypeOperationQuartet.SUMA);
+      this.qh.push(quartPos);
+      const inde = this.qh.tmpVar();
+      this.qh.aumentarTmp();
+      const quartref = new Quartet(`*((int*)heap[${inde}])`,'',`int ${this.qh.tmpVar()}`,TypeOperationQuartet.ASIGNATION);
+      this.qh.push(quartref);
+      direHeap = this.qh.tmpVar();
+      this.qh.aumentarTmp();
+    }else{
+      const quartPos = new Quartet(`${this.POINTER}`,`${asi.ArregloRealtivo.pos}`,`int ${this.qh.tmpVar()}`,TypeOperationQuartet.SUMA);
+      this.qh.push(quartPos);
+      const inde = this.qh.tmpVar();
+      this.qh.aumentarTmp();
+      const quartref = new Quartet(`*((int*)stack[${inde}])`,'',`int ${this.qh.tmpVar()}`,TypeOperationQuartet.ASIGNATION);
+      this.qh.push(quartref);
+      direHeap = this.qh.tmpVar();
+      this.qh.aumentarTmp();
+    }
+    let pos = '';
+    if(asi.ArregloRealtivo.dimension === 1){
+      pos = asi.opers[0].restult
+    }else{
+      //tn = i1*n1+i2
+      const quartp = new Quartet(
+        `${asi.opers[0].restult}`,
+        `${asi.ArregloRealtivo.indicesMax[1]}`,
+        `int ${this.qh.tmpVar()}`,
+        TypeOperationQuartet.MULTIPLICACION
+      );
+      this.qh.push(quartp);
+      pos = this.qh.tmpVar();
+      this.qh.aumentarTmp();
+      const quartp2 = new Quartet(
+        `${pos}`,
+        `${asi.opers[1].restult}`,
+        `int ${this.qh.tmpVar()}`,
+        TypeOperationQuartet.SUMA
+      );
+      this.qh.push(quartp2);
+      pos = this.qh.tmpVar();
+      this.qh.aumentarTmp();
+    }
+    const quartPos = new Quartet(`${direHeap}`,`${pos}`,`int ${this.qh.tmpVar()}`,TypeOperationQuartet.SUMA);
+    this.qh.push(quartPos);
+    const type = asi.typeAsiganar();
+    if(type === 'char'){
+      const quarAsig = new Quartet(
+        `${asi.op.restult}`,
+        '',
+        `heap[${this.qh.tmpVar()}]`,
+        TypeOperationQuartet.ASIGNATION
+      );
+      this.qh.push(quarAsig);
+    }else{
+      const quarAsig = new Quartet(
+        `&${asi.op.restult}`,
+        '',
+        `heap[${this.qh.tmpVar()}]`,
+        TypeOperationQuartet.ASIGNATION
+      );
+      this.qh.push(quarAsig);
+    }
+    this.qh.aumentarTmp();
+  }
+
+  visitNodoArr(arr: NodoArreglo): void | Dato {
+    arr.ops.forEach((op) => {
+      op.generecQuartet(this);
+    })
+    let direHeap = '';
+    if(arr.global){
+      const quartPos = new Quartet('t0',`${arr.arregloRelativo.pos}`,`int ${this.qh.tmpVar()}`,TypeOperationQuartet.SUMA);
+      this.qh.push(quartPos);
+      const inde = this.qh.tmpVar();
+      this.qh.aumentarTmp();
+      const quartref = new Quartet(`*((int*)heap[${inde}])`,'',`int ${this.qh.tmpVar()}`,TypeOperationQuartet.ASIGNATION);
+      this.qh.push(quartref);
+      direHeap = this.qh.tmpVar();
+      this.qh.aumentarTmp();
+    }else{
+      const quartPos = new Quartet(`${this.POINTER}`,`${arr.arregloRelativo.pos}`,`int ${this.qh.tmpVar()}`,TypeOperationQuartet.SUMA);
+      this.qh.push(quartPos);
+      const inde = this.qh.tmpVar();
+      this.qh.aumentarTmp();
+      const quartref = new Quartet(`*((int*)stack[${inde}])`,'',`int ${this.qh.tmpVar()}`,TypeOperationQuartet.ASIGNATION);
+      this.qh.push(quartref);
+      direHeap = this.qh.tmpVar();
+      this.qh.aumentarTmp();
+    }
+    let pos = '';
+    if(arr.arregloRelativo.dimension === 1){
+      pos = arr.ops[0].restult
+    }else{
+      //tn = i1*n1+i2
+      const quartp = new Quartet(
+        `${arr.ops[0].restult}`,
+        `${arr.arregloRelativo.indicesMax[1]}`,
+        `int ${this.qh.tmpVar()}`,
+        TypeOperationQuartet.MULTIPLICACION
+      );
+      this.qh.push(quartp);
+      pos = this.qh.tmpVar();
+      this.qh.aumentarTmp();
+      const quartp2 = new Quartet(
+        `${pos}`,
+        `${arr.ops[1].restult}`,
+        `int ${this.qh.tmpVar()}`,
+        TypeOperationQuartet.SUMA
+      );
+      this.qh.push(quartp2);
+      pos = this.qh.tmpVar();
+      this.qh.aumentarTmp();
+    }
+    const quartPos = new Quartet(`${direHeap}`,`${pos}`,`int ${this.qh.tmpVar()}`,TypeOperationQuartet.SUMA);
+    this.qh.push(quartPos);
+    const posFinal=this.qh.tmpVar();
+    this.qh.aumentarTmp();
+    //obtener valor del heap dependiendo del tipo
+    const typ = arr.typeCrearFun();
+    if (typ === 'char') {
+      const quartGetCh = new Quartet(
+        `heap[${posFinal}]`,'',`${typ}* ${this.qh.tmpVar()}`,TypeOperationQuartet.ASIGNATION
+      );
+      this.qh.push(quartGetCh);
+      arr.result = this.qh.tmpVar();
+      this.qh.aumentarTmp();
+    }else{
+      const quartGet = new Quartet(
+        `*((${typ}*)heap[${posFinal}])`,'',`${typ} ${this.qh.tmpVar()}`,TypeOperationQuartet.ASIGNATION
+      );
+      this.qh.push(quartGet);
+      arr.result = this.qh.tmpVar();
+      this.qh.aumentarTmp();
+    }
+
   }
 
   visitFunMath(funMath: FunMath): void {

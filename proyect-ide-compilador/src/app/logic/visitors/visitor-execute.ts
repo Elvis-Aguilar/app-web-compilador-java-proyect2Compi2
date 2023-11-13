@@ -33,9 +33,12 @@ import { TypeDato } from '../table-simbol/type-dato';
 import { Variable } from '../table-simbol/variable';
 import { Visitor } from './visitor';
 import { Read } from "../instructions/fun-nativas/read";
+import { AsigCompletaArr } from '../arreglos/asig-completa-arr';
+import { NodoArreglo } from '../arreglos/nodo-arr';
 
 
 export class VisitorExecute extends Visitor {
+
   private analizador = new AnalisisSemantico();
   nameClas: String = '';
   clases: Clase[] = [];
@@ -103,14 +106,14 @@ export class VisitorExecute extends Visitor {
         if (vari) {
           nodo.pos = vari.pos;
           nodo.typeDato = vari.typeDato
-          return new Dato(vari.typeDato);
+          return new Dato(vari.typeDato,vari.dato?.numero);
         }
       } else {
         const vari = nodo.symbolTable.getById(nodo.dato.token);
         if (vari) {
           nodo.pos = vari.pos;
           nodo.typeDato = vari.typeDato
-          return new Dato(vari.typeDato);
+          return new Dato(vari.typeDato, vari.dato?.numero);
         }
       }
     }
@@ -508,31 +511,38 @@ export class VisitorExecute extends Visitor {
 
   visitDeclareArr(dec: DeclarationArr): void {
     const pos = dec.symbolTable.getPosition();
-    if (dec.opers.length === 0) {
-      const arrSimple = new Arreglo(
-        dec.token,
-        dec.typeDato,
-        dec.visibilidad,
-        dec.isStatik,
-        dec.isFinal,
-        dec.dimension
-      );
-      arrSimple.pos = pos;
-      dec.symbolTable.arreglos.push(arrSimple);
-      return;
-    }
-    const datos: Dato[] = [];
-    dec.opers.forEach((op) => {
-      const dat = op.execute(this);
-      if (dat) {
-        datos.push(dat);
+    if(dec.indices){
+      //logica para declarar un arreglo type id[][] = new type[2][2];
+      if(dec.dimension !== dec.opers.length){
+        const msj = 'En la declaracion del arreglo las dimensiones no coinciden';
+        ErrorSingleton.getInstance().push(new Error(dec.token.line,dec.token.column,dec.token.id,`${msj}`,TypeError.SEMANTICO))  
+      }else{
+        const datos: Dato[] = [];
+        dec.opers.forEach((op) => {
+        const dat = op.execute(this);
+        if (dat) {
+          datos.push(dat);
+        }
+        });
+        const indicesMax: Array<number> = [];
+        for (let index = 0; index < dec.dimension; index++) {
+          indicesMax.push(datos[index].numero);
+        }
+        const arrSimple = new Arreglo(
+          dec.token,
+          dec.typeDato,
+          dec.visibilidad,
+          dec.isStatik,
+          dec.isFinal,
+          dec.dimension,
+          indicesMax
+        );
+        arrSimple.pos = pos;
+        dec.pos=pos;
+        dec.symbolTable.arreglos.push(arrSimple);
       }
-    });
-    if (dec.indices) {
-      const indicesMax: Array<number> = [];
-      for (let index = 0; index < dec.dimension; index++) {
-        indicesMax.push(datos[index].numero);
-      }
+
+    }else{
       const arrSimple = new Arreglo(
         dec.token,
         dec.typeDato,
@@ -540,35 +550,54 @@ export class VisitorExecute extends Visitor {
         dec.isStatik,
         dec.isFinal,
         dec.dimension,
-        indicesMax
       );
       arrSimple.pos = pos;
+      dec.pos = pos;
       dec.symbolTable.arreglos.push(arrSimple);
-      return;
     }
-    const indicesMax: Array<number> = [];
-    if (dec.dimension === 1) {
-      indicesMax.push(dec.opers.length);
-    } else {
-      indicesMax.push(2);
-      const ind = dec.opers.length / 2;
-      indicesMax.push(ind);
-    }
-    const arrSimple = new Arreglo(
-      dec.token,
-      dec.typeDato,
-      dec.visibilidad,
-      dec.isStatik,
-      dec.isFinal,
-      dec.dimension,
-      indicesMax
-    );
-    arrSimple.pos = pos;
-    dec.symbolTable.arreglos.push(arrSimple);
+    //otro logica de otros casos no implementados XD
   }
 
   visitAsigArr(asi: AsignacionArr): void {
-    //TODO:Method not implemented
+    const dato = asi.op.execute(this);
+    asi.opers.forEach((operacion) => {
+      operacion.execute(this);
+    })
+    if(asi.global){
+      const arr = asi.symbolTable.getByIdGlobalArr(asi.token);
+      if (arr) {
+        asi.ArregloRealtivo = arr;
+        if (arr.dimension !== asi.opers.length) {
+          const msj = 'Las dimensiones de los arreglos no coinciden';
+          ErrorSingleton.getInstance().push(
+            new Error(asi.token.line, asi.token.column, asi.token.id, `${msj}`, TypeError.SEMANTICO)
+          );
+        }
+        if (dato && dato.typeDato !== arr.typeDato) {
+          const msj = 'El dato a asignar no es del mismo tipo que el Arreglo';
+          ErrorSingleton.getInstance().push(
+            new Error(asi.token.line, asi.token.column, asi.token.id, `${msj}`, TypeError.SEMANTICO)
+          );
+        }
+      }
+    }else{
+      const arr = asi.symbolTable.getByIdArr(asi.token);
+      if (arr) {
+        asi.ArregloRealtivo = arr;
+        if (arr.dimension !== asi.opers.length) {
+          const msj = 'Las dimensiones de los arreglos no coinciden';
+          ErrorSingleton.getInstance().push(
+            new Error(asi.token.line, asi.token.column, asi.token.id, `${msj}`, TypeError.SEMANTICO)
+          );
+        }
+        if (dato && dato.typeDato !== arr.typeDato) {
+          const msj = 'El dato a asignar no es del mismo tipo que el Arreglo';
+          ErrorSingleton.getInstance().push(
+            new Error(asi.token.line, asi.token.column, asi.token.id, `${msj}`, TypeError.SEMANTICO)
+          );
+        }
+      }
+    }
   }
 
   visitFunMath(funMath: FunMath): void {
@@ -580,5 +609,104 @@ export class VisitorExecute extends Visitor {
     if (dato) {
       sout.typeImprimir = dato.typeDato;
     }
+  }
+
+  visitAsigComplArr(asigCom: AsigCompletaArr): void {  
+    if(asigCom.global){
+      const arr = asigCom.symbolTable.getByIdGlobalArr(asigCom.token);
+      if (arr) {
+        asigCom.ArregloRealtivo  = arr;
+        if (arr.typeDato !== asigCom.typeAsig) {
+          const msj = 'Arreglo a asignar no es equivalente';
+          ErrorSingleton.getInstance().push(
+            new Error(asigCom.token.line, asigCom.token.column, asigCom.token.id, `${msj}`, TypeError.SEMANTICO)
+          );
+        }
+        if (arr.dimension !== asigCom.opers.length) {
+          const msj = 'Las dimensiones de los arreglos no coinciden';
+          ErrorSingleton.getInstance().push(
+            new Error(asigCom.token.line, asigCom.token.column, asigCom.token.id, `${msj}`, TypeError.SEMANTICO)
+          );
+        }else{
+          const datos: Dato[] = [];
+          asigCom.opers.forEach((op) => {
+          const dat = op.execute(this);
+            if (dat) {
+              datos.push(dat);
+            }
+          });
+          const indicesMax: Array<number> = [];
+          for (let index = 0; index < asigCom.ArregloRealtivo.dimension; index++) {
+            indicesMax.push(datos[index].numero);
+          }
+          asigCom.ArregloRealtivo.indicesMax = indicesMax;
+        }
+      }
+    }else{
+      const arr = asigCom.symbolTable.getByIdArr(asigCom.token);
+      if (arr) {
+        asigCom.ArregloRealtivo  = arr;
+        if (arr.typeDato !== asigCom.typeAsig) {
+          const msj = 'Arreglo a asignar no es equivalente';
+          ErrorSingleton.getInstance().push(
+            new Error(asigCom.token.line, asigCom.token.column, asigCom.token.id, `${msj}`, TypeError.SEMANTICO)
+          );
+        }
+        if (arr.dimension !== asigCom.opers.length) {
+          const msj = 'Las dimensiones de los arreglos no coinciden';
+          ErrorSingleton.getInstance().push(
+            new Error(asigCom.token.line, asigCom.token.column, asigCom.token.id, `${msj}`, TypeError.SEMANTICO)
+          );
+        }else{
+          const datos: Dato[] = [];
+          asigCom.opers.forEach((op) => {
+          const dat = op.execute(this);
+            if (dat) {
+              datos.push(dat);
+            }
+          });
+          const indicesMax: Array<number> = [];
+          for (let index = 0; index < asigCom.ArregloRealtivo.dimension; index++) {
+            indicesMax.push(datos[index].numero);
+          }
+          asigCom.ArregloRealtivo.indicesMax = indicesMax;
+        }
+      }
+      
+    }
+  }
+
+  visitNodoArr(arr: NodoArreglo): void | Dato {
+    arr.ops.forEach((op) => {
+      op.execute(this);
+    })
+    const dato = new Dato(TypeDato.INT);
+    if(!arr.tok){
+      return dato;
+    }
+    if(arr.global){
+      const arrs = arr.symbolTable.getByIdGlobalArr(arr.tok);
+      if(arrs){
+        arr.arregloRelativo = arrs;
+        dato.typeDato = arrs.typeDato;
+        if(arrs.dimension !== arr.ops.length){
+          const mjs = 'La dimensiones no equivalen al arreglo buscado'
+          ErrorSingleton.getInstance().push(new Error(arr.tok.line,arr.tok.column,arr.tok.id,mjs,TypeError.SEMANTICO));
+        }
+      }
+    }else{
+      const arrs = arr.symbolTable.getByIdArr(arr.tok);
+      if(arrs){
+        arr.arregloRelativo = arrs;
+        dato.typeDato = arrs.typeDato;
+        if(arrs.dimension !== arr.ops.length){
+          const mjs = 'La dimensiones no equivalen al arreglo buscado'
+          ErrorSingleton.getInstance().push(new Error(arr.tok.line,arr.tok.column,arr.tok.id,mjs,TypeError.SEMANTICO));
+        }
+      }
+    }
+
+
+    return dato;
   }
 }
