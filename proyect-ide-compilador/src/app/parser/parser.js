@@ -565,8 +565,10 @@ parse: function parse(input) {
                     }
                 }
                 if (lexer.showPosition) {
+                    this.yy.Errores.getInstance().push(new this.yy.ErrorSintx(yylineno + 1, yyleng+1,  lexer.match,"Token no pertenece a la gramatica, se esperaba: "+expected.join(', ') ,this.yy.TypeError.SINTACTICO));
                     errStr = 'Parse error on line ' + (yylineno + 1) + ':\n' + lexer.showPosition() + '\nExpecting ' + expected.join(', ') + ', got \'' + (this.terminals_[symbol] || symbol) + '\'';
                 } else {
+                    this.yy.Errores.getInstance().push(new this.yy.ErrorSintx(yylineno + 1, yyleng+1,  lexer.match,"Token no pertenece a la gramatica, se esperaba: } fin de clase" ,this.yy.TypeError.SINTACTICO));
                     errStr = 'Parse error on line ' + (yylineno + 1) + ': Unexpected ' + (symbol == EOF ? 'end of input' : '\'' + (this.terminals_[symbol] || symbol) + '\'');
                 }
                 this.parseError(errStr, {
