@@ -18,7 +18,7 @@ public class GeneradorCodigoFinal {
 
     public String codigoResult() {
         this.result = "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n\n";
-        this.result += "void* stack[250];\nvoid* heap[250];\nint ptr = 0;\nint ptrh = 0;\n\n";
+        this.result += "void* stack[350];\nvoid* heap[450];\nint ptr = 0;\nint ptrh = 0;\n\n";
         for (Quartet quatete : quatetes) {
             if(quatete.getTypeOp().equals(TypeOperationQuartet.DECLARPROTOTIPO)){
                 this.result += "void "+quatete.getResult()+";\n";

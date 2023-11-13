@@ -110,6 +110,7 @@ export class Parser {
       try {
         const clase: Clase = parser.parse(arch.contenido);
         clase.packag = ` ${arch.packageCompleto}`;
+        this.generarConstructorVacio(clase);
         clases.push(clase);
         console.log(clase);
       } catch (error) {
@@ -177,6 +178,13 @@ export class Parser {
         'Existen Errores Semanticos en el proyecto, revisar reporte de Errores',
         'error'
       );
+    }
+  }
+
+  private generarConstructorVacio(clase:Clase){
+    if(clase.constructors.length === 0){
+      const contru = new Constructor(clase.nombre,[],[],new Token(clase.nombre,0,0));
+      clase.pushConstructor(contru);
     }
   }
 }
