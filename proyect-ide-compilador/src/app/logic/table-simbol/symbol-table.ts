@@ -138,7 +138,7 @@ export class SymbolTable {
     if (variable) {
       return variable;
     }else{
-      if (this.symbolTablePadre) {
+      if (this.symbolTablePadre && this.symbolTablePadre.nameReference !== 'Clase') {
         return this.symbolTablePadre.buscarEnTodasLasTAblas(tok);
       }
     }

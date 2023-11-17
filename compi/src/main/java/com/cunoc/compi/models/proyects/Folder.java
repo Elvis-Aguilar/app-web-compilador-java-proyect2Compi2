@@ -1,15 +1,15 @@
-
 package com.cunoc.compi.models.proyects;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  * @author elvis_agui
  */
-public class Folder implements Serializable{
-    
+public class Folder implements Serializable {
+
     private String nombre;
     private String packageCompleto;
     private ArrayList<Folder> folders;
@@ -61,7 +61,5 @@ public class Folder implements Serializable{
     public String toString() {
         return "Folder{" + "nombre=" + nombre + ", packageCompleto=" + packageCompleto + ", folders=" + folders + ", archivos=" + archivos + '}';
     }
-    
-    
-    
+
 }
