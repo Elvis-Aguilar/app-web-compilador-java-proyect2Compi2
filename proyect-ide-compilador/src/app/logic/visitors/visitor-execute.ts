@@ -97,6 +97,9 @@ export class VisitorExecute extends Visitor {
 
   visitNodoOP(nodo: NodoOperation): Dato | void {
     if (!nodo.typeOp && nodo.dato !== null) {
+      if(nodo.dato.typeDato === TypeDato.NULL){
+        return nodo.dato
+      }
       if (!nodo.dato.isVariable) {
         nodo.typeDato = nodo.dato.typeDato
         return nodo.dato;
@@ -362,7 +365,7 @@ export class VisitorExecute extends Visitor {
   visitDeclaration(dec: Declaration): void {
     const dato = dec.op?.execute(this);
     dec.typeAsignar = dato?.typeDato || TypeDato.INT;
-    if (dato && dato.typeDato !== dec.typeDato) {
+    if (dato && dato.typeDato !== dec.typeDato && dato.typeDato !== TypeDato.NULL) {
       const msj = 'El tipo a asignar no es equivalente tipo de la variable' ;
       ErrorSingleton.getInstance().push(
         new Error(
@@ -435,6 +438,9 @@ export class VisitorExecute extends Visitor {
             TypeError.SEMANTICO
           )
         );
+        return;
+      }
+      if (dato.typeDato === TypeDato.NULL) {
         return;
       }
       if (variable.typeDato !== dato.typeDato) {

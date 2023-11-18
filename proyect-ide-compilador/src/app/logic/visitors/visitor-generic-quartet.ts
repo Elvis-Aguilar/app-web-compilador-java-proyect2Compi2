@@ -137,6 +137,9 @@ export class VisitorGenericQuartet extends Visitor {
       //no realiazar nada si no tiene asignacion
       return;
     }
+    if(dec.op.rootOp.typeDato === TypeDato.NULL) {
+      return;
+    }
     //preparando `tn = ptr + pos`
     const quart = new Quartet(
       this.POINTER,
@@ -209,10 +212,16 @@ export class VisitorGenericQuartet extends Visitor {
       this.qh.push(quartHeap);
       asi.result = this.qh.tmpVar();
       this.qh.aumentarTmp();
-      if (
-        asi.typeAsignar === TypeDato.CHAR ||
-        asi.typeAsignar === TypeDato.STRING
-      ) {
+      if(asi.typeAsignar === TypeDato.NULL){
+        const quartAsig = new Quartet(
+          `0`,
+          '',
+          `heap[${asi.result}]`,
+          TypeOperationQuartet.ASIGNATION
+        );
+        this.qh.push(quartAsig);
+      }
+      if (asi.typeAsignar === TypeDato.CHAR ||asi.typeAsignar === TypeDato.STRING) {
         const quartAsig = new Quartet(
           `${asi.op.restult}`,
           '',
@@ -240,6 +249,15 @@ export class VisitorGenericQuartet extends Visitor {
       this.qh.push(quart);
       asi.result = this.qh.tmpVar();
       this.qh.aumentarTmp();
+      if(asi.typeAsignar === TypeDato.NULL){
+        const quartAsig = new Quartet(
+          `0`,
+          '',
+          `heap[${asi.result}]`,
+          TypeOperationQuartet.ASIGNATION
+        );
+        this.qh.push(quartAsig);
+      }
       if (
         asi.typeAsignar === TypeDato.CHAR ||
         asi.typeAsignar === TypeDato.STRING
@@ -273,13 +291,12 @@ export class VisitorGenericQuartet extends Visitor {
       op.generecQuartet(this);
       const index = posParam -1;
       const typeAsignar = decOb.construcotrRelativo.parametros[index].typeDato;
-      const quarttm = new Quartet(
-        `${size}`,
-        `${posParam}`,
-        `int ${this.qh.tmpVar()}`,
-        TypeOperationQuartet.SUMA
-      );
+      const quarttm = new Quartet(`${size}`,`${posParam}`,`int ${this.qh.tmpVar()}`,TypeOperationQuartet.SUMA);
       this.qh.push(quarttm);
+      const tmp = this.qh.tmpVar();
+      this.qh.aumentarTmp();
+      const quartPos = new Quartet(`${this.POINTER}`,`${tmp}`,`int ${this.qh.tmpVar()}`,TypeOperationQuartet.SUMA);
+      this.qh.push(quartPos);
       if (typeAsignar === TypeDato.CHAR || typeAsignar === TypeDato.STRING) {
         const quartStaCade = new Quartet(
           `${op.restult}`,
@@ -357,6 +374,10 @@ export class VisitorGenericQuartet extends Visitor {
         TypeOperationQuartet.SUMA
       );
       this.qh.push(quarttm);
+      const tmp = this.qh.tmpVar();
+      this.qh.aumentarTmp();
+      const quartPos = new Quartet(`${this.POINTER}`,`${tmp}`,`int ${this.qh.tmpVar()}`,TypeOperationQuartet.SUMA);
+      this.qh.push(quartPos)
       if (typeAsignar === TypeDato.CHAR || typeAsignar === TypeDato.STRING) {
         const quartStaCade = new Quartet(
           `${op.restult}`,
@@ -462,6 +483,19 @@ export class VisitorGenericQuartet extends Visitor {
 
   visitNodoOP(nodo: NodoOperation): void {
     if (nodo.dato !== null) {
+      if(nodo.dato.typeDato === TypeDato.NULL){
+        //retornar 0
+        const quaInt = new Quartet(
+          `0`,
+          '',
+          `int ${this.qh.tmpVar()}`,
+          TypeOperationQuartet.ASIGNATION
+        );
+        this.qh.push(quaInt);
+        nodo.result = `${this.qh.tmpVar()}`;
+        this.qh.aumentarTmp();
+        return;
+      }
       if (!nodo.dato.isVariable) {
         nodo.valueDato(this);
         return;
@@ -785,6 +819,10 @@ export class VisitorGenericQuartet extends Visitor {
         TypeOperationQuartet.SUMA
       );
       this.qh.push(quarttm);
+      const tmp = this.qh.tmpVar();
+      this.qh.aumentarTmp();
+      const quartPos = new Quartet(`${this.POINTER}`,`${tmp}`,`int ${this.qh.tmpVar()}`,TypeOperationQuartet.SUMA);
+      this.qh.push(quartPos)
       if (typeAsignar === TypeDato.CHAR || typeAsignar === TypeDato.STRING) {
         const quartStaCade = new Quartet(
           `${op.restult}`,
@@ -982,7 +1020,7 @@ export class VisitorGenericQuartet extends Visitor {
   }
 
   visitWhile(whileI: WhileInstruction): void {
-    if(whileI.condition.rootOp.dato !== null){
+    if(whileI.condition.rootOp.dato !== null || whileI.condition.rootOp instanceof LlamadaFun){
       // crearle un if goto
       const quartEt = new Quartet('','',`${this.qh.tmpEt()}`, TypeOperationQuartet.DECLEET);
       this.qh.push(quartEt);
@@ -1039,7 +1077,7 @@ export class VisitorGenericQuartet extends Visitor {
       instr.genericQuartet(this);
     });
     //cuartetas para la condicion
-    if(doWhileI.condition.rootOp.dato !== null){
+    if(doWhileI.condition.rootOp.dato !== null || doWhileI.condition.rootOp instanceof LlamadaFun){
       // crearle un if goto
       const quartEt = new Quartet('','',`${this.qh.tmpEt()}`, TypeOperationQuartet.DECLEET);
       this.qh.push(quartEt);
@@ -1075,7 +1113,7 @@ export class VisitorGenericQuartet extends Visitor {
     //cuartetas de la instruccion inicial
     fo.instrcInicial.genericQuartet(this);
     //realizando condicion, agregando if, goto si no tuviese
-    if(fo.condition.rootOp.dato !== null){
+    if(fo.condition.rootOp.dato !== null || fo.condition.rootOp instanceof LlamadaFun){
       // crearle un if goto
       const quartEt = new Quartet('','',`${this.qh.tmpEt()}`, TypeOperationQuartet.DECLEET);
       this.qh.push(quartEt);

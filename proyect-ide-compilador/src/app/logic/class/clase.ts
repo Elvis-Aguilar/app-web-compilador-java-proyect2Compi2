@@ -6,6 +6,7 @@ import { Funcion } from '../instructions/funcion/funcion';
 import { Instruction } from '../instructions/instruction';
 import { Dato } from '../table-simbol/dato';
 import { SymbolTable } from '../table-simbol/symbol-table';
+import { TypeDato } from '../table-simbol/type-dato';
 import { Variable } from '../table-simbol/variable';
 import { Visitor } from '../visitors/visitor';
 import { Constructor } from './constructor';
@@ -117,6 +118,9 @@ export class Clase {
     for (let index = 0; index < datos.length; index++) {
       const dato = datos[index];
       const vari =  parametros[index];
+      if(dato.typeDato === TypeDato.NULL) {
+        continue;
+      }
       if (dato.typeDato !== vari.typeDato) {
         return false;
       }

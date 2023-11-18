@@ -15,6 +15,10 @@ export class OperationCasteo {
     this.datoRight = dato2;
     this.typeOp = typeOp;
     let resutl = new Dato(TypeDato.INT);
+    if(this.datoLeft.typeDato === TypeDato.NULL || this.datoRight.typeDato === TypeDato.NULL){
+      resutl.typeDato = TypeDato.BOOLEAN
+      return resutl
+    }
     switch (this.typeOp) {
       case TypeOperation.SUMA:
         resutl = this.operacionSUma();

@@ -4,5 +4,6 @@ export enum TypeDato {
     STRING,
     CHAR,
     BOOLEAN,
-    VOID
+    VOID,
+    NULL
 }

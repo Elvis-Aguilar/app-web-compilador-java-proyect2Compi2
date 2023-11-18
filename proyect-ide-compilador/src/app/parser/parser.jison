@@ -334,7 +334,7 @@ declar_var_glo
   
 declar_obj_glo
     : agrup ID IGUAL NEW ID PARENTESA argumens PARENTESC PUNTOCOMA          {$$ = new yy.DeclarObject($1,new yy.Token($2,this._$.first_column, this._$.first_line), $7,$5);}
-    | agrup ID IGUAL NULL PUNTOCOMA                                         {$$ = new yy.DeclarObject($1,new yy.Token($2,this._$.first_column, this._$.first_line), [],$4);}
+    //| agrup ID IGUAL NULL PUNTOCOMA                                         {$$ = new yy.DeclarObject($1,new yy.Token($2,this._$.first_column, this._$.first_line), [],$4);}
     ;
 
 getSet
@@ -492,7 +492,7 @@ declaracion_var
 
 declar_obj
     : ID ID IGUAL NEW ID PARENTESA argumens PARENTESC PUNTOCOMA          {$$ = new yy.DeclarObject($1,new yy.Token($2,this._$.first_column, this._$.first_line), $7,$5);}
-    | ID ID IGUAL NULL PUNTOCOMA                                               {$$ = new yy.DeclarObject($1,new yy.Token($2,this._$.first_column, this._$.first_line), [],$4);}
+    //| ID ID IGUAL NULL PUNTOCOMA                                               {$$ = new yy.DeclarObject($1,new yy.Token($2,this._$.first_column, this._$.first_line), [],$4);}
     ;
 
 items 
@@ -689,6 +689,7 @@ ter_exp
       | THIS PUNTO ID                               {$$ = new yy.NodoOperation(new yy.Dato(yy.TypeDato.INT, 1, '',false, new yy.Token($3, this._$.first_column, this._$.first_line), true,  true ));}
       | ID cochets_val                              {$$ = new yy.NodoArreglo(new yy.Token($1, this._$.first_column, this._$.first_line),$2,false);}
       | THIS PUNTO ID cochets_val                   {$$ = new yy.NodoArreglo(new yy.Token($3, this._$.first_column, this._$.first_line),$4,true);}
+      | NULL                                        {$$ = new yy.NodoOperation(new yy.Dato(yy.TypeDato.NULL, 1,"", false, new yy.Token($1,this._$.first_column, this._$.first_line)));}
       ;
 
 /*gramatica para las clases math*/
