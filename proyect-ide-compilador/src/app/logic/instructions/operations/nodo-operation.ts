@@ -170,7 +170,7 @@ export class NodoOperation {
       vi.qh.aumentarTmp();
     }else{
       const quartGet = new Quartet(
-        `*((${typ}*)stack[${ref}])`,'',`${typ} ${vi.qh.tmpVar()}`,TypeOperationQuartet.ASIGNATION
+        `stack[${ref}]`,'',`${typ} ${vi.qh.tmpVar()}`,TypeOperationQuartet.ASIGNATION
       );
       vi.qh.push(quartGet);
       this.result = vi.qh.tmpVar();
@@ -196,7 +196,7 @@ export class NodoOperation {
       vi.qh.aumentarTmp();
     }else{
       const quartGet = new Quartet(
-        `*((${typ}*)heap[${ref}])`,'',`${typ} ${vi.qh.tmpVar()}`,TypeOperationQuartet.ASIGNATION
+        `heap[${ref}]`,'',`${typ} ${vi.qh.tmpVar()}`,TypeOperationQuartet.ASIGNATION
       );
       vi.qh.push(quartGet);
       this.result = vi.qh.tmpVar();

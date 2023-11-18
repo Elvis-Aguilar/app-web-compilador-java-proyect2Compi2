@@ -116,7 +116,7 @@ export class VisitorGenericQuartet extends Visitor {
 
     //stack[tn] = t0
     const cuartRetorno = new Quartet(
-      `&t0`,
+      `t0`,
       '',
       `stack[${this.qh.tmpVar()}]`,
       TypeOperationQuartet.ASIGNATION
@@ -161,7 +161,7 @@ export class VisitorGenericQuartet extends Visitor {
       this.qh.push(quartAsig);
     } else {
       const quartAsig = new Quartet(
-        `&${dec.op.restult}`,
+        `${dec.op.restult}`,
         '',
         `stack[${dec.result}]`,
         TypeOperationQuartet.ASIGNATION
@@ -171,7 +171,33 @@ export class VisitorGenericQuartet extends Visitor {
   }
 
   visitAsig(asi: Asignacion): void {
-    asi.op.generecQuartet(this);
+    if (asi.op.rootOp.typeOp !== undefined && asi.op.rootOp.isRelacionales()) {
+      const etTrue = this.qh.tmpEt();
+      this.qh.aumentarTmpLabel();
+      const etFalse = this.qh.tmpEt();
+      this.qh.aumentarTmpLabel();
+      const quartIni = new Quartet('0', '', `int ${this.qh.tmpVar()}`,TypeOperationQuartet.ASIGNATION);
+      this.qh.push(quartIni);
+      const resutTem = this.qh.tmpVar();
+      this.qh.aumentarTmp();
+      asi.op.generecQuartet(this);
+      asi.op.restult = resutTem;
+      asi.op.quartets.forEach((qt)=>{
+        if(qt.typeOp === TypeOperationQuartet.GOTOFLASE){
+          qt.result = etFalse;
+        }else{
+          qt.result = etTrue;
+        }
+      })
+      const quartTrue = new Quartet('','',`${etTrue}`,TypeOperationQuartet.DECLEET);
+      this.qh.push(quartTrue);
+      const quart = new Quartet('1', '', `${asi.op.restult}`,TypeOperationQuartet.ASIGNATION);
+      this.qh.push(quart);
+      const quartFalse = new Quartet('','',`${etFalse}`,TypeOperationQuartet.DECLEET);
+      this.qh.push(quartFalse);
+    }else{
+      asi.op.generecQuartet(this);
+    }
     if (asi.global) {
       //variable en el heap t0 equivale a this
       const quartHeap = new Quartet(
@@ -196,7 +222,7 @@ export class VisitorGenericQuartet extends Visitor {
         this.qh.push(quartAsig);
       } else {
         const quartAsig = new Quartet(
-          `&${asi.op.restult}`,
+          `${asi.op.restult}`,
           '',
           `heap[${asi.result}]`,
           TypeOperationQuartet.ASIGNATION
@@ -227,7 +253,7 @@ export class VisitorGenericQuartet extends Visitor {
         this.qh.push(quartAsig);
       } else {
         const quartAsig = new Quartet(
-          `&${asi.op.restult}`,
+          `${asi.op.restult}`,
           '',
           `stack[${asi.result}]`,
           TypeOperationQuartet.ASIGNATION
@@ -264,7 +290,7 @@ export class VisitorGenericQuartet extends Visitor {
         this.qh.push(quartStaCade);
       }else{
         const quartSta = new Quartet(
-          `&${op.restult}`,
+          `${op.restult}`,
           '',
           `stack[${this.qh.tmpVar()}]`,
           TypeOperationQuartet.ASIGNATION
@@ -292,7 +318,7 @@ export class VisitorGenericQuartet extends Visitor {
     const tmp = this.qh.tmpVar();
     this.qh.aumentarTmp();
     const quartref = new Quartet(
-      `*((int*)stack[${tmp}])`,
+      `stack[${tmp}]`,
       '',
       `int ${this.qh.tmpVar()}`,
       TypeOperationQuartet.ASIGNATION
@@ -308,7 +334,7 @@ export class VisitorGenericQuartet extends Visitor {
     );
     this.qh.push(quart);
     const quar = new Quartet(
-      `&${ref}`,
+      `${ref}`,
       '',
       `stack[${this.qh.tmpVar()}]`,
       TypeOperationQuartet.ASIGNATION
@@ -341,7 +367,7 @@ export class VisitorGenericQuartet extends Visitor {
         this.qh.push(quartStaCade);
       }else{
         const quartSta = new Quartet(
-          `&${op.restult}`,
+          `${op.restult}`,
           '',
           `stack[${this.qh.tmpVar()}]`,
           TypeOperationQuartet.ASIGNATION
@@ -384,7 +410,7 @@ export class VisitorGenericQuartet extends Visitor {
     const tmp = this.qh.tmpVar();
     this.qh.aumentarTmp();
     const quartref = new Quartet(
-      `*((int*)stack[${tmp}])`,
+      `stack[${tmp}]`,
       '',
       `int ${this.qh.tmpVar()}`,
       TypeOperationQuartet.ASIGNATION
@@ -402,7 +428,7 @@ export class VisitorGenericQuartet extends Visitor {
       );
       this.qh.push(quartHeap);
       const quar = new Quartet(
-        `&${ref}`,
+        `${ref}`,
         '',
         `heap[${this.qh.tmpVar()}]`,
         TypeOperationQuartet.ASIGNATION
@@ -418,7 +444,7 @@ export class VisitorGenericQuartet extends Visitor {
       );
       this.qh.push(quart);
       const quar = new Quartet(
-        `&${ref}`,
+        `${ref}`,
         '',
         `stack[${this.qh.tmpVar()}]`,
         TypeOperationQuartet.ASIGNATION
@@ -610,7 +636,7 @@ export class VisitorGenericQuartet extends Visitor {
       case TypeDato.BOOLEAN:
         const quartDecleBol = new Quartet('','',`int ${this.qh.tmpVar()}`,TypeOperationQuartet.DECLARTION);
         this.qh.push(quartDecleBol);
-        const quartRead = new Quartet(`"%d"`,'',`&${this.qh.tmpVar()}`,TypeOperationQuartet.READ);
+        const quartRead = new Quartet(`"%d"`,'',`${this.qh.tmpVar()}`,TypeOperationQuartet.READ);
         this.qh.push(quartRead)
         read.result = this.qh.tmpVar();
         this.qh.aumentarTmp();
@@ -626,7 +652,7 @@ export class VisitorGenericQuartet extends Visitor {
       case TypeDato.FLOAT:
         const quartDecleFloat = new Quartet('','',`float ${this.qh.tmpVar()}`,TypeOperationQuartet.DECLARTION);
         this.qh.push(quartDecleFloat);
-        const quartReadFloat = new Quartet(`"%f"`,'',`&${this.qh.tmpVar()}`,TypeOperationQuartet.READ);
+        const quartReadFloat = new Quartet(`"%f"`,'',`${this.qh.tmpVar()}`,TypeOperationQuartet.READ);
         this.qh.push(quartReadFloat)
         read.result = this.qh.tmpVar();
         this.qh.aumentarTmp();
@@ -634,7 +660,7 @@ export class VisitorGenericQuartet extends Visitor {
       case TypeDato.INT:
         const quartDecleInt = new Quartet('','',`int ${this.qh.tmpVar()}`,TypeOperationQuartet.DECLARTION);
         this.qh.push(quartDecleInt);
-        const quartReadInt = new Quartet(`"%d"`,'',`&${this.qh.tmpVar()}`,TypeOperationQuartet.READ);
+        const quartReadInt = new Quartet(`"%d"`,'',`${this.qh.tmpVar()}`,TypeOperationQuartet.READ);
         this.qh.push(quartReadInt)
         read.result = this.qh.tmpVar();
         this.qh.aumentarTmp();
@@ -650,7 +676,7 @@ export class VisitorGenericQuartet extends Visitor {
       default:
         const quartDecledef = new Quartet('','',`int ${this.qh.tmpVar()}`,TypeOperationQuartet.DECLARTION);
         this.qh.push(quartDecledef);
-        const quartReaDef = new Quartet(`"%d"`,'',`&${this.qh.tmpVar()}`,TypeOperationQuartet.READ);
+        const quartReaDef = new Quartet(`"%d"`,'',`${this.qh.tmpVar()}`,TypeOperationQuartet.READ);
         this.qh.push(quartReaDef)
         read.result = this.qh.tmpVar();
         this.qh.aumentarTmp();
@@ -678,7 +704,7 @@ export class VisitorGenericQuartet extends Visitor {
     this.qh.push(cuarteH);
     this.qh.aumentarTmp();
     const cuarteThis = new Quartet(
-      `*((int*)stack[t0])`,
+      `stack[t0]`,
       '',
       `int ${this.qh.tmpVar()}`,
       TypeOperationQuartet.ASIGNATION
@@ -715,7 +741,7 @@ export class VisitorGenericQuartet extends Visitor {
         this.qh.push(quartHep);
         const tmp = this.qh.tmpVar();
         this.qh.aumentarTmp();
-        const quarValHeap = new Quartet(`*((int*)heap[${tmp}])`,``,`int ${this.qh.tmpVar()}`, TypeOperationQuartet.ASIGNATION); 
+        const quarValHeap = new Quartet(`heap[${tmp}]`,``,`int ${this.qh.tmpVar()}`, TypeOperationQuartet.ASIGNATION); 
         this.qh.push(quarValHeap);
         tRef = this.qh.tmpVar();
         this.qh.aumentarTmp();
@@ -725,7 +751,7 @@ export class VisitorGenericQuartet extends Visitor {
         this.qh.push(quartHep);
         const tmp = this.qh.tmpVar();
         this.qh.aumentarTmp();
-        const quarValHeap = new Quartet(`*((int*)stack[${tmp}])`,``,`int ${this.qh.tmpVar()}`, TypeOperationQuartet.ASIGNATION); 
+        const quarValHeap = new Quartet(`stack[${tmp}]`,``,`int ${this.qh.tmpVar()}`, TypeOperationQuartet.ASIGNATION); 
         this.qh.push(quarValHeap);
         tRef = this.qh.tmpVar();
         this.qh.aumentarTmp();
@@ -734,14 +760,14 @@ export class VisitorGenericQuartet extends Visitor {
       this.qh.push(quartHep);
       const posStak = this.qh.tmpVar();
       this.qh.aumentarTmp();
-      const quarValHeap = new Quartet(`&${tRef}`,``,`stack[${posStak}]`, TypeOperationQuartet.ASIGNATION); 
+      const quarValHeap = new Quartet(`${tRef}`,``,`stack[${posStak}]`, TypeOperationQuartet.ASIGNATION); 
       this.qh.push(quarValHeap);
     }else{
       const quartHep = new Quartet(this.POINTER,`${llama.symbolTable.getPosition()}`,`int ${this.qh.tmpVar()}`, TypeOperationQuartet.SUMA); 
       this.qh.push(quartHep);
       const posStak = this.qh.tmpVar();
       this.qh.aumentarTmp();
-      const quarValHeap = new Quartet(`&t0`,``,`stack[${posStak}]`, TypeOperationQuartet.ASIGNATION); 
+      const quarValHeap = new Quartet(`t0`,``,`stack[${posStak}]`, TypeOperationQuartet.ASIGNATION); 
       this.qh.push(quarValHeap);
     }
 
@@ -769,7 +795,7 @@ export class VisitorGenericQuartet extends Visitor {
         this.qh.push(quartStaCade);
       }else{
         const quartSta = new Quartet(
-          `&${op.restult}`,
+          `${op.restult}`,
           '',
           `stack[${this.qh.tmpVar()}]`,
           TypeOperationQuartet.ASIGNATION
@@ -803,7 +829,7 @@ export class VisitorGenericQuartet extends Visitor {
       this.qh.aumentarTmp();
     }else{
       const quartGet = new Quartet(
-        `*((${typ}*)stack[${posSatk}])`,'',`${typ} ${this.qh.tmpVar()}`,TypeOperationQuartet.ASIGNATION
+        `stack[${posSatk}]`,'',`${typ} ${this.qh.tmpVar()}`,TypeOperationQuartet.ASIGNATION
       );
       this.qh.push(quartGet);
       llama.result = this.qh.tmpVar();
@@ -869,7 +895,7 @@ export class VisitorGenericQuartet extends Visitor {
       const quartInst = new Quartet('','',`${ifI.labelInstruc}`, TypeOperationQuartet.DECLEET);
       this.qh.push(quartInst);
     }
-    if(ifI.condition.rootOp.dato !== null){
+    if(ifI.condition.rootOp.dato !== null || ifI.condition.rootOp instanceof LlamadaFun){
       // crearle un if goto
       const quartEt = new Quartet('','',`${this.qh.tmpEt()}`, TypeOperationQuartet.DECLEET);
       this.qh.push(quartEt);
@@ -1112,7 +1138,7 @@ export class VisitorGenericQuartet extends Visitor {
       const tmp = this.qh.tmpVar();
       this.qh.aumentarTmp();
       const quar = new Quartet(
-        `&${this.POINTERH}`,
+        `${this.POINTERH}`,
         '',
         `stack[${tmp}]`,
         TypeOperationQuartet.ASIGNATION
@@ -1157,7 +1183,7 @@ export class VisitorGenericQuartet extends Visitor {
       //acciones globales
       const quartHep = new Quartet('t0',`${asi.ArregloRealtivo.pos}`,`int ${this.qh.tmpVar()}`, TypeOperationQuartet.SUMA); 
       this.qh.push(quartHep);
-      const quartH = new Quartet(`&${this.POINTERH}`,``,`heap[${this.qh.tmpVar()}]`, TypeOperationQuartet.ASIGNATION); 
+      const quartH = new Quartet(`${this.POINTERH}`,``,`heap[${this.qh.tmpVar()}]`, TypeOperationQuartet.ASIGNATION); 
       this.qh.push(quartH);
       this.qh.aumentarTmp();
     }else{
@@ -1172,7 +1198,7 @@ export class VisitorGenericQuartet extends Visitor {
       const tmp = this.qh.tmpVar();
       this.qh.aumentarTmp();
       const quar = new Quartet(
-        `&${this.POINTERH}`,
+        `${this.POINTERH}`,
         '',
         `stack[${tmp}]`,
         TypeOperationQuartet.ASIGNATION
@@ -1225,7 +1251,7 @@ export class VisitorGenericQuartet extends Visitor {
       this.qh.push(quartPos);
       const inde = this.qh.tmpVar();
       this.qh.aumentarTmp();
-      const quartref = new Quartet(`*((int*)heap[${inde}])`,'',`int ${this.qh.tmpVar()}`,TypeOperationQuartet.ASIGNATION);
+      const quartref = new Quartet(`heap[${inde}]`,'',`int ${this.qh.tmpVar()}`,TypeOperationQuartet.ASIGNATION);
       this.qh.push(quartref);
       direHeap = this.qh.tmpVar();
       this.qh.aumentarTmp();
@@ -1234,7 +1260,7 @@ export class VisitorGenericQuartet extends Visitor {
       this.qh.push(quartPos);
       const inde = this.qh.tmpVar();
       this.qh.aumentarTmp();
-      const quartref = new Quartet(`*((int*)stack[${inde}])`,'',`int ${this.qh.tmpVar()}`,TypeOperationQuartet.ASIGNATION);
+      const quartref = new Quartet(`stack[${inde}]`,'',`int ${this.qh.tmpVar()}`,TypeOperationQuartet.ASIGNATION);
       this.qh.push(quartref);
       direHeap = this.qh.tmpVar();
       this.qh.aumentarTmp();
@@ -1276,7 +1302,7 @@ export class VisitorGenericQuartet extends Visitor {
       this.qh.push(quarAsig);
     }else{
       const quarAsig = new Quartet(
-        `&${asi.op.restult}`,
+        `${asi.op.restult}`,
         '',
         `heap[${this.qh.tmpVar()}]`,
         TypeOperationQuartet.ASIGNATION
@@ -1296,7 +1322,7 @@ export class VisitorGenericQuartet extends Visitor {
       this.qh.push(quartPos);
       const inde = this.qh.tmpVar();
       this.qh.aumentarTmp();
-      const quartref = new Quartet(`*((int*)heap[${inde}])`,'',`int ${this.qh.tmpVar()}`,TypeOperationQuartet.ASIGNATION);
+      const quartref = new Quartet(`heap[${inde}]`,'',`int ${this.qh.tmpVar()}`,TypeOperationQuartet.ASIGNATION);
       this.qh.push(quartref);
       direHeap = this.qh.tmpVar();
       this.qh.aumentarTmp();
@@ -1305,7 +1331,7 @@ export class VisitorGenericQuartet extends Visitor {
       this.qh.push(quartPos);
       const inde = this.qh.tmpVar();
       this.qh.aumentarTmp();
-      const quartref = new Quartet(`*((int*)stack[${inde}])`,'',`int ${this.qh.tmpVar()}`,TypeOperationQuartet.ASIGNATION);
+      const quartref = new Quartet(`stack[${inde}]`,'',`int ${this.qh.tmpVar()}`,TypeOperationQuartet.ASIGNATION);
       this.qh.push(quartref);
       direHeap = this.qh.tmpVar();
       this.qh.aumentarTmp();
@@ -1349,7 +1375,7 @@ export class VisitorGenericQuartet extends Visitor {
       this.qh.aumentarTmp();
     }else{
       const quartGet = new Quartet(
-        `*((${typ}*)heap[${posFinal}])`,'',`${typ} ${this.qh.tmpVar()}`,TypeOperationQuartet.ASIGNATION
+        `heap[${posFinal}]`,'',`${typ} ${this.qh.tmpVar()}`,TypeOperationQuartet.ASIGNATION
       );
       this.qh.push(quartGet);
       arr.result = this.qh.tmpVar();

@@ -17,7 +17,11 @@ export class Constructor extends Instruction {
 
   constructor(nombre: any,parametros: Variable[],instructions: Instruction[], token: Token) {
     super();
-    this.nombre = nombre[3];
+    if (nombre instanceof Array) {
+      this.nombre = nombre[3];
+    }else{
+      this.nombre = nombre;
+    }
     this.parametros = parametros;
     this.instructions = instructions;
     this.token = token;

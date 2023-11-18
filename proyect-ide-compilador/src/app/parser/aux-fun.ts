@@ -70,8 +70,8 @@ export class AuxFun {
   }
 
   configIncremet(token:Token, typeOp: TypeOperation, globla?:boolean): Asignacion{
-    const opright = new NodoOperation(new Dato(TypeDato.INT, 1,"", false, token , true, globla));
-    const opLeft = new NodoOperation(new Dato(TypeDato.INT, 1,"", false, token));
+    const opLeft  = new NodoOperation(new Dato(TypeDato.INT, 1,"", false, token , true, globla));
+    const opright = new NodoOperation(new Dato(TypeDato.INT, 1,"", false, token));
     const nodoRoot = new NodoOperation(undefined, opLeft, opright, typeOp, token);
     const operation = new Operation(nodoRoot);
     return new Asignacion(token, operation, globla);
