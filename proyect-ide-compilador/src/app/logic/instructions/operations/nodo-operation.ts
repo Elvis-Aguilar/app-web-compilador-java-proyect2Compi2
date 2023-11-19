@@ -163,7 +163,7 @@ export class NodoOperation {
     vi.qh.aumentarTmp();
     if (typ === 'char') {
       const quartGetCh = new Quartet(
-        `stack[${ref}]`,'',`${typ}* ${vi.qh.tmpVar()}`,TypeOperationQuartet.ASIGNATION
+        `(char*)(&stack[${ref}])`,'',`${typ}* ${vi.qh.tmpVar()}`,TypeOperationQuartet.ASIGNATION
       );
       vi.qh.push(quartGetCh);
       this.result = vi.qh.tmpVar();
@@ -189,7 +189,7 @@ export class NodoOperation {
     vi.qh.aumentarTmp();
     if (typ === 'char') {
       const quartGetCh = new Quartet(
-        `heap[${ref}]`,'',`${typ}* ${vi.qh.tmpVar()}`,TypeOperationQuartet.ASIGNATION
+        `(char*)(&heap[${ref}])`,'',`${typ}* ${vi.qh.tmpVar()}`,TypeOperationQuartet.ASIGNATION
       );
       vi.qh.push(quartGetCh);
       this.result = vi.qh.tmpVar();
