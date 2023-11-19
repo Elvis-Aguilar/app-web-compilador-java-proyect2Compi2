@@ -126,4 +126,15 @@ export class AuxFun {
         break;
     }
   }
+
+  generateGetSetGlobal(enumGet: getYset, clase: Clase){
+    clase.instructions.forEach((instr)=>{
+      if (instr instanceof Declaration) {
+        const config = [Visibilidad.PUBLIC, false, false, instr.typeDato];
+        const instucs:Declaration[] = [instr]
+        this.generarGetSet(enumGet,config,instucs,clase);
+      }
+    })
+
+  }
 }

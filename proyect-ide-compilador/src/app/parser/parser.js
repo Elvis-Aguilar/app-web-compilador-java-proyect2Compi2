@@ -110,8 +110,11 @@ break;
 case 11:
 this.$ = "";
 break;
-case 12: case 13:
+case 12:
 this.$ = claseAux; this.$.isFinal = $$[$0-4]; this.$.instructions = $$[$0-1];
+break;
+case 13:
+this.$ = claseAux; this.$.isFinal = $$[$0-4]; this.$.instructions = $$[$0-1]; yy.AuxFun.generateGetSetGlobal($$[$0-5],this.$);
 break;
 case 16:
 claseAux = new yy.Clase($$[$0-1]);  yy.Errores.getInstance().ubicacion = $$[$0-1];

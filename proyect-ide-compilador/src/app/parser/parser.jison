@@ -291,7 +291,7 @@ term_imprt
 /*gramatica para clases: public class id {...} || class id {...}*/
 clase 
   : visi_class clas_name LLAVEA sente_glos LLAVEC               {$$ = claseAux; $$.isFinal = $1; $$.instructions = $4;}         
-  | getSet visi_class clas_name LLAVEA sente_glos LLAVEC        {$$ = claseAux; $$.isFinal = $2; $$.instructions = $5;}
+  | getSet visi_class clas_name LLAVEA sente_glos LLAVEC        {$$ = claseAux; $$.isFinal = $2; $$.instructions = $5; yy.AuxFun.generateGetSetGlobal($1,$$);}
   ; 
 
 exti 
