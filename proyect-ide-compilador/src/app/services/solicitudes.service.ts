@@ -24,4 +24,10 @@ export class SolicitudesService {
   public saveProyects(proyect: Folder): Observable<Folder[]> {
     return this.http.post<Folder[]>(this.API_URL+'save-proyect', proyect);
   }
+
+  public downloadC3D(): Observable<ArrayBuffer> {
+    return this.http.get(this.API_URL + 'dowload-code', {
+      responseType: 'arraybuffer' // Indicamos que esperamos un arraybuffer como respuesta
+    });
+  }
 }

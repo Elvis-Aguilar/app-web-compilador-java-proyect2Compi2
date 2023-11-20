@@ -36,6 +36,7 @@ public class Controller {
         for (Quartet quartet : quartets) {
             System.out.println(quartet.toString());
         }
+        this.menjador.saveCodeC(code.getContent());
         return code;
     }
 
@@ -64,5 +65,15 @@ public class Controller {
         }
         this.menjador.saveProyects(nombreBin, proyects);
         return proyects;
+    }
+    
+    @GetMapping(path = "/dowload-code")
+    public byte[] compilar(){
+        System.out.println("compilando el archivo");
+        if(this.menjador.compilarArchivo()){
+            byte[] contenidoArchivo = this.menjador.leerArchivoComoBytes();
+            return contenidoArchivo;
+        }
+        return null;
     }
 }

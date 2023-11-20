@@ -71,14 +71,55 @@ export class NavbarComponent {
     this.sesion.areaTrabajo = AreaTrabajo.PROYECTS;
   }
 
-  
-
   msj(){
     Swal.fire(
       'Texto vacio?',
       'intentas compilar una clase vacia?',
       'question'
     )
+  }
+
+  descargarEjecC3D(){
+    if(this.sesion.code.content === ''){
+      Swal.fire(
+        'No hay Codigo Final',
+        'Antes de descargar el ejecutable debes compilar a codigo 3 direcciones',
+        'error'
+      )
+    }else{
+      this.solici.downloadC3D().subscribe(
+        (fileContent: ArrayBuffer) => {
+          this.descargarArchivo(fileContent, 'ejecutable');
+         /** Swal.fire(
+            'compilado con exito',
+            'Proceso de compilacion con exito',
+            'success'
+          ) */
+        },
+        (error) => {
+          console.error('Error al descargar el archivo:', error);
+        }
+      );
+    }
+  }
+
+  private descargarArchivo(data: ArrayBuffer, nombreArchivo: string) {
+    const blob = new Blob([data], { type: 'application/octet-stream' });
+
+    // Crear URL del Blob
+    const url = window.URL.createObjectURL(blob);
+
+    // Crear un enlace <a> oculto en el DOM y simular clic para descargar el archivo
+    const enlace = document.createElement('a');
+    enlace.href = url;
+    enlace.download = nombreArchivo;
+    enlace.style.display = 'none';
+    document.body.appendChild(enlace);
+    enlace.click();
+
+    // Liberar la URL del Blob después de la descarga
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(enlace);
   }
 
 }
